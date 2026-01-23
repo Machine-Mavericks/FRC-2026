@@ -100,106 +100,24 @@ public class ManualDrive extends Command {
         // omega = Math.abs(omega) > 0.2 ? omega : 0;
         
         // determine distance from center of reef to robot
-        Translation2d CurrentPosition = RobotContainer.odometry.getPose2d().getTranslation();
+        //Translation2d CurrentPosition = RobotContainer.odometry.getPose2d().getTranslation();
         Translation2d CenterReef = AutoFunctions.redVsBlue(new Translation2d(4.489, 4.0259));
-        double distanceToReef = CurrentPosition.getDistance(CenterReef) - 0.84;
+        
 
         boolean EnableDriftCorrection = true;
-        if (RobotContainer.intake.getSensorState() && RobotContainer.snapToReef&& distanceToReef < 1.5)
-        {
+        
+        
             
             // determine distance from center of reef
            
 
             // heading to center of reef
-            double ReefAngle = CenterReef.minus(CurrentPosition).getAngle().getDegrees();
+        
             
             // current robot angle
             double RobotAngle = RobotContainer.gyro.getYawAngle();
 
-            /*double TargetAngle=0.0;
-            if (ReefAngle > -30.0 && ReefAngle <=30.0)
-                TargetAngle = 0.0;
-            else if (ReefAngle > -90.0 && ReefAngle <=-30.0)
-                TargetAngle = -60.0;
-            else if (ReefAngle > -150.0 && ReefAngle <=-90.0)
-                TargetAngle = -120.0;
-            else if (ReefAngle <= -150.0 || ReefAngle >= 150.0)
-                TargetAngle = -180.0;
-            else if (ReefAngle >30.0 && ReefAngle <=90.0)
-                TargetAngle = 60.0;
-            else if (ReefAngle >90.0 && ReefAngle < 150.0)
-                TargetAngle = 120.0; */
-
-
-            double TargetAngle=0.0;
-            if (ReefAngle > -35.0 && ReefAngle <=35.0)
-                TargetAngle = 0.0;
-            else if (ReefAngle > -95.0 && ReefAngle <=-25.0)
-                TargetAngle = -60.0;
-            else if (ReefAngle > -155.0 && ReefAngle <=-85.0)
-                TargetAngle = -120.0;
-            else if (ReefAngle <= -145.0 || ReefAngle >= 145.0)
-                TargetAngle = -180.0;
-            else if (ReefAngle >25.0 && ReefAngle <=95.0)
-                TargetAngle = 60.0;
-            else if (ReefAngle >85.0 && ReefAngle < 155.0)
-                TargetAngle = 120.0;
-            
-                double error = Utils.AngleDifference(TargetAngle,RobotAngle);
-                error = Math.abs(error) > 1.0 ? error : 0;
-            
-            omega = omegaControl.calculate(error);
-             //omega = omegaControl.calculate(Utils.AngleDifference(30.0,RobotAngle));
-            
-            // deadband the control
-            //omega = Math.abs(omega) > 0.1 ? omega : 0;
-            
-            if (omega > 3.0)
-                    omega = 3.0;
-            if (omega < -3.0)
-                    omega = -3.0;
-
-            EnableDriftCorrection = false;
-        }
-        else{
-            omegaControl.reset();
-        }
-        
-    
-
-        // --------- Correct robot angle for gyro angle wander --------
-        if(false && omega == 0.0 && !RobotContainer.driverOp.back().getAsBoolean())
-        {// was EnableDriftCorrection 
-            if (m_pidDelay > 0)
-                m_pidDelay --;
-            else
-            {
-                // If the target is unset, set it to current heading
-                if(m_PIDTarget == null)
-                {
-                    m_PIDTarget = RobotContainer.gyro.getYawAngle();
-                    m_headingPID.reset(); // Clear existing integral term as may accumulate while not in use
-                }
-
-                omega = m_headingPID.calculate(Utils.AngleDifference(m_PIDTarget, RobotContainer.gyro.getYawAngle()));
-            }
-        }
-        else
-        {
-            // there is rotational input, or gyro reset was pressed, set target to null so it's properly reset next time
-            m_PIDTarget = null;
-            m_pidDelay = 10;
-        }
-        // --------- End Correct robot angle for gyro angle wander --------
-
-
-        // Need to deadzone omega again. Anti-wander function above always results in
-        // very small non-zero robot rotation. This resutls in wheels always resetting to 
-        // robot rotate position when robot in rest position.
-        // With deadzoning, this allows wheel orientation to remain as it was.
-        omega = Math.abs(omega) > 0.07 ? omega : 0;
-
+          
 
         powerFactor = basePowerFacter + (speedTrigger * boostPowerFacter);
         // Since the drive was shifted to closed loop (i.e. requested velocities), change joystick input max values

@@ -27,20 +27,10 @@ public class RobotMap {
         public static final int LR_DRIVE_MOTOR = 7;
         public static final int RR_DRIVE_MOTOR = 9;
         // CAN Ids for Coral Intake Motors 
-        //(Dont know ports at the monment this is just for the subsystem)
-        public static final int IN1_INTAKE_Motor= 1;
-        public static final int IN2_INTAKE_Motor = 2;
-        //public static final int ALGAE_MOTOR = 3;
-        //public static final int ALGAE_TILT_MOTOR = 15;
-        // CAN IDs for Climb
-        //(Dont know ports at the monment this is just for the subsystem)
-        public static final int Cl_Climb_Motor = 30;
         
         // CAN ID for CTR Pigeon Gyro
         public static final int PIGEON = 14;
-        // elevator motors
-        public static final int L_ELEVATOR = 20;
-        public static final int R_ELEVATOR = 21;
+       
 
     }
 
@@ -63,7 +53,7 @@ public class RobotMap {
 
     public static class PWMPorts {
         /** PWM Port for led strip */
-        public static final int LED_BLINKING = 0;
+        
 
         // PWM port for camera tilting subsystem
         //public static final int CAMERA_SERVO_ID = 1;

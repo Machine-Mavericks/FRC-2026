@@ -12,8 +12,7 @@ import frc.robot.utils.AutoFunctions;
 // command template
 public class MoveToPose extends Command {
     
-    // the follow-path command that this command will use
-    FollowPath cmd;
+    
 
     // local copy of input parameters
     double maxSpeed, maxAccel;
@@ -53,7 +52,7 @@ public class MoveToPose extends Command {
     public void initialize() {
 
         // current robot pose
-        Pose2d currentPose = RobotContainer.odometry.getPose2d();
+       // Pose2d currentPose = RobotContainer.odometry.getPose2d();
 
         // destination mirroring as req'd
         if (redVsBlueEnable)
@@ -62,41 +61,41 @@ public class MoveToPose extends Command {
             dest = dest_unmirrored;
 
         // straight-line travel heading
-        Rotation2d heading = new Rotation2d(dest.getX()-currentPose.getX(),
-                dest.getY()- currentPose.getY());
+        // Rotation2d heading = new Rotation2d(dest.getX()-currentPose.getX(),
+        //         dest.getY()- currentPose.getY());
 
-        // construct follow-path command
-        cmd = new FollowPath(maxSpeed,
-                maxAccel,
-                0.0,
-                0.0,
-                heading,
-                new ArrayList<Translation2d>() {{ }},
-                new Pose2d(dest.getX(), dest.getY(), heading),
-                dest.getRotation(),
-                false
-        );
+        // // construct follow-path command
+        // cmd = new FollowPath(maxSpeed,
+        //         maxAccel,
+        //         0.0,
+        //         0.0,
+        //         heading,
+        //         new ArrayList<Translation2d>() {{ }},
+        //         new Pose2d(dest.getX(), dest.getY(), heading),
+        //         dest.getRotation(),
+        //         false
+        // );
 
         // initialize the follow-path command
-        cmd.initialize();
+        //cmd.initialize();
     }
 
     // This method is called periodically while command is active
-    @Override
-    public void execute() { 
-        cmd.execute();
-    }
+    // @Override
+    // public void execute() { 
+    //     cmd.execute();
+    // }
 
-    // This method to return true only when command is to finish. Otherwise return false
-    @Override
-    public boolean isFinished() {
-        return cmd.isFinished();
-    }
+    // // This method to return true only when command is to finish. Otherwise return false
+    // @Override
+    // public boolean isFinished() {
+    //     return cmd.isFinished();
+    // }
 
-    // This method is called once when command is finished.
-    @Override
-    public void end(boolean interrupted) {
-        cmd.end(interrupted);
-    }
+    // // This method is called once when command is finished.
+    // @Override
+    // public void end(boolean interrupted) {
+    //     cmd.end(interrupted);
+    // }
 
 }

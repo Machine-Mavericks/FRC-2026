@@ -86,7 +86,7 @@ public class GoToPose extends Command {
     public void execute() {
 
         // get current position estimate from estimator
-        Pose2d currentpose = RobotContainer.odometry.getPose2d();
+       // Pose2d currentpose = RobotContainer.odometry.getPose2d();
 
         // only integrate errors in within 10cm or 5deg of target
         // if (Math.abs(m_target.getX() - currentpose.getX())<0.20)
@@ -104,49 +104,46 @@ public class GoToPose extends Command {
         //     m_rotController.setI(0.0); 
 
         // execute PIDs
-        double xSpeed = -m_xController.calculate(m_target.getX() - currentpose.getX() );
-        double ySpeed = -m_yController.calculate( m_target.getY() - currentpose.getY());
-        double rotSpeed = m_rotController.calculate(Utils.AngleDifference(m_target.getRotation().getDegrees(),currentpose.getRotation().getDegrees()));
+        
 
-
-        // limit speeds to allowable
-        if (xSpeed > m_speed)
-        xSpeed = m_speed;
-        if (xSpeed < -m_speed)
-        xSpeed = -m_speed;
-        if (ySpeed > m_speed)
-        ySpeed = m_speed; 
-        if (ySpeed < -m_speed)
-        ySpeed = -m_speed;  
-        if (rotSpeed >m_rotspeed)
-        rotSpeed = m_rotspeed;
-        if (rotSpeed < -m_rotspeed)
-        rotSpeed = -m_rotspeed;
+        // // limit speeds to allowable
+        // if (xSpeed > m_speed)
+        // xSpeed = m_speed;
+        // if (xSpeed < -m_speed)
+        // xSpeed = -m_speed;
+        // if (ySpeed > m_speed)
+        // ySpeed = m_speed; 
+        // if (ySpeed < -m_speed)
+        // ySpeed = -m_speed;  
+        // if (rotSpeed >m_rotspeed)
+        // rotSpeed = m_rotspeed;
+        // if (rotSpeed < -m_rotspeed)
+        // rotSpeed = -m_rotspeed;
 
         // drive robot according to x,y,rot PID controller speeds
-        RobotContainer.drivesystem.FieldDrive(xSpeed, ySpeed, rotSpeed, false);   
+        //RobotContainer.drivesystem.FieldDrive(xSpeed, ySpeed, rotSpeed, false);   
 
     }
 
     // This method to return true only when command is to finish. Otherwise return false
-    @Override
-    public boolean isFinished() {
+   // @Override
+   // public boolean isFinished() {
 
-        Pose2d CurrentPosition = RobotContainer.odometry.getPose2d();
+        //Pose2d CurrentPosition = RobotContainer.odometry.getPose2d();
 
         // we are finished if we are within erorr of target or command had timeed out
-        return (((Math.abs(m_target.getX() - CurrentPosition.getX()) <  m_positiontolerance) &&
-            (Math.abs(m_target.getY() - CurrentPosition.getY()) <  m_positiontolerance) &&
-            (Math.abs(m_target.getRotation().getDegrees() - CurrentPosition.getRotation().getDegrees()) < m_angletolerance)) ||
-            (m_Timer.hasElapsed(m_timeout)));
+        // return (((Math.abs(m_target.getX() - CurrentPosition.getX()) <  m_positiontolerance) &&
+        //     (Math.abs(m_target.getY() - CurrentPosition.getY()) <  m_positiontolerance) &&
+        //     (Math.abs(m_target.getRotation().getDegrees() - CurrentPosition.getRotation().getDegrees()) < m_angletolerance)) ||
+        //     (m_Timer.hasElapsed(m_timeout)));
 
-    }
+    //}
 
     // This method is called once when command is finished.
-    @Override
-    public void end(boolean interrupted) {
-        // we have finished path. Stop robot
-        RobotContainer.drivesystem.FieldDrive(0.0, 0.0, 0.0, false);
-    }
+    // @Override
+    // public void end(boolean interrupted) {
+    //     // we have finished path. Stop robot
+    //     RobotContainer.drivesystem.FieldDrive(0.0, 0.0, 0.0, false);
+    // }
 
 }
