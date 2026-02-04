@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.ManualDrive;
 //import frc.robot.commands.TiltAlgaeRemover;
 
 //import frc.robot.utils.AlgaePositions;
@@ -23,7 +22,6 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
 
-  private boolean isElevatorInitialized = false;
   //private boolean isAlgaeTiltInitialized = false;
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -61,14 +59,13 @@ public class Robot extends TimedRobot {
   ///** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-    RobotContainer.elevator.ZeroEncoder();
-    isElevatorInitialized = true;
+   
   }
 
   /** This function is called periodically during autonomous. */
@@ -85,35 +82,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    if (!isElevatorInitialized){
-      RobotContainer.elevator.ZeroEncoder(); 
-      isElevatorInitialized = true;
-    }
-
-    RobotContainer.elevator.Level0();
-
-    // if (!isAlgaeTiltInitialized){
-    //   RobotContainer.algaeRemover.ZeroEncoder(); 
-    //   isAlgaeTiltInitialized = true;
-    // }
-
-    // RobotContainer.algaeRemover.ResetTilt();
-  
-
-    // set default swerve drive command to manual drive mode
-    RobotContainer.drivesystem.setDefaultCommand(new ManualDrive());
-    // set defalt trigger to tilt algae remover 
-    //RobotContainer.algaeRemover.setDefaultCommand(new TiltAlgaeRemover(AlgaePositions.TILT_UP));
-    
-    
-
-    // temporary
-    //RobotContainer.gyro.resetYawAngle();
-
-    RobotContainer.camleft.SetPriorityTagID(-1);
-    RobotContainer.camr.SetPriorityTagID(-1);
-
-    RobotContainer.odometry.EnableApriltagProcessing(true);
+    //RobotContainer.odometry.EnableApriltagProcessing(true);
   }
 
   /** This function is called periodically during operator control. */

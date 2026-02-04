@@ -10,8 +10,6 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -168,7 +166,6 @@ public class NeoSwerveDrive extends SubsystemBase {
         steerConfig.inverted(true);
         steerConfig.idleMode(IdleMode.kCoast);
         steerConfig.inverted(false);
-        steerConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         steerConfig.closedLoop.p(10.0);
         steerConfig.closedLoop.i(0.2);
         steerConfig.closedLoop.d(0.0);
@@ -195,7 +192,6 @@ public class NeoSwerveDrive extends SubsystemBase {
         // configure drive motors
         SparkMaxConfig driveConfig = new SparkMaxConfig();
         driveConfig.idleMode(IdleMode.kCoast);
-        driveConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         driveConfig.closedLoop.p(0.0005);
         driveConfig.closedLoop.i(0.000008);
         driveConfig.closedLoop.d(0.0);
