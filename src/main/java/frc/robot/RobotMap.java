@@ -12,22 +12,21 @@ public class RobotMap {
     public static class CANID {
         
         // CAN IDs for Swerve Cancoders
-        public static final int LF_CANCODER = 10;
-        public static final int RF_CANCODER = 11;
-        public static final int LR_CANCODER = 12;
-        public static final int RR_CANCODER  = 13;
+        public static final int LF_CANCODER = 9;
+        public static final int RF_CANCODER = 10;
+        public static final int LR_CANCODER = 11;
+        public static final int RR_CANCODER  = 12;
         // CAN IDs for Steer Motors
         public static final int LF_STEER_MOTOR = 2;
         public static final int RF_STEER_MOTOR = 4;
         public static final int LR_STEER_MOTOR = 6;
         public static final int RR_STEER_MOTOR = 8;
         // CAN IDs for Drive Motors
-        public static final int LF_DRIVE_MOTOR = 3;
-        public static final int RF_DRIVE_MOTOR = 5;
-        public static final int LR_DRIVE_MOTOR = 7;
-        public static final int RR_DRIVE_MOTOR = 9;
-        // CAN Ids for Coral Intake Motors 
-        
+        public static final int LF_DRIVE_MOTOR = 1;
+        public static final int RF_DRIVE_MOTOR = 3;
+        public static final int LR_DRIVE_MOTOR = 5;
+        public static final int RR_DRIVE_MOTOR = 7;
+                
         // CAN ID for CTR Pigeon Gyro
         public static final int PIGEON = 14;
        
