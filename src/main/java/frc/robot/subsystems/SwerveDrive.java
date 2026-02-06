@@ -32,8 +32,8 @@ public class SwerveDrive extends SubsystemBase {
 
 
     // Setup Drive Kinematics Object Constants
-    private final double TRACK_WIDTH = 0.5715;   // Width between the left and right wheels - in m.
-    private final double TRACK_LENGTH = 0.5715;  // Length between the front and back wheel - in m.
+    private final double TRACK_WIDTH = 0.5969; // Width between the left and right wheels - in m.
+    private final double TRACK_LENGTH = 0.4445; // Length between the front and back wheel - in m.
     
     // steering gear ratio for SPS MK4 L1 Swerve
     private final double STEER_RATIO = 12.8;
