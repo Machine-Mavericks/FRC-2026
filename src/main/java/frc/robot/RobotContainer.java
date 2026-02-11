@@ -8,7 +8,7 @@ import frc.robot.commands.TemplateCommand;
 import frc.robot.subsystems.Pigeon;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.TemplateSubsystem;
-// import frc.robot.subsystems.Odometry;
+import frc.robot.subsystems.Odometry;
 import frc.robot.utils.AutoFunctions;
 import frc.robot.utils.ElevatorPositions;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,7 +35,7 @@ public class RobotContainer {
     // make pointers to robot subsystems here
     public static Pigeon gyro;
     public static SwerveDrive drivesystem;
-    //public static Odometry odometry;
+    public static Odometry odometry;
     public static TemplateSubsystem mySubsystem;
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -52,7 +52,8 @@ public class RobotContainer {
         // create instances of subsystems here
         gyro = new Pigeon();
         drivesystem = new SwerveDrive();
-        //odometry = new Odometry();
+        drivesystem.setDefaultCommand(new ManualDrive());
+        odometry = new Odometry();
         mySubsystem = new TemplateSubsystem();
        
         // attach commands to controller buttons
@@ -66,11 +67,11 @@ public class RobotContainer {
         // attach commands to buttons
     
         // reset odometry to appropriate angle when back pressed.
-        // driverOp.back().onTrue(new InstantCommand(()-> {
-        //     Pose2d pos = odometry.getPose2d();
-        //     Rotation2d newHeading = AutoFunctions.redVsBlue(new Rotation2d(0.0));
-        //     odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
-        // } ));
+        driverOp.back().onTrue(new InstantCommand(()-> {
+            Pose2d pos = odometry.getPose2d();
+            Rotation2d newHeading = AutoFunctions.redVsBlue(new Rotation2d(0.0));
+            odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
+        } ));
         
 
         // operator controls 
@@ -96,6 +97,12 @@ public class RobotContainer {
 
     /** Use this function to return pointer to the command the robot is to follow in autonomous
     * @return the command to run in autonomous */
-   
-  
-}
+       public Command getAutonomousCommand() {
+           // Example: Move robot forward 1 meter, no rotation
+           return new frc.robot.commands.MoveRobotRelative(
+               1.0, // maxSpeed
+               0.5, // maxAccel (used as maxRotSpeed)
+               new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
+           );
+       }
+    }

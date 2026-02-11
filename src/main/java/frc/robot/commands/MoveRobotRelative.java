@@ -2,19 +2,18 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.utils.AutoFunctions;
 import frc.robot.utils.Utils;
 
-public class MoveToPose extends Command {
+public class MoveRobotRelative extends Command {
 
-    private Pose2d dest_unmirrored;
+    private Pose2d relative_dest;
     private Pose2d dest;
     private double maxSpeed;
     private double maxRotSpeed;
-    private boolean redVsBlueEnable;
 
     private double m_timeout;
     private Timer m_Timer;
@@ -26,20 +25,14 @@ public class MoveToPose extends Command {
     private final double m_positiontolerance = 0.01;
     private final double m_angletolerance = 1.0;
 
-    public MoveToPose(double maxSpeed, double maxAccel, Pose2d destination) {
-        this(maxSpeed, maxAccel, destination, true);
-    }
-
-    public MoveToPose(double maxSpeed,
+    public MoveRobotRelative(double maxSpeed,
                     double maxAccel,
-                    Pose2d destination,
-                    boolean redVsBlueEnable) {
+                    Pose2d destination) {
 
         // record input parameters
         this.maxSpeed = maxSpeed;
         this.maxRotSpeed = maxAccel; // Assuming maxAccel is maxRotSpeed
-        this.dest_unmirrored = destination;
-        this.redVsBlueEnable = redVsBlueEnable;
+        this.relative_dest = destination;
         this.m_timeout = 15.0; // set default timeout to 15 seconds
 
         // this command requires robot drive subsystem
@@ -69,11 +62,8 @@ public class MoveToPose extends Command {
         m_yController.reset();
         m_rotController.reset();
 
-        // destination mirroring as req'd
-        if (redVsBlueEnable)
-            dest = AutoFunctions.redVsBlue(dest_unmirrored);
-        else
-            dest = dest_unmirrored;
+        // Calculate absolute destination from robot's current pose and relative destination
+        dest = RobotContainer.odometry.getPose2d().plus(new Transform2d(relative_dest.getTranslation(), relative_dest.getRotation()));
     }
 
     // This method is called periodically while command is active
