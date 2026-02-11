@@ -97,6 +97,12 @@ public class RobotContainer {
 
     /** Use this function to return pointer to the command the robot is to follow in autonomous
     * @return the command to run in autonomous */
-   
-  
-}
+       public Command getAutonomousCommand() {
+           // Example: Move robot forward 1 meter, no rotation
+           return new frc.robot.commands.MoveRobotRelative(
+               1.0, // maxSpeed
+               0.5, // maxAccel (used as maxRotSpeed)
+               new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
+           );
+       }
+    }

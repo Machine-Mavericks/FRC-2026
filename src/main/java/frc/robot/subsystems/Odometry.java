@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Limelight.LimelightResults;
@@ -335,6 +336,7 @@ public class Odometry extends SubsystemBase {
 
     // -------------------- Subsystem Shuffleboard Methods --------------------
     
+    private Field2d m_field;
     private GenericEntry m_fieldXPos;
     private GenericEntry m_fieldYPos;
     private GenericEntry m_fieldAngle;
@@ -351,6 +353,9 @@ public class Odometry extends SubsystemBase {
         // Create page in shuffleboard
         ShuffleboardTab Tab = Shuffleboard.getTab("Odometry");
         
+        m_field = new Field2d();
+        Tab.add("Field", m_field).withPosition(5, 0).withSize(6, 4);
+
         // robot position info
         ShuffleboardLayout l1 = Tab.getLayout("Odometry", BuiltInLayouts.kList);
         l1.withPosition(0, 0);
@@ -384,6 +389,8 @@ public class Odometry extends SubsystemBase {
         m_fieldYPos.setDouble(CurrentPose.getY());
         m_fieldAngle.setDouble(CurrentPose.getRotation().getDegrees()); 
         
+        m_field.setRobotPose(CurrentPose);
+
         // temp
         m_DWfieldXPos.setDouble(DWfieldX);
         m_DWfieldYPos.setDouble(DWfieldY);
