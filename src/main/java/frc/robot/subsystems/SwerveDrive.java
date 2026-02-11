@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
+import frc.robot.commands.ManualDrive;
 import frc.robot.utils.Utils;
 
 /** Subsystem */
@@ -92,9 +93,13 @@ public class SwerveDrive extends SubsystemBase {
     // Swerve module states - contains target speed(m/s) and angle for each swerve module
     private SwerveModuleState[] m_states;
 
+    
+    public void initDefaultCommand() {
+    }
 
     /** Place code here to initialize subsystem */
     public SwerveDrive() {
+       
 
         // setup the drive Kinematics
         driveKinematics = new SwerveDriveKinematics(
@@ -160,7 +165,7 @@ public class SwerveDrive extends SubsystemBase {
         m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
 
         // turn on safety oversight of steer motors
-        m_LFSteerMotor.setSafetyEnabled(true);
+        m_LFSteerMotor.setSafetyEnabled(false);
         m_RFSteerMotor.setSafetyEnabled(true);
         m_LRSteerMotor.setSafetyEnabled(true);
         m_RRSteerMotor.setSafetyEnabled(true);
