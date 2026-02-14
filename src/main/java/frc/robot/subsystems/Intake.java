@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -15,7 +16,7 @@ public class Intake extends SubsystemBase {
     @Logged
     public double currentSpeed;
     private double commandedSpeed;
-    
+
     private SparkMax intakeMotor;
 
     /** Place code here to initialize subsystem */
