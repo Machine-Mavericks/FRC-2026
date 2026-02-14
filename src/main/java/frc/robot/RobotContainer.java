@@ -17,6 +17,7 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Odometry;
 import frc.robot.utils.AutoFunctions;
 import frc.robot.utils.ElevatorPositions;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 //import frc.robot.utils.AlgaePositions;
 
 
+@Logged
 public class RobotContainer {
   
     // pointer to robot object
@@ -62,9 +64,9 @@ public class RobotContainer {
 
         // create instances of subsystems here
         gyro = new Pigeon();
-        drivesystem = new SwerveDrive();
+        drivesystem = new SwerveDrive(gyro);
         drivesystem.setDefaultCommand(new ManualDrive());
-        odometry = new Odometry();
+        odometry = new Odometry(drivesystem, gyro);
         uptake = new Uptake();
         shooter = new Shooter();
         mySubsystem = new TemplateSubsystem();

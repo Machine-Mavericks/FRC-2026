@@ -91,6 +91,8 @@ public class SwerveDrive extends SubsystemBase {
     private VelocityVoltage m_LRDriveControl;
     private VelocityVoltage m_RRDriveControl;
 
+    private final Pigeon gyro;
+
     // Swerve module states - contains target speed(m/s) and angle for each swerve module
     private SwerveModuleState[] m_states;
 
@@ -99,8 +101,8 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     /** Place code here to initialize subsystem */
-    public SwerveDrive() {
-       
+    public SwerveDrive(Pigeon gyro) {
+       this.gyro = gyro;
 
         // setup the drive Kinematics
         driveKinematics = new SwerveDriveKinematics(
@@ -329,7 +331,7 @@ public class SwerveDrive extends SubsystemBase {
 
     public void FieldDrive(ChassisSpeeds speed, boolean Park) {
         // convert chassis speeds from field to robot oriented, getting angle from gyro
-        ChassisSpeeds newSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(speed, Rotation2d.fromDegrees(RobotContainer.gyro.getYawAngle()));
+        ChassisSpeeds newSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(speed, Rotation2d.fromDegrees(gyro.getYawAngle()));
     
         // speeds now in robot coordinates - call robot drive
         RobotDrive (newSpeed, Park);

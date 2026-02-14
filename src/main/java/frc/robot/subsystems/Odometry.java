@@ -48,14 +48,19 @@ public class Odometry extends SubsystemBase {
 
     public boolean TagEnable = true;
 
-    public Odometry() {
+    private final SwerveDrive driveSystem;
+    private final Pigeon gyro;
 
+    public Odometry(SwerveDrive driveSystem, Pigeon gryo) {
+        this.driveSystem = driveSystem;
+        this.gyro = gryo;
+        
         // create position estimator - set to (0,0,0)(x,y,ang)
         // initialize swerve drive odometry
         m_Estimator = new SwerveDrivePoseEstimator(
-            RobotContainer.drivesystem.getKinematics(),
+            driveSystem.getKinematics(),
             new Rotation2d(0),
-            RobotContainer.drivesystem.GetSwerveDistances(),
+            driveSystem.GetSwerveDistances(),
             new Pose2d(0.0, 0.0, new Rotation2d(0.0)),
             VecBuilder.fill(1.0, 1.0, 0.1),
             VecBuilder.fill(0.02, 0.02, 0.03));
@@ -141,11 +146,11 @@ public class Odometry extends SubsystemBase {
         DWfieldAngle = position.getRotation().getRadians();
         
         // set gyro
-        RobotContainer.gyro.setYawAngle(gyroangle.getDegrees());
+        gyro.setYawAngle(gyroangle.getDegrees());
     
         // set robot odometry
         m_Estimator.resetPosition(gyroangle,
-            RobotContainer.drivesystem.GetSwerveDistances(),
+            driveSystem.GetSwerveDistances(),
             position);
     }
   
@@ -162,10 +167,10 @@ public class Odometry extends SubsystemBase {
     // helper function to updates drive wheel odometry - called by periodic()
     private void updateDriveWheelOdometry() {
         // get gyro angle (in degrees) and make rotation vector
-        Rotation2d gyroangle = new Rotation2d(RobotContainer.gyro.getYawAngle() * DEGtoRAD);
+        Rotation2d gyroangle = new Rotation2d(gyro.getYawAngle() * DEGtoRAD);
 
         // get position of all sewrve modules from subsystem
-        SwerveModulePosition[] positions = RobotContainer.drivesystem.GetSwerveDistances();
+        SwerveModulePosition[] positions = driveSystem.GetSwerveDistances();
 
         // ensure we have the proper length array positions
         if (positions.length >= 4) {
@@ -278,7 +283,7 @@ public class Odometry extends SubsystemBase {
                         Pose2d LLpose =  TagResults.targets_Fiducials[i].getRobotPose_FieldSpace().toPose2d();
 
                         // get angle from gyro 
-                        Rotation2d gyroangle = new Rotation2d(Math.toRadians(RobotContainer.gyro.getYawAngle()));
+                        Rotation2d gyroangle = new Rotation2d(Math.toRadians(gyro.getYawAngle()));
 
                         Pose2d fieldPose = new Pose2d(LLpose.getX()+8.774176, LLpose.getY()+4.0259, gyroangle);
                     
@@ -416,16 +421,16 @@ public class Odometry extends SubsystemBase {
     public void simulationPeriodic() {
 
         // drive kinematics
-        SwerveDriveKinematics kinematics = RobotContainer.drivesystem.getKinematics();
+        SwerveDriveKinematics kinematics = driveSystem.getKinematics();
         
         // swerve drive states
-        SwerveModuleState[] states = RobotContainer.drivesystem.getTargetModuleStates();
+        SwerveModuleState[] states = driveSystem.getTargetModuleStates();
         
         // get chassis speeds (in robot frame)
         ChassisSpeeds speed = kinematics.toChassisSpeeds(states);
         
         // convert to field relative speeds
-        speed = ChassisSpeeds.fromRobotRelativeSpeeds(speed, Rotation2d.fromDegrees(RobotContainer.gyro.getYawAngle()));
+        speed = ChassisSpeeds.fromRobotRelativeSpeeds(speed, Rotation2d.fromDegrees(gyro.getYawAngle()));
 
         // get current robot pose
         Pose2d currentPose = m_Estimator.getEstimatedPosition();
