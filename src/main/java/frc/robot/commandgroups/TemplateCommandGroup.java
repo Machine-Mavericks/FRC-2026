@@ -11,6 +11,9 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.GoToPose;
 import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
+import frc.robot.subsystems.Odometry;
+import frc.robot.subsystems.Pigeon;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.utils.AutoFunctions;
 
 // Example Sequential Command Group
@@ -21,7 +24,7 @@ import frc.robot.utils.AutoFunctions;
 public class TemplateCommandGroup extends SequentialCommandGroup {
 
     // constructor
-    public TemplateCommandGroup() {
+    public TemplateCommandGroup(SwerveDrive drivesystem, Odometry odometry) {
 
         addCommands (
         
@@ -43,7 +46,7 @@ public class TemplateCommandGroup extends SequentialCommandGroup {
        // new InstantCommand(()->RobotContainer.odometry.setPose(AutoFunctions.redVsBlue(new Pose2d(7.55, 1.5, new Rotation2d(0))))),
         
         // // move to spot 1.25m in front of tag #22
-        new MoveToPose(2.0, 
+        new MoveToPose(drivesystem, odometry, 2.0, 
                         2.5,
                         new Pose2d (5.98,2.68, new Rotation2d(Math.toRadians(120)))),
 
@@ -53,7 +56,7 @@ public class TemplateCommandGroup extends SequentialCommandGroup {
 
         new Pause(1.0),
 
-        new GoToPose(new Pose2d (5.40,2.75, new Rotation2d(Math.toRadians(120))), 0.5, 1.0, 10.0)
+        new GoToPose(drivesystem, new Pose2d (5.40,2.75, new Rotation2d(Math.toRadians(120))), 0.5, 1.0, 10.0)
     
         // move slowly to exact spot               
         //new MoveToPose(0.5, 

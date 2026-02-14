@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.Odometry;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.utils.Utils;
 
 public class MoveRobotRelative extends Command {
@@ -25,18 +27,26 @@ public class MoveRobotRelative extends Command {
     private final double m_positiontolerance = 0.01;
     private final double m_angletolerance = 1.0;
 
-    public MoveRobotRelative(double maxSpeed,
+    private final SwerveDrive drivesystem;
+    private final Odometry odometry;
+
+    public MoveRobotRelative(
+                    SwerveDrive drivesystem,
+                    Odometry odometry,
+                    double maxSpeed,
                     double maxAccel,
                     Pose2d destination) {
 
         // record input parameters
+        this.drivesystem = drivesystem;
+        this.odometry = odometry;
         this.maxSpeed = maxSpeed;
         this.maxRotSpeed = maxAccel; // Assuming maxAccel is maxRotSpeed
         this.relative_dest = destination;
         this.m_timeout = 15.0; // set default timeout to 15 seconds
 
         // this command requires robot drive subsystem
-        addRequirements(RobotContainer.drivesystem);
+        addRequirements(drivesystem);
 
         // set up PIDs
         m_xController = new PIDController(2.2, 0.1, 0.0);
@@ -63,14 +73,14 @@ public class MoveRobotRelative extends Command {
         m_rotController.reset();
 
         // Calculate absolute destination from robot's current pose and relative destination
-        dest = RobotContainer.odometry.getPose2d().plus(new Transform2d(relative_dest.getTranslation(), relative_dest.getRotation()));
+        dest = odometry.getPose2d().plus(new Transform2d(relative_dest.getTranslation(), relative_dest.getRotation()));
     }
 
     // This method is called periodically while command is active
     @Override
     public void execute() {
         // get current position estimate from estimator
-        Pose2d currentpose = RobotContainer.odometry.getPose2d();
+        Pose2d currentpose = odometry.getPose2d();
 
         // execute PIDs
         double xSpeed = m_xController.calculate(currentpose.getX(), dest.getX());
@@ -86,13 +96,13 @@ public class MoveRobotRelative extends Command {
         if (rotSpeed < -maxRotSpeed) rotSpeed = -maxRotSpeed;
 
         // drive robot according to x,y,rot PID controller speeds
-        RobotContainer.drivesystem.FieldDrive(xSpeed, ySpeed, rotSpeed, false);   
+        drivesystem.FieldDrive(xSpeed, ySpeed, rotSpeed, false);   
     }
 
     // This method to return true only when command is to finish. Otherwise return false
     @Override
     public boolean isFinished() {
-        Pose2d CurrentPosition = RobotContainer.odometry.getPose2d();
+        Pose2d CurrentPosition = odometry.getPose2d();
 
         // we are finished if we are within erorr of target or command had timeed out
         return ((Math.abs(dest.getX() - CurrentPosition.getX()) <  m_positiontolerance) &&
@@ -105,6 +115,6 @@ public class MoveRobotRelative extends Command {
     @Override
     public void end(boolean interrupted) {
         // we have finished path. Stop robot
-        RobotContainer.drivesystem.FieldDrive(0.0, 0.0, 0.0, false);
+        drivesystem.FieldDrive(0.0, 0.0, 0.0, false);
     }
 }

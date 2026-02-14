@@ -65,7 +65,7 @@ public class RobotContainer {
         // create instances of subsystems here
         gyro = new Pigeon();
         drivesystem = new SwerveDrive(gyro);
-        drivesystem.setDefaultCommand(new ManualDrive());
+        drivesystem.setDefaultCommand(new ManualDrive(drivesystem, gyro, driverOp));
         odometry = new Odometry(drivesystem, gyro);
         uptake = new Uptake();
         shooter = new Shooter();
@@ -120,6 +120,7 @@ public class RobotContainer {
        public Command getAutonomousCommand() {
            // Example: Move robot forward 1 meter, no rotation
            return new frc.robot.commands.MoveRobotRelative(
+                drivesystem, odometry,
                1.0, // maxSpeed
                0.5, // maxAccel (used as maxRotSpeed)
                new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward

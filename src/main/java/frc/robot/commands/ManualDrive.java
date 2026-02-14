@@ -9,9 +9,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.Pigeon;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.utils.AutoFunctions;
 import frc.robot.utils.Utils;
 
@@ -40,12 +44,18 @@ public class ManualDrive extends Command {
     // rotate to reef controller
     PIDController omegaControl;
 
-    
+    SwerveDrive drivesystem;
+    CommandXboxController driverOp;
+    Pigeon gyro;
+
     // constructor
-    public ManualDrive() {
+    public ManualDrive(SwerveDrive drivesystem, Pigeon gyro, CommandXboxController driverOp) {
 
         // this command requires swerve drive subsystem
-        addRequirements(RobotContainer.drivesystem);
+        this.drivesystem = drivesystem;
+        this.driverOp = driverOp;
+        this.gyro = gyro;
+        addRequirements(drivesystem);
 
         deltat = new Timer();
 
@@ -75,10 +85,10 @@ public class ManualDrive extends Command {
 
         // get joystick input - for competition
         // Note: FRC joystick is oriented +ve to left and +ve down
-        double dX = -RobotContainer.driverOp.getLeftY();
-        double dY = -RobotContainer.driverOp.getLeftX();
-        double omega = -2.0 * RobotContainer.driverOp.getRightX();
-        double speedTrigger = RobotContainer.driverOp.getRightTriggerAxis();
+        double dX = -driverOp.getLeftY();
+        double dY = -driverOp.getLeftX();
+        double omega = -2.0 * driverOp.getRightX();
+        double speedTrigger = driverOp.getRightTriggerAxis();
         
         //boolean Park = RobotContainer.driverOp.leftBumper().getAsBoolean();
 
@@ -94,7 +104,7 @@ public class ManualDrive extends Command {
         // made the dead zones a circle instead of a square, old equation commented below
         dX = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2)) > 0.1 ? dX : 0;
         dY = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2)) > 0.1 ? dY : 0;
-        omega = Math.sqrt(Math.pow(omega, 2) + Math.pow(RobotContainer.driverOp.getRightY(), 2)) > 0.1  ? omega : 0;
+        omega = Math.sqrt(Math.pow(omega, 2) + Math.pow(driverOp.getRightY(), 2)) > 0.1  ? omega : 0;
         // dX = Math.abs(dX) > 0.1 ? dX : 0;
         // dY = Math.abs(dY) > 0.1 ? dY : 0;
         // omega = Math.abs(omega) > 0.2 ? omega : 0;
@@ -115,14 +125,14 @@ public class ManualDrive extends Command {
         
             
             // current robot angle
-            double RobotAngle = RobotContainer.gyro.getYawAngle();
+            double RobotAngle = gyro.getYawAngle();
 
           
 
         powerFactor = basePowerFacter + (speedTrigger * boostPowerFacter);
         // Since the drive was shifted to closed loop (i.e. requested velocities), change joystick input max values
         // to MAX_SPEED values.
-        powerFactor = powerFactor * RobotContainer.drivesystem.MAX_SPEED;
+        powerFactor = powerFactor * drivesystem.MAX_SPEED;
 
         // include power factor to get full x,y and omega speeds beings requested
         dX *= powerFactor;
@@ -148,7 +158,7 @@ public class ManualDrive extends Command {
 
         // drive robot
         //if (!Park)
-            RobotContainer.drivesystem.FieldDrive(dX, dY, omega, false);
+            drivesystem.FieldDrive(dX, dY, omega, false);
         //else
             //RobotContainer.drivesystem.FieldDrive(0.0, 0.0, 0.0, true);
     }

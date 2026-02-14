@@ -33,13 +33,14 @@ public class GoToPose extends Command {
     private final double m_angletolerance = 1.0;
 
     // constructor
-    public GoToPose(Pose2d target,
+    public GoToPose(SwerveDrive drivesystem,
+                    Pose2d target,
                     double maxspeed,
                     double maxrotationalspeed,
                     double timeout) {
 
         // this command requires use of swervedrive subsystem
-        addRequirements(RobotContainer.drivesystem);
+        addRequirements(drivesystem);
     
         // set up PIDs
         m_xController = new PIDController(2.2, 0.1, 0.0);
