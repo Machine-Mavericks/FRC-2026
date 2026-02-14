@@ -31,25 +31,23 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   
     // pointer to robot object
-    public static Robot robot;
+    private final Robot robot;
 
     // create driver and operator xBox controllers
-    public static CommandXboxController driverOp;
-    public static CommandXboxController toolOp;
+    public final CommandXboxController driverOp;
+    public final CommandXboxController toolOp;
 
     
     // make pointers to robot subsystems here
-    public static Pigeon gyro;
-    public static SwerveDrive drivesystem;
-    public static Odometry odometry;
-    public static Uptake uptake;
-    public static Shooter shooter;
-    public static TemplateSubsystem mySubsystem;
-    public static Climber climber;
-    public static Hopper hopper;
-    public static Intake intake;
-   
-   
+    public final Pigeon gyro;
+    public final SwerveDrive drivesystem;
+    public final Odometry odometry;
+    public final Uptake uptake;
+    public final Shooter shooter;
+    public final TemplateSubsystem mySubsystem;
+    public final Climber climber;
+    public final Hopper hopper;
+    public final Intake intake;
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer(Robot robotptr) {
