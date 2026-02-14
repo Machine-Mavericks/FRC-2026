@@ -24,6 +24,9 @@ public class Climber extends SubsystemBase {
 
     }
 
+    public void setClimbPosition(double position){
+        climbMotor.setPosition(position);
+    }
     // place special subsystem methods here
     // this is where rest of program can access functions to return
     // values or control the subsystem

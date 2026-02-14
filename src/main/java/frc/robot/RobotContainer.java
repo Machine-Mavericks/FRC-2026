@@ -92,6 +92,16 @@ public class RobotContainer {
             Rotation2d newHeading = AutoFunctions.redVsBlue(new Rotation2d(0.0));
             odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
         } ));
+
+         driverOp.a().onTrue(new InstantCommand(()-> {
+           intake.spin(0.5);
+           
+        } ));
+
+         driverOp.b().onTrue(new InstantCommand(()-> {
+           intake.spin(0.0);
+           
+        } ));
         
 
         // operator controls 

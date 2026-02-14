@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -9,7 +10,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Hopper extends SubsystemBase {
     
     TalonFX hopperMotor = new TalonFX(5);
- 
+    
+    @Logged
+    private double commandedSpeed;
+    public double currentSpeed;
 
     // Local objects and variables here
     // These are for things that only belong to, and used by, the subsystem
@@ -22,8 +26,13 @@ public class Hopper extends SubsystemBase {
     /** Method called periodically by the scheduler
      * Place any code here you wish to have run periodically */
     @Override
-    public void periodic() {
+   public void periodic() {
+        hopperMotor.set(commandedSpeed);
+        currentSpeed = hopperMotor.get();
+    }
 
+    public void runHopper(double speed){
+        commandedSpeed = speed;
     }
 
     // place special subsystem methods here
