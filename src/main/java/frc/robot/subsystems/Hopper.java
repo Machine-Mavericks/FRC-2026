@@ -1,16 +1,21 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 /** Subsystem */
-public class TemplateSubsystem extends SubsystemBase {
+public class Hopper extends SubsystemBase {
+    
+    TalonFX hopperMotor = new TalonFX(5);
+ 
 
     // Local objects and variables here
     // These are for things that only belong to, and used by, the subsystem
 
     /** Place code here to initialize subsystem */
-    public TemplateSubsystem() {
+    public Hopper() {
 
     }
 

@@ -6,8 +6,14 @@ import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.subsystems.Pigeon;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.TemplateSubsystem;
+import frc.robot.subsystems.Uptake;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Odometry;
 import frc.robot.utils.AutoFunctions;
 import frc.robot.utils.ElevatorPositions;
@@ -36,7 +42,14 @@ public class RobotContainer {
     public static Pigeon gyro;
     public static SwerveDrive drivesystem;
     public static Odometry odometry;
+    public static Uptake uptake;
+    public static Shooter shooter;
     public static TemplateSubsystem mySubsystem;
+    public static Climber climber;
+    public static Hopper hopper;
+    public static Intake intake;
+   
+   
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer(Robot robotptr) {
@@ -54,7 +67,14 @@ public class RobotContainer {
         drivesystem = new SwerveDrive();
         drivesystem.setDefaultCommand(new ManualDrive());
         odometry = new Odometry();
+        uptake = new Uptake();
+        shooter = new Shooter();
         mySubsystem = new TemplateSubsystem();
+        climber = new Climber();
+        hopper = new Hopper();
+        intake = new Intake();
+       
+        
        
         // attach commands to controller buttons
         configureBindings();
