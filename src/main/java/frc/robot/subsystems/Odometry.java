@@ -118,6 +118,12 @@ public class Odometry extends SubsystemBase {
         
     }
 
+    // function to get distance from robot to goal
+    public double getDistanceToGoal(){
+
+        return 1.0; // to be changed
+    }
+
 
     // -------- get/update odometry methods
 

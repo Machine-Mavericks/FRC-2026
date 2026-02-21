@@ -48,6 +48,7 @@ public class RobotContainer {
     public static Climber climber;
     public static Hopper hopper;
     public static Intake intake;
+    public static Limelight camera;
    
    
    
@@ -73,6 +74,7 @@ public class RobotContainer {
         climber = new Climber();
         hopper = new Hopper();
         intake = new Intake();
+        camera = new Limelight(null);
        
         
        

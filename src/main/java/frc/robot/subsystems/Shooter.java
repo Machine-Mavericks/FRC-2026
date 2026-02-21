@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 
 /** Subsystem */
@@ -11,6 +12,7 @@ public class Shooter extends SubsystemBase {
     TalonFX shooterMotor = new TalonFX(1);
     public double wheelRPM;
     public double speed;
+
     // Local objects and variables here
     // These are for things that only belong to, and used by, the subsystem
 
@@ -32,6 +34,12 @@ public class Shooter extends SubsystemBase {
             speed = power;
         }
         
+     }
+
+     public double calculateSpeed(){
+        double x = RobotContainer.odometry.getDistanceToGoal();
+        double y = (0.000284701*x*x) + 50.67876;
+        return y;
      }
     // place special subsystem methods here
     // this is where rest of program can access functions to return
