@@ -36,9 +36,9 @@ public class Shooter extends SubsystemBase {
         
      }
 
-     public double calculateSpeed(){
+     public double calculateRPM(){
         double x = RobotContainer.odometry.getDistanceToGoal();
-        double y = (0.000284701*x*x) + 50.67876;
+        double y = (151.57*x*x) -320.2*x + 2981.2;
         return y;
      }
     // place special subsystem methods here
