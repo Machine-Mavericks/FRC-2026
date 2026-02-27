@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -52,6 +53,8 @@ public class Shooter extends SubsystemBase {
         .withKI(0)
         .withKD(0)
         .withKV(1 / FEEDFORWARD)
+      ).withClosedLoopRamps(new ClosedLoopRampsConfigs()
+        .withVoltageClosedLoopRampPeriod(10) // Time it takes to go to full voltage //TODO Test this
       );
 
       shooterMotor.getConfigurator().apply(config);
