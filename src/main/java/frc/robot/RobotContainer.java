@@ -11,6 +11,7 @@ import frc.robot.subsystems.TemplateSubsystem;
 import frc.robot.subsystems.Odometry;
 import frc.robot.utils.AutoFunctions;
 import frc.robot.utils.ElevatorPositions;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 //import frc.robot.utils.AlgaePositions;
 
-
+@Logged
 public class RobotContainer {
   
     // pointer to robot object
