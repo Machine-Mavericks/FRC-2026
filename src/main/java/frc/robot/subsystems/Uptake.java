@@ -15,7 +15,7 @@ public class Uptake extends SubsystemBase {
  private double commandedSpeed;
  public double currentSpeed;
 
- 
+ private static final double MECHANISM_RATIO = (1.0 / 9.0);
  
     // Local objects and variables here
     // These are for things that only belong to, and used by, the subsystem
@@ -40,6 +40,24 @@ public class Uptake extends SubsystemBase {
     // place special subsystem methods here
     // this is where rest of program can access functions to return
     // values or control the subsystem
+
+    public void UptakeRun (){
+        spinUptake(1.0); 
+    }
+
+    public void UptakeStop(){
+        spinUptake(0.0);  
+    }
+
+    @Logged(name = "Uptake Current Speed")
+    public double GetCurrentSpeed(){
+        return currentSpeed; 
+    }
+
+    @Logged(name = "Uptake Commanded Speed")
+    public double GetCommandedSpeed(){
+        return commandedSpeed;
+    }
 
 
 }
