@@ -1,11 +1,13 @@
 package frc.robot;
 
 
+import frc.robot.commands.IncrementShootersSpeed;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.subsystems.Pigeon;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.TemplateSubsystem;
 import frc.robot.subsystems.Odometry;
@@ -36,6 +38,9 @@ public class RobotContainer {
     public static SwerveDrive drivesystem;
     public static Odometry odometry;
     public static TemplateSubsystem mySubsystem;
+
+    // define shooter subsystem
+    private Shooter shooter;
    
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer(Robot robotptr) {
@@ -91,6 +96,14 @@ public class RobotContainer {
 
         // to use a trigger as a button - note: analog triggers should be debounced as well
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
+
+        //TODO change these for operator controlling
+        driverOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
+        driverOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
+        driverOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
+        driverOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
+
+        driverOp.leftBumper().onTrue(new InstantCommand(() -> shooter.shooterSpeed()));
     }
 
 
