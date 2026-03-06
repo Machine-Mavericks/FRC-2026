@@ -6,7 +6,6 @@ import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.subsystems.Pigeon;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.TemplateSubsystem;
 import frc.robot.subsystems.Uptake;
@@ -43,7 +42,6 @@ public class RobotContainer {
     public static SwerveDrive drivesystem;
     public static Odometry odometry;
     public static Uptake uptake;
-    public static Shooter shooter;
     public static TemplateSubsystem mySubsystem;
     public static Climber climber;
     public static Hopper hopper;
@@ -69,7 +67,6 @@ public class RobotContainer {
         drivesystem.setDefaultCommand(new ManualDrive());
         odometry = new Odometry();
         uptake = new Uptake();
-        shooter = new Shooter();
         mySubsystem = new TemplateSubsystem();
         climber = new Climber();
         hopper = new Hopper();

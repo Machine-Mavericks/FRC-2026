@@ -14,6 +14,8 @@ public class Uptake extends SubsystemBase {
 @Logged
  private double commandedSpeed;
  public double currentSpeed;
+
+ 
  
     // Local objects and variables here
     // These are for things that only belong to, and used by, the subsystem
