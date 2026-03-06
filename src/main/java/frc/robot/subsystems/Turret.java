@@ -32,7 +32,19 @@ public class Turret extends SubsystemBase {
     }
 
     public void setAngle(double angle){
+        angle = angle/5/18*120;
+        if(angle >= 90){
+            IntakeMotor.getEncoder().setPosition(90);
+        } else if(angle <= -90){
+            IntakeMotor.getEncoder().setPosition(-90);
+        } else {
+            IntakeMotor.getEncoder().setPosition(angle);
+        }
        
+    }
+
+    public void getAngle(){
+        currentAngle = IntakeMotor.getEncoder().getPosition()*5*120/18;
     }
 
     // place special subsystem methods here
