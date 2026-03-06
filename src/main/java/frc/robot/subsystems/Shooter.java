@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
     
     //TODO change motor id
-    TalonFX shooterMotor = new TalonFX(1);
+    TalonFX shooterMotor = new TalonFX(20);
     
     
     public double velocity;
