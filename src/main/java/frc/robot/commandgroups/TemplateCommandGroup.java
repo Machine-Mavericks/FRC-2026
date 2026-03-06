@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
-import frc.robot.commands.GoToPose;
+
 import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
 import frc.robot.utils.AutoFunctions;
@@ -51,9 +51,8 @@ public class TemplateCommandGroup extends SequentialCommandGroup {
         // Turn on tag detection
         //new InstantCommand(()->RobotContainer.odometry.TagEnable=true),
 
-        new Pause(1.0),
+        new Pause(1.0)
 
-        new GoToPose(new Pose2d (5.40,2.75, new Rotation2d(Math.toRadians(120))), 0.5, 1.0, 10.0)
     
         // move slowly to exact spot               
         //new MoveToPose(0.5, 

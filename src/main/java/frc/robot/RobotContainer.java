@@ -10,7 +10,6 @@ import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.TemplateSubsystem;
 import frc.robot.subsystems.Odometry;
 import frc.robot.utils.AutoFunctions;
-import frc.robot.utils.ElevatorPositions;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -97,12 +96,7 @@ public class RobotContainer {
 
     /** Use this function to return pointer to the command the robot is to follow in autonomous
     * @return the command to run in autonomous */
-       public Command getAutonomousCommand() {
-           // Example: Move robot forward 1 meter, no rotation
-           return new frc.robot.commands.MoveRobotRelative(
-               1.0, // maxSpeed
-               0.5, // maxAccel (used as maxRotSpeed)
-               new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
-           );
-       }
+    //    public Command getAutonomousCommand() {
+        
+    //    }
     }
