@@ -103,6 +103,8 @@ public class RobotContainer {
         driverOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
         driverOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
         driverOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
+
+        driverOp.leftBumper().onTrue(new InstantCommand(() -> shooter.shooterSpeed()));
     }
 
 

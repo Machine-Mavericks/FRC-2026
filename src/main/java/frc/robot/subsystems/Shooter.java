@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -8,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -25,6 +28,8 @@ public class Shooter extends SubsystemBase {
     
     public double currentSpeed;
 
+    public double targetSpeed;
+
     /**
    * Total ratio from motor to flywheel <br/>
    * Represents how many wheel rotations occur for one motor rotation <br/>
@@ -36,7 +41,7 @@ public class Shooter extends SubsystemBase {
   /**
    * Feedforward value, in RPS per Volt
    */
-  private static final double FEEDFORWARD = 4.93884;
+  private static final double FEEDFORWARD = 0.013;
 
   public Shooter() {
 
@@ -48,26 +53,32 @@ public class Shooter extends SubsystemBase {
       ).withMotorOutput(
         new MotorOutputConfigs()
         .withInverted(InvertedValue.Clockwise_Positive)
+        .withNeutralMode(NeutralModeValue.Coast)
       ).withSlot0(new Slot0Configs()
-        .withKP(1.25)
-        .withKI(0)
+        .withKP(1.25) // was 1.25
+        .withKI(2.0)
         .withKD(0)
-        .withKV(1 / FEEDFORWARD)
+        .withKV(FEEDFORWARD)
       ).withClosedLoopRamps(new ClosedLoopRampsConfigs()
-        .withVoltageClosedLoopRampPeriod(10) // Time it takes to go to full voltage //TODO Test this
+        .withVoltageClosedLoopRampPeriod(Seconds.of(1))
       );
 
       shooterMotor.getConfigurator().apply(config);
   }
 
   public void shooterSpeed(double speed) {
-    if (speed < 15) {
-        shooterMotor.set(0);
+    if (speed < 15) { // in RPS
+      shooterMotor.set(0);
     } else {
-        shooterMotor.setControl(new VelocityVoltage(speed));
+      shooterMotor.setControl(new VelocityVoltage(speed));
     }
 
     commanded = speed;
+  }
+
+  public void shooterSpeed() {
+    targetSpeed = CalculateSpeed(3.0);
+    shooterMotor.setControl(new VelocityVoltage(targetSpeed));
   }
 
   public void stop() {
@@ -76,12 +87,18 @@ public class Shooter extends SubsystemBase {
     commanded = 0;
   }
 
+  public double CalculateSpeed(double distance) { // saying its metres
+    double x = distance;
+    return 2.9382 * x*x -7.1015 * x + 51.427;
+  }
+
 
   @Override
   public void periodic() {
 
     currentSpeed = shooterMotor.get();
 
+    // Get velocity in rotations per second (RPS) from the Motor
     double velocity = shooterMotor.getVelocity().getValueAsDouble();
     double wheelRPM = velocity*60;
 
@@ -105,5 +122,17 @@ public class Shooter extends SubsystemBase {
 
   public double getCurrent() {
     return shooterMotor.getStatorCurrent().getValueAsDouble();
+  }
+
+  public double getVelocity() {
+    return velocity;
+  }
+
+  public double getWheelRPM() {
+    return wheelRPM;
+  }
+
+  public double getTargetSpeed() {
+    return targetSpeed;
   }
 }

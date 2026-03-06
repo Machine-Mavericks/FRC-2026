@@ -31,7 +31,7 @@ public class IncrementShootersSpeed extends Command {
     @Override
     public void execute() {
         double desired = shooter.velocity + newSpeed;
-        double newVal = Math.min(Math.max(desired, -60), 60);
+        double newVal = Math.min(Math.max(desired, -80), 80);
 
         shooter.shooterSpeed(newVal);
     }
