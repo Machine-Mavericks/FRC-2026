@@ -34,7 +34,7 @@ public class Intake extends SubsystemBase {
     // place special subsystem methods here
     // this is where rest of program can access functions to return
     // values or control the subsystem
-    public void spin(double power){
+    public void intakeRun(double power){
         this.commandedPower = power;
         intakeMotor.set(power);
     }

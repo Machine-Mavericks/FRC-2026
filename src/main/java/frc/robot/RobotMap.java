@@ -35,6 +35,9 @@ public class RobotMap {
 
          // CAN ID for uptake motor
         public static final int UPTAKE_MOTOR = 16;
+
+          // CAN ID for climb motor
+        public static final int CLIMB_MOTOR = 17;
     }
 
     /**

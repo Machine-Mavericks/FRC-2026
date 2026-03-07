@@ -1,6 +1,7 @@
 package frc.robot;
 
 
+import frc.robot.commandgroups.IntakeCommand;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
@@ -92,15 +93,16 @@ public class RobotContainer {
             odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
         } ));
 
-         driverOp.a().onTrue(new InstantCommand(()-> {
-           intake.spin(0.5);
-           
-        } ));
+         driverOp.a().onTrue(new IntakeCommand());
 
          driverOp.b().onTrue(new InstantCommand(()-> {
-           intake.spin(0.0);
+           intake.intakeRun(0.0);
            
         } ));
+           
+        } 
+
+         
         
 
         // operator controls 
@@ -121,7 +123,7 @@ public class RobotContainer {
 
         // to use a trigger as a button - note: analog triggers should be debounced as well
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
-    }
+    
 
 
     /** Use this function to return pointer to the command the robot is to follow in autonomous
@@ -134,4 +136,5 @@ public class RobotContainer {
                new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
            );
        }
+    
     }

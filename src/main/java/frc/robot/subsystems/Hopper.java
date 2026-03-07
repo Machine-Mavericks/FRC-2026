@@ -31,8 +31,8 @@ public class Hopper extends SubsystemBase {
         currentSpeed = hopperMotor.get();
     }
 
-    public void runHopper(double speed){
-        commandedSpeed = speed;
+    public void hopperDown(){
+      
     }
 
     // place special subsystem methods here
