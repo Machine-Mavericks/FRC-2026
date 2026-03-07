@@ -48,6 +48,9 @@ public class RobotMap {
         public static final int UPTAKE_MASTER = 25;
         public static final int UPTAKE_FOLLOWER = 26;
 
+        // HopperFeed motor
+        public static final int HOPPER_FEED = 27;
+
     }
 
     /**
@@ -253,5 +256,13 @@ public class RobotMap {
     public static class Uptake {
         public static final double UPTAKE_SPEED = 0.8;
         public static final double GEAR_RATIO = 9.0;
+    }
+
+    /**
+     * HopperFeed subsystem constants
+     */
+    public static class HopperFeed {
+        /** Default feed speed (percent output, 0.0 – 1.0). Tunable via Shuffleboard. */
+        public static final double DEFAULT_SPEED = 0.5;
     }
 }

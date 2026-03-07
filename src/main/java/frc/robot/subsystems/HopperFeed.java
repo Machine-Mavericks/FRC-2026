@@ -1,0 +1,39 @@
+package frc.robot.subsystems;
+
+import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
+
+/**
+ * HopperFeed subsystem - feeds game pieces from the hopper toward the shooter.
+ * Single TalonFX with a 1:1 gear ratio. Runs continuously while the robot
+ * is enabled at a speed configurable via Shuffleboard.
+ */
+public class HopperFeed extends SubsystemBase {
+
+    private final TalonFX motor;
+    private final GenericEntry speedEntry;
+
+    public HopperFeed() {
+        motor = new TalonFX(RobotMap.CANID.HOPPER_FEED);
+
+        ShuffleboardTab tab = Shuffleboard.getTab("HopperFeed");
+        speedEntry = tab.add("Feed Speed", RobotMap.HopperFeed.DEFAULT_SPEED)
+                .withPosition(0, 0)
+                .withSize(2, 1)
+                .getEntry();
+    }
+
+    @Override
+    public void periodic() {
+        if (DriverStation.isEnabled()) {
+            motor.set(speedEntry.getDouble(RobotMap.HopperFeed.DEFAULT_SPEED));
+        } else {
+            motor.set(0.0);
+        }
+    }
+}

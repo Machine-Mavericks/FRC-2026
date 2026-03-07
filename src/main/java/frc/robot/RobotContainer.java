@@ -20,6 +20,7 @@ import frc.robot.subsystems.TurretDisabled;
 import frc.robot.subsystems.ShooterDisabled;
 import frc.robot.subsystems.UptakeDisabled;
 import frc.robot.subsystems.Odometry;
+import frc.robot.subsystems.HopperFeed;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeArm;
 import frc.robot.subsystems.Uptake;
@@ -62,6 +63,7 @@ public class RobotContainer {
     public static IntakeSubsystem intake;
     public static IntakeArm intakeArm;
     public static Uptake uptake;
+    public static HopperFeed hopperFeed;
 
     // AutoTrackGoal is the default command on both turrets; exposed as a static
     // field so isReadyToShoot() and getCalculatedShooterRPM() are reachable from
@@ -122,6 +124,7 @@ public class RobotContainer {
         // Create intake subsystems
         intake = new IntakeSubsystem();
         intakeArm = new IntakeArm();
+        hopperFeed = new HopperFeed();
 
         // Set default command for turrets (auto-tracking)
         autoTrack = new AutoTrackGoal();
