@@ -1,13 +1,18 @@
 package frc.robot;
 
-
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
 import frc.robot.commands.TemplateCommand;
+import frc.robot.commands.AutoTrackGoal;
+import frc.robot.commands.ManualTurretControl;
+import frc.robot.subsystems.HubTargetingSubsystem;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Pigeon;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.TemplateSubsystem;
+import frc.robot.subsystems.TurretLeft;
+import frc.robot.subsystems.TurretRight;
 import frc.robot.subsystems.Odometry;
 import frc.robot.utils.AutoFunctions;
 import frc.robot.utils.ElevatorPositions;
@@ -21,9 +26,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 //import frc.robot.utils.AlgaePositions;
 
-
 public class RobotContainer {
-  
+
     // pointer to robot object
     public static Robot robot;
 
@@ -31,14 +35,19 @@ public class RobotContainer {
     public static CommandXboxController driverOp;
     public static CommandXboxController toolOp;
 
-    
     // make pointers to robot subsystems here
+    public static Limelight limelight;
+    public static HubTargetingSubsystem hubTargeting;
     public static Pigeon gyro;
     public static SwerveDrive drivesystem;
     public static Odometry odometry;
     public static TemplateSubsystem mySubsystem;
-   
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public static TurretLeft turretLeft;
+    public static TurretRight turretRight;
+
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
     public RobotContainer(Robot robotptr) {
 
         // record pointer to robot object
@@ -47,62 +56,99 @@ public class RobotContainer {
         // create driver(port 0) and operator(port 1) controllers
         driverOp = new CommandXboxController(RobotMap.GamePadPorts.DriverID);
         toolOp = new CommandXboxController(RobotMap.GamePadPorts.OperatorID);
-    
 
         // create instances of subsystems here
         gyro = new Pigeon();
+
+        // Create Limelight for AprilTag detection — filter to all HUB tags (both
+        // alliances)
+        limelight = new Limelight(RobotMap.Vision.LIMELIGHT_NAME, true);
+        int[] allHubTagIds = concatArrays(RobotMap.Vision.BLUE_HUB_TAG_IDS, RobotMap.Vision.RED_HUB_TAG_IDS);
+        limelight.SetFiducialIDFiltersOverride(allHubTagIds);
+
+        // Create hub targeting subsystem (reads from limelight, computes distance +
+        // RPM)
+        hubTargeting = new HubTargetingSubsystem();
+
         drivesystem = new SwerveDrive();
         drivesystem.setDefaultCommand(new ManualDrive());
         odometry = new Odometry();
         mySubsystem = new TemplateSubsystem();
-       
+
+        // Create turret subsystems
+        turretLeft = new TurretLeft();
+        turretRight = new TurretRight();
+
+        // Set default command for turrets (auto-tracking)
+        AutoTrackGoal autoTrack = new AutoTrackGoal();
+        turretLeft.setDefaultCommand(autoTrack);
+        turretRight.setDefaultCommand(autoTrack);
+
         // attach commands to controller buttons
         configureBindings();
     }
 
-   
     /** Use this method to define your trigger->command mappings. */
     private void configureBindings() {
-    
+
         // attach commands to buttons
-    
+
         // reset odometry to appropriate angle when back pressed.
-        driverOp.back().onTrue(new InstantCommand(()-> {
+        driverOp.back().onTrue(new InstantCommand(() -> {
             Pose2d pos = odometry.getPose2d();
             Rotation2d newHeading = AutoFunctions.redVsBlue(new Rotation2d(0.0));
             odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
-        } ));
-        
+        }));
 
-        // operator controls 
-       
-        
+        // operator controls
+
+        // Manual turret control - hold left bumper to override auto-tracking
+        toolOp.leftBumper().whileTrue(new ManualTurretControl());
+
         // description of commands available:
         // .onTrue - runs command when button changes from not-pressed to pressed.
         // .onFalse - runs command when button changes from pressed to not-pressed.
         // .onChange - runs command when state changes either way
-        // .whileTrue - runs command only while button is pressed - command does not restart if finished
-        // .whileFalse - runs command only while button is not pressed - command does not restart if finished
+        // .whileTrue - runs command only while button is pressed - command does not
+        // restart if finished
+        // .whileFalse - runs command only while button is not pressed - command does
+        // not restart if finished
 
-        // to have command automatically repeat if it finishes while button is pressed or whatever
+        // to have command automatically repeat if it finishes while button is pressed
+        // or whatever
         // toolOp.back().whileTrue(new RepeatCommand(new TemplateCommand()));
 
         // to debounce the trigger event
         // driverOp.y().debounce(0.5).onTrue(new TemplateCommand());
 
-        // to use a trigger as a button - note: analog triggers should be debounced as well
+        // to use a trigger as a button - note: analog triggers should be debounced as
+        // well
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
     }
 
-
-    /** Use this function to return pointer to the command the robot is to follow in autonomous
-    * @return the command to run in autonomous */
-       public Command getAutonomousCommand() {
-           // Example: Move robot forward 1 meter, no rotation
-           return new frc.robot.commands.MoveRobotRelative(
-               1.0, // maxSpeed
-               0.5, // maxAccel (used as maxRotSpeed)
-               new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
-           );
-       }
+    /**
+     * Use this function to return pointer to the command the robot is to follow in
+     * autonomous
+     * 
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        // Example: Move robot forward 1 meter, no rotation
+        return new frc.robot.commands.MoveRobotRelative(
+                1.0, // maxSpeed
+                0.5, // maxAccel (used as maxRotSpeed)
+                new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
+        );
     }
+
+    /**
+     * Helper: concatenate two int arrays into one (used to combine blue + red HUB
+     * tag IDs).
+     */
+    private static int[] concatArrays(int[] a, int[] b) {
+        int[] result = new int[a.length + b.length];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+}

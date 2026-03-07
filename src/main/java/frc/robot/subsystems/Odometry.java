@@ -107,8 +107,7 @@ public class Odometry extends SubsystemBase {
 
         // pose update using apriltag data
         if (TagEnable){
-            // updateAprilTagOdometry(RobotContainer.camleft);
-            // updateAprilTagOdometry(RobotContainer.camr);
+            updateAprilTagOdometry(RobotContainer.limelight);
         }
        
 

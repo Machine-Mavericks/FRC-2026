@@ -1,0 +1,29 @@
+{
+  "fileName": "SparkMax-2026.0.4.json",
+  "name": "REV-SPARK-MAX",
+  "version": "2026.0.4",
+  "frcYear": "2026",
+  "uuid": "b2b5c3b9-0000-4d4d-aaaa-111122223333",
+  "mavenUrls": [
+    "https://maven.revrobotics.com/"
+  ],
+  "jsonUrl": "https://software-metadata.revrobotics.com/SparkMax-2026.0.4.json",
+  "javaDependencies": [],
+  "jniDependencies": [
+    {
+      "groupId": "com.revrobotics",
+      "artifactId": "SparkMax-driver",
+      "version": "2026.0.4",
+      "skipInvalidPlatforms": true,
+      "isJar": false,
+      "validPlatforms": [
+        "windowsx86-64",
+        "linuxx86-64",
+        "linuxarm64",
+        "linuxathena",
+        "osxuniversal"
+      ]
+    }
+  ],
+  "cppDependencies": []
+}
