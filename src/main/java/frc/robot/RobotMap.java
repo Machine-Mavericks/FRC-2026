@@ -51,6 +51,20 @@ public class RobotMap {
     }
 
     /**
+     * Feature flags for enabling/disabling hardware or features at runtime.
+     * Toggle these while testing or for robots that don't have certain hardware
+     * installed.
+     */
+    public static class Features {
+        /**
+         * When false, the left turret (and related shooter/uptake hardware) is
+         * disabled and replaced with software no-op stubs. Set to true to enable
+         * the left turret and the shooter/uptake hardware.
+         */
+        public static final boolean ENABLE_LEFT_TURRET = false;
+    }
+
+    /**
      * Inner class to hold RoboRIO I/O connection constants
      */
     public static class DIO {
@@ -128,8 +142,10 @@ public class RobotMap {
      */
     public static class Vision {
 
-        // Limelight network table name (must match the name configured in the camera)
-        public static final String LIMELIGHT_NAME = "limelight";
+        // Limelight network table names (must match the names configured in the
+        // cameras)
+        public static final String LIMELIGHT_DRIVE_NAME = "limelight-drive";
+        public static final String LIMELIGHT_SHOOTER_NAME = "limelight-shooter";
 
         // --------------- HUB AprilTag IDs (2026 Game Manual, p.34) ---------------
         // AprilTags are placed on all 4 faces of each alliance HUB.
@@ -163,15 +179,46 @@ public class RobotMap {
 
         // --------------- Limelight Mount (MEASURE ON YOUR ROBOT) ---------------
         /**
-         * Height of Limelight lens center above carpet (meters) — measure on actual
+         * Height of Shooter Limelight lens center above carpet (meters) — measure on
+         * actual
          * robot
          */
-        public static final double LIMELIGHT_MOUNT_HEIGHT_M = 0.60;
+        public static final double SHOOTER_LIMELIGHT_MOUNT_HEIGHT_M = 0.60;
         /**
-         * Upward tilt angle of Limelight from horizontal (degrees) — measure on actual
+         * Upward tilt angle of Shooter Limelight from horizontal (degrees) — measure on
+         * actual
          * robot
          */
-        public static final double LIMELIGHT_MOUNT_ANGLE_DEG = 30.0;
+        public static final double SHOOTER_LIMELIGHT_MOUNT_ANGLE_DEG = 30.0;
+
+        // --------------- Limelight 3D Poses (OVERRIDE WEB UI) ---------------
+        // These arrays configure the physical location of the cameras relative
+        // to the center of the robot. This overrides the "botpose" settings in the Web
+        // UI.
+        // Format: [Forward, Side, Up, Roll, Pitch, Yaw]
+        // Forward/Side/Up are in meters. Roll/Pitch/Yaw are in degrees.
+
+        /**
+         * 3D Pose of the Shooter Limelight relative to robot center.
+         * Using the existing height and angle constants for Up and Pitch.
+         * TODO: Measure precise Forward and Side offsets!
+         */
+        public static final double[] SHOOTER_LIMELIGHT_3D_POSE = {
+                0.0, // Forward
+                0.0, // Side
+                SHOOTER_LIMELIGHT_MOUNT_HEIGHT_M, // Up
+                0.0, // Roll
+                SHOOTER_LIMELIGHT_MOUNT_ANGLE_DEG, // Pitch
+                0.0 // Yaw
+        };
+
+        /**
+         * 3D Pose of the Drive Limelight relative to robot center.
+         * TODO: Entire Drive Limelight position is TBD. Leaving entirely as 0 for now.
+         */
+        public static final double[] DRIVE_LIMELIGHT_3D_POSE = {
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+        };
     }
 
     /**

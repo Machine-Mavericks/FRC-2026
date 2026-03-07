@@ -12,6 +12,13 @@ public class TurretLeft extends TurretSubsystem {
      * Create the left turret subsystem.
      */
     public TurretLeft() {
-        super(RobotMap.CANID.LEFT_TURRET_MOTOR, "Turret Left");
+        this(false);
+    }
+
+    /**
+     * Create the left turret subsystem, optionally skipping hardware init.
+     */
+    public TurretLeft(boolean skipHardware) {
+        super(skipHardware, RobotMap.CANID.LEFT_TURRET_MOTOR, "Turret Left");
     }
 }

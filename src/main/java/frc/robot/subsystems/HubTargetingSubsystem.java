@@ -76,12 +76,12 @@ public class HubTargetingSubsystem extends SubsystemBase {
         m_isRedAlliance = alliance.isPresent() && alliance.get() == Alliance.Red;
 
         // Read raw Limelight values
-        m_txDegrees = RobotContainer.limelight.getHorizontalTargetOffsetAngle();
-        m_tyDegrees = RobotContainer.limelight.getVerticalTargetOffsetAngle();
-        m_bestTagId = (int) RobotContainer.limelight.getPrimAprilTagID();
+        m_txDegrees = RobotContainer.limelightShooter.getHorizontalTargetOffsetAngle();
+        m_tyDegrees = RobotContainer.limelightShooter.getVerticalTargetOffsetAngle();
+        m_bestTagId = (int) RobotContainer.limelightShooter.getPrimAprilTagID();
 
         // Check whether what the camera sees is actually one of our HUB's tags
-        boolean limelightHasTarget = RobotContainer.limelight.isTargetPresent();
+        boolean limelightHasTarget = RobotContainer.limelightShooter.isTargetPresent();
         m_hubTagVisible = limelightHasTarget
                 && TargetCalculations.isOurHubTag(m_bestTagId, m_isRedAlliance);
 

@@ -109,8 +109,10 @@ public class ShooterCalculations {
      * Calculate straight-line horizontal distance to the HUB AprilTag from a
      * Limelight ty reading.
      *
-     * Uses constants from RobotMap.Vision. Update LIMELIGHT_MOUNT_HEIGHT_M and
-     * LIMELIGHT_MOUNT_ANGLE_DEG to match the physical robot before using this
+     * Uses constants from RobotMap.Vision. Update SHOOTER_LIMELIGHT_MOUNT_HEIGHT_M
+     * and
+     * SHOOTER_LIMELIGHT_MOUNT_ANGLE_DEG to match the physical robot before using
+     * this
      * method.
      *
      * @param tyDegrees Vertical offset angle from Limelight (degrees, positive =
@@ -120,14 +122,14 @@ public class ShooterCalculations {
      */
     public static double calculateDistanceFromTy(double tyDegrees) {
         double angleRad = Math.toRadians(
-                RobotMap.Vision.LIMELIGHT_MOUNT_ANGLE_DEG + tyDegrees);
+                RobotMap.Vision.SHOOTER_LIMELIGHT_MOUNT_ANGLE_DEG + tyDegrees);
 
         // Guard against negative or near-zero denominator (camera pointing down at tag)
         if (angleRad <= 0.01)
             return -1.0;
 
         double heightDelta = RobotMap.Vision.HUB_APRILTAG_HEIGHT_M
-                - RobotMap.Vision.LIMELIGHT_MOUNT_HEIGHT_M;
+                - RobotMap.Vision.SHOOTER_LIMELIGHT_MOUNT_HEIGHT_M;
 
         if (heightDelta <= 0)
             return -1.0; // camera is above the tag — unusual

@@ -17,7 +17,7 @@ import frc.robot.RobotMap;
 
 public class Shooter extends SubsystemBase {
 
-  TalonFX shooterMotor = new TalonFX(RobotMap.CANID.SHOOTER);
+  TalonFX shooterMotor;
 
   public double velocity;
 
@@ -42,39 +42,50 @@ public class Shooter extends SubsystemBase {
   private static final double FEEDFORWARD = 0.013;
 
   public Shooter() {
+    this(false);
+  }
 
-    TalonFXConfiguration config = new TalonFXConfiguration()
-        .withFeedback(
-            new FeedbackConfigs()
-                // CTRE Needs reduction ration (N:1) instead of actual ratio
-                .withSensorToMechanismRatio(1 / MECHANISM_RATIO))
-        .withMotorOutput(
-            new MotorOutputConfigs()
-                .withInverted(InvertedValue.Clockwise_Positive)
-                .withNeutralMode(NeutralModeValue.Coast))
-        .withSlot0(new Slot0Configs()
-            .withKP(1.25) // was 1.25
-            .withKI(2.0)
-            .withKD(0)
-            .withKV(FEEDFORWARD))
-        .withClosedLoopRamps(new ClosedLoopRampsConfigs()
-            .withVoltageClosedLoopRampPeriod(Seconds.of(1)));
+  /**
+   * Create a Shooter, optionally skipping hardware initialization.
+   */
+  public Shooter(boolean skipHardware) {
+    if (!skipHardware) {
+      shooterMotor = new TalonFX(RobotMap.CANID.SHOOTER);
 
-    shooterMotor.getConfigurator().apply(config);
+      TalonFXConfiguration config = new TalonFXConfiguration()
+          .withFeedback(
+              new FeedbackConfigs()
+                  // CTRE Needs reduction ration (N:1) instead of actual ratio
+                  .withSensorToMechanismRatio(1 / MECHANISM_RATIO))
+          .withMotorOutput(new MotorOutputConfigs()
+              .withInverted(InvertedValue.Clockwise_Positive).withNeutralMode(NeutralModeValue.Coast))
+          .withSlot0(new Slot0Configs().withKP(1.25) // was 1.25
+              .withKI(2.0).withKD(0).withKV(FEEDFORWARD))
+          .withClosedLoopRamps(new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Seconds.of(1)));
+
+      shooterMotor.getConfigurator().apply(config);
+    } else {
+      shooterMotor = null;
+    }
   }
 
   public void shooterSpeed(double speed) {
-    if (speed < 15) { // in RPS
-      shooterMotor.set(0);
-    } else {
-      shooterMotor.setControl(new VelocityVoltage(speed));
+    if (shooterMotor != null) {
+      if (speed < 15) { // in RPS
+        shooterMotor.set(0);
+      } else {
+        shooterMotor.setControl(new VelocityVoltage(speed));
+      }
     }
 
+    // Always update bookkeeping fields even when hardware is absent
     commanded = speed;
   }
 
   public void stop() {
-    shooterMotor.set(0);
+    if (shooterMotor != null) {
+      shooterMotor.set(0);
+    }
 
     commanded = 0;
   }
@@ -86,15 +97,18 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (shooterMotor != null) {
+      currentSpeed = shooterMotor.get();
 
-    currentSpeed = shooterMotor.get();
+      // Get velocity in rotations per second (RPS) from the Motor
+      double velocity = shooterMotor.getVelocity().getValueAsDouble();
+      double wheelRPM = velocity * 60;
 
-    // Get velocity in rotations per second (RPS) from the Motor
-    double velocity = shooterMotor.getVelocity().getValueAsDouble();
-    double wheelRPM = velocity * 60;
-
-    this.velocity = velocity;
-    this.wheelRPM = wheelRPM;
+      this.velocity = velocity;
+      this.wheelRPM = wheelRPM;
+    } else {
+      // No hardware: keep existing internal values
+    }
   }
 
   // IDK if we are actually gonna do simulation but ill leave it here just in case
@@ -104,15 +118,24 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getBolts() {
-    return shooterMotor.getMotorVoltage().getValueAsDouble();
+    if (shooterMotor != null) {
+      return shooterMotor.getMotorVoltage().getValueAsDouble();
+    }
+    return 0.0;
   }
 
   public double getBusVolts() {
-    return shooterMotor.getSupplyVoltage().getValueAsDouble();
+    if (shooterMotor != null) {
+      return shooterMotor.getSupplyVoltage().getValueAsDouble();
+    }
+    return 0.0;
   }
 
   public double getCurrent() {
-    return shooterMotor.getStatorCurrent().getValueAsDouble();
+    if (shooterMotor != null) {
+      return shooterMotor.getStatorCurrent().getValueAsDouble();
+    }
+    return 0.0;
   }
 
   public double getVelocity() {

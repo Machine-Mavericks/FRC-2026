@@ -16,6 +16,9 @@ import frc.robot.subsystems.TemplateSubsystem;
 import frc.robot.subsystems.TurretLeft;
 import frc.robot.subsystems.TurretLeft;
 import frc.robot.subsystems.TurretRight;
+import frc.robot.subsystems.TurretDisabled;
+import frc.robot.subsystems.ShooterDisabled;
+import frc.robot.subsystems.UptakeDisabled;
 import frc.robot.subsystems.Odometry;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.Hopper;
@@ -43,7 +46,8 @@ public class RobotContainer {
     public static CommandXboxController toolOp;
 
     // make pointers to robot subsystems here
-    public static Limelight limelight;
+    public static Limelight limelightDrive;
+    public static Limelight limelightShooter;
     public static HubTargetingSubsystem hubTargeting;
     public static Pigeon gyro;
     public static SwerveDrive drivesystem;
@@ -79,11 +83,14 @@ public class RobotContainer {
         // create instances of subsystems here
         gyro = new Pigeon();
 
+        limelightDrive = new Limelight(RobotMap.Vision.LIMELIGHT_DRIVE_NAME, false);
+        limelightDrive.setCameraPoseRobotSpace(RobotMap.Vision.DRIVE_LIMELIGHT_3D_POSE);
         // Create Limelight for AprilTag detection — filter to all HUB tags (both
         // alliances)
-        limelight = new Limelight(RobotMap.Vision.LIMELIGHT_NAME, true);
+        limelightShooter = new Limelight(RobotMap.Vision.LIMELIGHT_SHOOTER_NAME, true);
+        limelightShooter.setCameraPoseRobotSpace(RobotMap.Vision.SHOOTER_LIMELIGHT_3D_POSE);
         int[] allHubTagIds = concatArrays(RobotMap.Vision.BLUE_HUB_TAG_IDS, RobotMap.Vision.RED_HUB_TAG_IDS);
-        limelight.SetFiducialIDFiltersOverride(allHubTagIds);
+        limelightShooter.SetFiducialIDFiltersOverride(allHubTagIds);
 
         // Create hub targeting subsystem (reads from limelight, computes distance +
         // RPM)
@@ -94,18 +101,27 @@ public class RobotContainer {
         odometry = new Odometry();
         mySubsystem = new TemplateSubsystem();
 
-        // Create shooter subsystem
-        shooter = new Shooter();
+        // Create shooter, turret, and uptake subsystems.
+        // If left turret feature is disabled, instantiate no-op stubs so the
+        // rest of the code (commands, default commands) can run without
+        // null-checks or hardware present.
+        if (frc.robot.RobotMap.Features.ENABLE_LEFT_TURRET) {
+            shooter = new Shooter();
+            turretLeft = new TurretLeft();
+            uptake = new Uptake();
+        } else {
+            // Left turret hardware missing -> provide software stubs
+            shooter = new ShooterDisabled();
+            turretLeft = new TurretDisabled();
+            uptake = new UptakeDisabled();
+        }
 
-        // Create turret subsystems
-        // Create turret subsystems
-        turretLeft = new TurretLeft();
+        // Right turret (present) and other subsystems
         turretRight = new TurretRight();
 
-        // Create intake, hopper, and uptake subsystems
+        // Create intake and hopper subsystems
         intake = new IntakeSubsystem();
         hopper = new Hopper();
-        uptake = new Uptake();
 
         // Set default command for turrets (auto-tracking)
         autoTrack = new AutoTrackGoal();

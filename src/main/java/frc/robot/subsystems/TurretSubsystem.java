@@ -35,45 +35,76 @@ public abstract class TurretSubsystem extends SubsystemBase {
      * @param motorCANID CAN ID for the turret motor
      * @param name Name of this turret (for telemetry)
      */
+    /**
+     * Primary constructor. Use this when hardware is present.
+     */
     public TurretSubsystem(int motorCANID, String name) {
-        this.name = name;
-        
-        // Initialize motor
-        motor = new CANSparkMax(motorCANID, MotorType.kBrushless);
-        motor.restoreFactoryDefaults();
-        motor.setIdleMode(IdleMode.kBrake);
-        motor.setSmartCurrentLimit(20); // NEO 550 current limit
-        
-        // Get encoder and PID controller
-        encoder = motor.getEncoder();
-        pidController = motor.getPIDController();
-        
-        // Configure encoder - convert rotations to degrees
-        // Encoder counts motor rotations, need to account for gear ratio
-        encoder.setPositionConversionFactor(360.0 / RobotMap.Turret.GEAR_RATIO);
-        encoder.setVelocityConversionFactor(360.0 / RobotMap.Turret.GEAR_RATIO / 60.0); // deg/sec
-        
-        // Configure PID
-        pidController.setP(RobotMap.Turret.kP);
-        pidController.setI(RobotMap.Turret.kI);
-        pidController.setD(RobotMap.Turret.kD);
-        pidController.setIZone(RobotMap.Turret.kIZone);
-        pidController.setFF(RobotMap.Turret.kFF);
-        pidController.setOutputRange(-1.0, 1.0);
-        
-        // Set soft limits
-        motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-        motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-        motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 
-            (float)(RobotMap.Turret.MAX_ROTATION_DEGREES * RobotMap.Turret.GEAR_RATIO / 360.0));
-        motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, 
-            (float)(RobotMap.Turret.MIN_ROTATION_DEGREES * RobotMap.Turret.GEAR_RATIO / 360.0));
-        
-        motor.burnFlash(); // Save configuration to flash
-        
-        // Initialize Shuffleboard
-        initializeShuffleboard();
+        this(false, motorCANID, name);
     }
+
+    /**
+     * Constructor that can skip hardware initialization when running on a robot
+     * that doesn't have this motor/controller installed. When skipHardware is
+     * true, motor/encoder/pidController will be left null and subclasses should
+     * avoid calling hardware methods.
+     */
+    public TurretSubsystem(boolean skipHardware, int motorCANID, String name) {
+        this.name = name;
+
+        if (!skipHardware) {
+            // Initialize motor
+            motor = new CANSparkMax(motorCANID, MotorType.kBrushless);
+            motor.restoreFactoryDefaults();
+            motor.setIdleMode(IdleMode.kBrake);
+            motor.setSmartCurrentLimit(20); // NEO 550 current limit
+
+            // Get encoder and PID controller
+            encoder = motor.getEncoder();
+            pidController = motor.getPIDController();
+
+            // Configure encoder - convert rotations to degrees
+            // Encoder counts motor rotations, need to account for gear ratio
+            encoder.setPositionConversionFactor(360.0 / RobotMap.Turret.GEAR_RATIO);
+            encoder.setVelocityConversionFactor(360.0 / RobotMap.Turret.GEAR_RATIO / 60.0); // deg/sec
+
+            // Configure PID
+            pidController.setP(RobotMap.Turret.kP);
+            pidController.setI(RobotMap.Turret.kI);
+            pidController.setD(RobotMap.Turret.kD);
+            pidController.setIZone(RobotMap.Turret.kIZone);
+            pidController.setFF(RobotMap.Turret.kFF);
+            pidController.setOutputRange(-1.0, 1.0);
+
+            // Set soft limits
+            motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+            motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+            motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,
+                    (float) (RobotMap.Turret.MAX_ROTATION_DEGREES * RobotMap.Turret.GEAR_RATIO / 360.0));
+            motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,
+                    (float) (RobotMap.Turret.MIN_ROTATION_DEGREES * RobotMap.Turret.GEAR_RATIO / 360.0));
+
+            motor.burnFlash(); // Save configuration to flash
+
+            // Initialize Shuffleboard
+            initializeShuffleboard();
+        } else {
+            // Hardware skipped; leave motor/encoder/pidController null
+            motor = null;
+            encoder = null;
+            pidController = null;
+            // Subclasses (disabled stubs) must avoid calling hardware methods
+            // and should override telemetry methods as needed.
+            // Note: keep fields final by assigning null here.
+            // (They were declared final; Java allows final fields to be assigned
+            // in constructor.)
+            // no-op
+            // initializeShuffleboard intentionally not called
+            // Assign nulls to final fields via reflection not needed; assign here
+            // via local initialization below
+            // But since fields are final, we must assign them. Use simple approach:
+        }
+    }
+
     
     /**
      * Set the target angle for the turret.
@@ -87,7 +118,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
         
         targetAngleDegrees = angleDegrees;
         
-        if (!manualControlEnabled) {
+        if (!manualControlEnabled && pidController != null) {
             pidController.setReference(angleDegrees, ControlType.kPosition);
         }
     }
@@ -98,7 +129,10 @@ public abstract class TurretSubsystem extends SubsystemBase {
      * @return Current angle in degrees
      */
     public double getCurrentAngle() {
-        return encoder.getPosition();
+        if (encoder != null) {
+            return encoder.getPosition();
+        }
+        return targetAngleDegrees;
     }
     
     /**
@@ -143,7 +177,9 @@ public abstract class TurretSubsystem extends SubsystemBase {
                 speed = 0.0;
             }
             
-            motor.set(speed);
+            if (motor != null) {
+                motor.set(speed);
+            }
         }
     }
     
@@ -151,7 +187,9 @@ public abstract class TurretSubsystem extends SubsystemBase {
      * Reset the encoder to zero at the current position.
      */
     public void resetEncoder() {
-        encoder.setPosition(0.0);
+        if (encoder != null) {
+            encoder.setPosition(0.0);
+        }
         targetAngleDegrees = 0.0;
     }
     
@@ -177,8 +215,10 @@ public abstract class TurretSubsystem extends SubsystemBase {
         tab.addNumber("Target Angle (deg)", this::getTargetAngle);
         tab.addBoolean("At Setpoint", this::atSetpoint);
         tab.addBoolean("Manual Control", () -> manualControlEnabled);
-        tab.addNumber("Motor Current (A)", motor::getOutputCurrent);
-        tab.addNumber("Motor Temp (C)", motor::getMotorTemperature);
+        if (motor != null) {
+            tab.addNumber("Motor Current (A)", motor::getOutputCurrent);
+            tab.addNumber("Motor Temp (C)", motor::getMotorTemperature);
+        }
     }
     
     /**

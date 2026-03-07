@@ -146,8 +146,8 @@ public class AutoTrackGoal extends Command {
      */
     private Pose2d getRobotPoseFromOdometry() {
         // Try vision-based pose first (highest accuracy)
-        if (RobotContainer.limelight.isTargetPresent()) {
-            PoseEstimate estimate = RobotContainer.limelight.getBotPoseOrbDetail();
+        if (RobotContainer.limelightShooter.isTargetPresent()) {
+            PoseEstimate estimate = RobotContainer.limelightShooter.getBotPoseOrbDetail();
             if (estimate != null && estimate.pose != null) {
                 return estimate.pose.toPose2d();
             }

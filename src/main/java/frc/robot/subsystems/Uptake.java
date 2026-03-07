@@ -15,25 +15,42 @@ public class Uptake extends SubsystemBase {
     private final TalonFX followerMotor;
 
     public Uptake() {
-        masterMotor = new TalonFX(RobotMap.CANID.UPTAKE_MASTER);
-        followerMotor = new TalonFX(RobotMap.CANID.UPTAKE_FOLLOWER);
+        this(false);
+    }
 
-        // Geared 9:1, follower follows master
-        followerMotor.setControl(new Follower(masterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+    /**
+     * Create an Uptake, optionally skipping hardware initialization. When
+     * skipHardware is true, no TalonFX objects will be created.
+     */
+    public Uptake(boolean skipHardware) {
+        if (!skipHardware) {
+            masterMotor = new TalonFX(RobotMap.CANID.UPTAKE_MASTER);
+            followerMotor = new TalonFX(RobotMap.CANID.UPTAKE_FOLLOWER);
+
+            // Geared 9:1, follower follows master
+            followerMotor.setControl(new Follower(masterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        } else {
+            masterMotor = null;
+            followerMotor = null;
+        }
     }
 
     /**
      * Runs the uptake forward to feed a ball into the shooter.
      */
     public void feedShooter() {
-        masterMotor.set(RobotMap.Uptake.UPTAKE_SPEED);
+        if (masterMotor != null) {
+            masterMotor.set(RobotMap.Uptake.UPTAKE_SPEED);
+        }
     }
 
     /**
      * Stops the uptake motors.
      */
     public void stop() {
-        masterMotor.set(0.0);
+        if (masterMotor != null) {
+            masterMotor.set(0.0);
+        }
     }
 
     @Override
