@@ -1,6 +1,5 @@
 package frc.robot;
 
-
 import frc.robot.commands.IncrementShootersSpeed;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.MoveToPose;
@@ -22,9 +21,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 //import frc.robot.utils.AlgaePositions;
 
-
 public class RobotContainer {
-  
+
     // pointer to robot object
     public static Robot robot;
 
@@ -32,7 +30,6 @@ public class RobotContainer {
     public static CommandXboxController driverOp;
     public static CommandXboxController toolOp;
 
-    
     // make pointers to robot subsystems here
     public static Pigeon gyro;
     public static SwerveDrive drivesystem;
@@ -41,8 +38,10 @@ public class RobotContainer {
 
     // define shooter subsystem
     private Shooter shooter;
-   
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
     public RobotContainer(Robot robotptr) {
 
         // record pointer to robot object
@@ -51,7 +50,6 @@ public class RobotContainer {
         // create driver(port 0) and operator(port 1) controllers
         driverOp = new CommandXboxController(RobotMap.GamePadPorts.DriverID);
         toolOp = new CommandXboxController(RobotMap.GamePadPorts.OperatorID);
-    
 
         // create instances of subsystems here
         gyro = new Pigeon();
@@ -59,45 +57,46 @@ public class RobotContainer {
         drivesystem.setDefaultCommand(new ManualDrive());
         odometry = new Odometry();
         mySubsystem = new TemplateSubsystem();
-       
+
         // attach commands to controller buttons
         configureBindings();
     }
 
-   
     /** Use this method to define your trigger->command mappings. */
     private void configureBindings() {
-    
+
         // attach commands to buttons
-    
+
         // reset odometry to appropriate angle when back pressed.
-        driverOp.back().onTrue(new InstantCommand(()-> {
+        driverOp.back().onTrue(new InstantCommand(() -> {
             Pose2d pos = odometry.getPose2d();
             Rotation2d newHeading = AutoFunctions.redVsBlue(new Rotation2d(0.0));
             odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
-        } ));
-        
+        }));
 
-        // operator controls 
-       
-        
+        // operator controls
+
         // description of commands available:
         // .onTrue - runs command when button changes from not-pressed to pressed.
         // .onFalse - runs command when button changes from pressed to not-pressed.
         // .onChange - runs command when state changes either way
-        // .whileTrue - runs command only while button is pressed - command does not restart if finished
-        // .whileFalse - runs command only while button is not pressed - command does not restart if finished
+        // .whileTrue - runs command only while button is pressed - command does not
+        // restart if finished
+        // .whileFalse - runs command only while button is not pressed - command does
+        // not restart if finished
 
-        // to have command automatically repeat if it finishes while button is pressed or whatever
+        // to have command automatically repeat if it finishes while button is pressed
+        // or whatever
         // toolOp.back().whileTrue(new RepeatCommand(new TemplateCommand()));
 
         // to debounce the trigger event
         // driverOp.y().debounce(0.5).onTrue(new TemplateCommand());
 
-        // to use a trigger as a button - note: analog triggers should be debounced as well
+        // to use a trigger as a button - note: analog triggers should be debounced as
+        // well
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
 
-        //TODO change these for operator controlling
+        // TODO change these for operator controlling
         driverOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
         driverOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
         driverOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
@@ -106,10 +105,13 @@ public class RobotContainer {
         driverOp.leftBumper().onTrue(new InstantCommand(() -> shooter.shooterSpeed()));
     }
 
-
-    /** Use this function to return pointer to the command the robot is to follow in autonomous
-    * @return the command to run in autonomous */
-    //    public Command getAutonomousCommand() {
-        
-    //    }
+    /**
+     * Use this function to return pointer to the command the robot is to follow in
+     * autonomous
+     * 
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return null; // TODO: return an autonomous command
     }
+}
