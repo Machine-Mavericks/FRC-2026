@@ -4,12 +4,13 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
 
 
 /** Subsystem */
 public class Uptake extends SubsystemBase {
     
- TalonFX uptakeMotor = new TalonFX(4);
+ TalonFX uptakeMotor = new TalonFX(RobotMap.CANID.UPTAKE_MOTOR);
  
 @Logged
  private double commandedSpeed;
@@ -41,21 +42,21 @@ public class Uptake extends SubsystemBase {
     // this is where rest of program can access functions to return
     // values or control the subsystem
 
-    public void UptakeRun (){
+    public void uptakeRun (){
         spinUptake(1.0); 
     }
 
-    public void UptakeStop(){
+    public void uptakeStop(){
         spinUptake(0.0);  
     }
 
     @Logged(name = "Uptake Current Speed")
-    public double GetCurrentSpeed(){
+    public double getCurrentSpeed(){
         return currentSpeed; 
     }
 
     @Logged(name = "Uptake Commanded Speed")
-    public double GetCommandedSpeed(){
+    public double getCommandedSpeed(){
         return commandedSpeed;
     }
 
