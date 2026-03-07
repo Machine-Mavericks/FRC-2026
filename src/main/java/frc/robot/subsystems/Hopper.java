@@ -6,9 +6,11 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.NeutralOut;
 
 import edu.wpi.first.epilogue.Logged;
 // import edu.wpi.first.wpilibj.DigitalInput;  // Uncomment when limit switches are installed
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -32,6 +34,41 @@ public class Hopper extends SubsystemBase {
     private static final double POSITION_UP = 0.25; // TODO: tune for up position (arm rotations)
 
     // -------------------------------------------------------------------------
+    // Current-Based Stall Detection (substitute for uninstalled limit switches)
+    // -------------------------------------------------------------------------
+    /**
+     * Stator current threshold (amps) above which we consider the arm stalled
+     * against a hard stop. Start conservative (~30–40 A) and tune upward if
+     * normal acceleration trips it falsely.
+     * TODO: tune this value on the actual robot.
+     */
+    private static final double STALL_CURRENT_THRESHOLD_AMPS = 35.0;
+
+    /**
+     * How long (seconds) the current must stay above the threshold before we
+     * declare a stall. This prevents brief acceleration spikes from triggering
+     * a false stop.
+     * TODO: tune this value on the actual robot.
+     */
+    private static final double STALL_DEBOUNCE_SECONDS = 0.1;
+
+    // Timers: reset when current drops below threshold, start counting when it
+    // rises.
+    private final Timer stallTimerDown = new Timer();
+    private final Timer stallTimerUp = new Timer();
+
+    // Are we currently commanding motion toward each limit?
+    private boolean movingDown = false;
+    private boolean movingUp = false;
+
+    // Stall flags — set when current debounce fires, cleared when new command
+    // issued.
+    @Logged
+    public boolean stalledAtDown = false;
+    @Logged
+    public boolean stalledAtUp = false;
+
+    // -------------------------------------------------------------------------
     // Limit Switches (commented out — not yet installed on robot)
     // -------------------------------------------------------------------------
     // private final DigitalInput limitSwitchDown = new
@@ -44,9 +81,13 @@ public class Hopper extends SubsystemBase {
     // -------------------------------------------------------------------------
     @Logged
     private double commandedPose;
+    @Logged
     public double currentPose;
+    @Logged
+    public double statorCurrentAmps;
 
     private final MotionMagicVoltage mmRequest;
+    private final NeutralOut stopRequest = new NeutralOut();
 
     // -------------------------------------------------------------------------
     /** Initializes the Hopper subsystem */
@@ -71,25 +112,36 @@ public class Hopper extends SubsystemBase {
         hopperMotorLeft.setControl(new Follower(hopperMotorRight.getDeviceID(), MotorAlignmentValue.Opposed));
 
         mmRequest = new MotionMagicVoltage(0.0);
+
+        stallTimerDown.reset();
+        stallTimerUp.reset();
     }
 
     // -------------------------------------------------------------------------
     /**
      * Called periodically by the scheduler.
-     * Update current position and check limit switches when they are installed.
+     * Reads position and stator current; runs current-based stall detection
+     * as a software stand-in for the uninstalled limit switches.
      */
     @Override
     public void periodic() {
         currentPose = hopperMotorRight.getPosition().getValueAsDouble();
+        statorCurrentAmps = hopperMotorRight.getStatorCurrent().getValueAsDouble();
 
-        // -- Limit switch logic (uncomment when switches are installed) --------
+        // -- Current-based stall detection (substitute for limit switches) ------
+        runStallDetection();
+        // -----------------------------------------------------------------------
+
+        // -- Limit switch logic (uncomment when switches are installed) ---------
         // if (!limitSwitchDown.get()) {
-        // // At the down hard stop — reset encoder and stop motion
         // hopperMotorRight.setPosition(POSITION_DOWN);
+        // stalledAtDown = true;
+        // hopperMotorRight.setControl(stopRequest);
         // }
         // if (!limitSwitchUp.get()) {
-        // // At the up hard stop — reset encoder and stop motion
         // hopperMotorRight.setPosition(POSITION_UP);
+        // stalledAtUp = true;
+        // hopperMotorRight.setControl(stopRequest);
         // }
         // -----------------------------------------------------------------------
     }
@@ -100,16 +152,28 @@ public class Hopper extends SubsystemBase {
 
     /**
      * Moves the hopper arm to the DOWN position using Motion Magic.
+     * Ignored if the arm is already stalled at the down limit.
      */
     public void downHopper() {
+        stalledAtDown = false; // clear stall flag so a new command is allowed
+        movingDown = true;
+        movingUp = false;
+        stallTimerDown.reset();
+        stallTimerDown.start();
         commandedPose = POSITION_DOWN;
         hopperMotorRight.setControl(mmRequest.withPosition(commandedPose));
     }
 
     /**
      * Moves the hopper arm to the UP position using Motion Magic.
+     * Ignored if the arm is already stalled at the up limit.
      */
     public void upHopper() {
+        stalledAtUp = false; // clear stall flag so a new command is allowed
+        movingDown = false;
+        movingUp = true;
+        stallTimerUp.reset();
+        stallTimerUp.start();
         commandedPose = POSITION_UP;
         hopperMotorRight.setControl(mmRequest.withPosition(commandedPose));
     }
@@ -123,7 +187,7 @@ public class Hopper extends SubsystemBase {
      * Once limit switches are installed, also check limitSwitchDown.
      */
     public boolean isDown() {
-        return Math.abs(currentPose - POSITION_DOWN) < 0.5;
+        return Math.abs(currentPose - POSITION_DOWN) < 0.5 || stalledAtDown;
         // && !limitSwitchDown.get() // uncomment when limit switch is installed
     }
 
@@ -132,7 +196,63 @@ public class Hopper extends SubsystemBase {
      * Once limit switches are installed, also check limitSwitchUp.
      */
     public boolean isUp() {
-        return Math.abs(currentPose - POSITION_UP) < 0.5;
+        return Math.abs(currentPose - POSITION_UP) < 0.5 || stalledAtUp;
         // && !limitSwitchUp.get() // uncomment when limit switch is installed
+    }
+
+    // -------------------------------------------------------------------------
+    // Private Helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Checks stator current against {@link #STALL_CURRENT_THRESHOLD_AMPS} while
+     * the arm is in motion. If the current exceeds the threshold for longer than
+     * {@link #STALL_DEBOUNCE_SECONDS}, the motor is stopped and the appropriate
+     * stall flag is latched.
+     *
+     * <p>
+     * Replace this method (or set the stall flags from limit-switch logic in
+     * {@link #periodic()}) once the physical switches are installed.
+     */
+    private void runStallDetection() {
+        boolean overcurrent = statorCurrentAmps > STALL_CURRENT_THRESHOLD_AMPS;
+
+        // --- Down direction ---
+        if (movingDown && !stalledAtDown) {
+            if (overcurrent) {
+                if (stallTimerDown.hasElapsed(STALL_DEBOUNCE_SECONDS)) {
+                    stalledAtDown = true;
+                    movingDown = false;
+                    hopperMotorRight.setControl(stopRequest);
+                    // Latch the encoder at the down position so future moves are accurate.
+                    hopperMotorRight.setPosition(POSITION_DOWN);
+                }
+                // else: current is high but hasn't held long enough — keep waiting
+            } else {
+                // Current dropped back below threshold; keep the timer running from 0
+                // so only a sustained overcurrent causes a stop.
+                stallTimerDown.reset();
+            }
+        } else {
+            stallTimerDown.reset();
+        }
+
+        // --- Up direction ---
+        if (movingUp && !stalledAtUp) {
+            if (overcurrent) {
+                if (stallTimerUp.hasElapsed(STALL_DEBOUNCE_SECONDS)) {
+                    stalledAtUp = true;
+                    movingUp = false;
+                    hopperMotorRight.setControl(stopRequest);
+                    // Latch the encoder at the up position so future moves are accurate.
+                    hopperMotorRight.setPosition(POSITION_UP);
+                }
+                // else: current is high but hasn't held long enough — keep waiting
+            } else {
+                stallTimerUp.reset();
+            }
+        } else {
+            stallTimerUp.reset();
+        }
     }
 }
