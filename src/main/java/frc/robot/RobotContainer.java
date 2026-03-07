@@ -19,6 +19,7 @@ import frc.robot.subsystems.TurretRight;
 import frc.robot.subsystems.Odometry;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Uptake;
 import frc.robot.commands.IntakeSequence;
 import frc.robot.commands.ShootSequence;
 import frc.robot.utils.AutoFunctions;
@@ -56,6 +57,7 @@ public class RobotContainer {
     public static TurretRight turretRight;
     public static IntakeSubsystem intake;
     public static Hopper hopper;
+    public static Uptake uptake;
 
     // AutoTrackGoal is the default command on both turrets; exposed as a static
     // field so isReadyToShoot() and getCalculatedShooterRPM() are reachable from
@@ -100,9 +102,10 @@ public class RobotContainer {
         turretLeft = new TurretLeft();
         turretRight = new TurretRight();
 
-        // Create intake and hopper subsystems
+        // Create intake, hopper, and uptake subsystems
         intake = new IntakeSubsystem();
         hopper = new Hopper();
+        uptake = new Uptake();
 
         // Set default command for turrets (auto-tracking)
         autoTrack = new AutoTrackGoal();
@@ -150,18 +153,18 @@ public class RobotContainer {
         // well
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
 
-        // TODO change these for operator controlling
-        driverOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
-        driverOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
-        driverOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
-        driverOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
+        // Operator controlling shooter speeds
+        toolOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
+        toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
+        toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
+        toolOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
 
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
-        driverOp.leftBumper().whileTrue(new ShootSequence(shooter, hopper));
+        toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, hopper, uptake));
 
         // Intake control - hold right bumper to intake and store
-        driverOp.rightBumper().whileTrue(new IntakeSequence(intake, hopper));
+        toolOp.rightBumper().whileTrue(new IntakeSequence(intake, hopper));
     }
 
     /**

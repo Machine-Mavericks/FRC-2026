@@ -44,6 +44,10 @@ public class RobotMap {
         public static final int INTAKE_MASTER = 23;
         public static final int INTAKE_FOLLOWER = 24;
 
+        // Uptake motors
+        public static final int UPTAKE_MASTER = 25;
+        public static final int UPTAKE_FOLLOWER = 26;
+
     }
 
     /**
@@ -183,5 +187,13 @@ public class RobotMap {
      */
     public static class Hopper {
         public static final double HOPPER_SPEED = 0.5;
+    }
+
+    /**
+     * Uptake subsystem constants
+     */
+    public static class Uptake {
+        public static final double UPTAKE_SPEED = 0.8;
+        public static final double GEAR_RATIO = 9.0;
     }
 }
