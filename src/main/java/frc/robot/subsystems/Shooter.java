@@ -73,11 +73,6 @@ public class Shooter extends SubsystemBase {
     commanded = speed;
   }
 
-  public void shooterSpeed() {
-    targetSpeed = CalculateSpeed(3.0);
-    shooterMotor.setControl(new VelocityVoltage(targetSpeed));
-  }
-
   public void stop() {
     shooterMotor.set(0);
 

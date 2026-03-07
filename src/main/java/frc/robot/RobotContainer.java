@@ -49,6 +49,11 @@ public class RobotContainer {
     public static TurretLeft turretLeft;
     public static TurretRight turretRight;
 
+    // AutoTrackGoal is the default command on both turrets; exposed as a static
+    // field so isReadyToShoot() and getCalculatedShooterRPM() are reachable from
+    // anywhere (e.g. button bindings). Fixes issue #13.
+    public static AutoTrackGoal autoTrack;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -87,7 +92,7 @@ public class RobotContainer {
         turretRight = new TurretRight();
 
         // Set default command for turrets (auto-tracking)
-        AutoTrackGoal autoTrack = new AutoTrackGoal();
+        autoTrack = new AutoTrackGoal();
         turretLeft.setDefaultCommand(autoTrack);
         turretRight.setDefaultCommand(autoTrack);
 
@@ -138,7 +143,12 @@ public class RobotContainer {
         driverOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
         driverOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
 
-        driverOp.leftBumper().onTrue(new InstantCommand(() -> shooter.shooterSpeed()));
+        // Fire only when turrets are on-target and Limelight confirms aim.
+        // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
+        driverOp.leftBumper()
+                .and(() -> RobotContainer.autoTrack.isReadyToShoot())
+                .onTrue(new InstantCommand(
+                        () -> shooter.shooterSpeed(RobotContainer.autoTrack.getCalculatedShooterRPM())));
     }
 
     /**
