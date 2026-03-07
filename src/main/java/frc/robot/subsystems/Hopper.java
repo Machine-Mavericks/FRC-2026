@@ -22,10 +22,14 @@ public class Hopper extends SubsystemBase {
     TalonFX hopperMotorLeft = new TalonFX(RobotMap.CANID.HOPPER_LEFT);
 
     // -------------------------------------------------------------------------
-    // Arm Position Constants (in rotations — tune these to your robot)
+    // Gear Reduction & Arm Position Constants
     // -------------------------------------------------------------------------
+    // 36.25 motor rotations : 1 arm rotation
+    private static final double GEAR_RATIO = 36.25;
+
+    // Positions expressed in ARM (mechanism) rotations — tune to your robot
     private static final double POSITION_DOWN = 0.0; // TODO: tune for down position
-    private static final double POSITION_UP = 10.0; // TODO: tune for up position
+    private static final double POSITION_UP = 0.25; // TODO: tune for up position (arm rotations)
 
     // -------------------------------------------------------------------------
     // Limit Switches (commented out — not yet installed on robot)
@@ -49,10 +53,17 @@ public class Hopper extends SubsystemBase {
     public Hopper() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
+        // Apply gear reduction so all positions/velocities are in arm (mechanism)
+        // rotations.
+        // Phoenix 6 multiplies internally: motor rotations / GEAR_RATIO = arm
+        // rotations.
+        config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
+
         config.Slot0.kP = 12.0;
         config.Slot0.kD = 0.1;
-        config.MotionMagic.MotionMagicCruiseVelocity = 5;
-        config.MotionMagic.MotionMagicAcceleration = 10;
+        // Cruise/accel are now in ARM rotations/sec — tune these to your mechanism
+        config.MotionMagic.MotionMagicCruiseVelocity = 0.5; // TODO: tune (arm rot/s)
+        config.MotionMagic.MotionMagicAcceleration = 1.0; // TODO: tune (arm rot/s²)
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
