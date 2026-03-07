@@ -1,11 +1,10 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import edu.wpi.first.math.controller.PIDController;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -18,9 +17,10 @@ import frc.robot.RobotMap;
  */
 public abstract class TurretSubsystem extends SubsystemBase {
     
-    protected final CANSparkMax motor;
+    protected final SparkMax motor;
     protected final RelativeEncoder encoder;
-    protected final SparkPIDController pidController;
+    // Use a software PIDController (runs on RoboRIO) to control turret position
+    protected final PIDController pidController;
     
     protected final String name;
     protected double targetAngleDegrees = 0.0;
@@ -52,46 +52,22 @@ public abstract class TurretSubsystem extends SubsystemBase {
         this.name = name;
 
         if (!skipHardware) {
-            // Initialize motor
-            motor = new CANSparkMax(motorCANID, MotorType.kBrushless);
-            motor.restoreFactoryDefaults();
-            motor.setIdleMode(IdleMode.kBrake);
-            motor.setSmartCurrentLimit(20); // NEO 550 current limit
+            // Initialize motor (REVLib new API)
+            motor = new SparkMax(motorCANID, MotorType.kBrushless);
 
-            // Get encoder and PID controller
+            // Get encoder (returns rotations) and create a software PID controller
             encoder = motor.getEncoder();
-            pidController = motor.getPIDController();
-
-            // Configure encoder - convert rotations to degrees
-            // Encoder counts motor rotations, need to account for gear ratio
-            encoder.setPositionConversionFactor(360.0 / RobotMap.Turret.GEAR_RATIO);
-            encoder.setVelocityConversionFactor(360.0 / RobotMap.Turret.GEAR_RATIO / 60.0); // deg/sec
-
-            // Configure PID
-            pidController.setP(RobotMap.Turret.kP);
-            pidController.setI(RobotMap.Turret.kI);
-            pidController.setD(RobotMap.Turret.kD);
-            pidController.setIZone(RobotMap.Turret.kIZone);
-            pidController.setFF(RobotMap.Turret.kFF);
-            pidController.setOutputRange(-1.0, 1.0);
-
-            // Set soft limits
-            motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-            motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-            motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,
-                    (float) (RobotMap.Turret.MAX_ROTATION_DEGREES * RobotMap.Turret.GEAR_RATIO / 360.0));
-            motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,
-                    (float) (RobotMap.Turret.MIN_ROTATION_DEGREES * RobotMap.Turret.GEAR_RATIO / 360.0));
-
-            motor.burnFlash(); // Save configuration to flash
+            pidController = new PIDController(RobotMap.Turret.kP, RobotMap.Turret.kI, RobotMap.Turret.kD);
+            pidController.setTolerance(RobotMap.Turret.POSITION_TOLERANCE);
 
             // Initialize Shuffleboard
             initializeShuffleboard();
         } else {
             // Hardware skipped; leave motor/encoder/pidController null
-            motor = null;
-            encoder = null;
-            pidController = null;
+        motor = null;
+        encoder = null;
+        // create a dummy PIDController to keep final field semantics
+        pidController = null;
             // Subclasses (disabled stubs) must avoid calling hardware methods
             // and should override telemetry methods as needed.
             // Note: keep fields final by assigning null here.
@@ -119,7 +95,9 @@ public abstract class TurretSubsystem extends SubsystemBase {
         targetAngleDegrees = angleDegrees;
         
         if (!manualControlEnabled && pidController != null) {
-            pidController.setReference(angleDegrees, ControlType.kPosition);
+            // Run software PID: set the setpoint (degrees). Actual motor output
+            // is applied in periodic().
+            pidController.setSetpoint(angleDegrees);
         }
     }
     
@@ -130,7 +108,8 @@ public abstract class TurretSubsystem extends SubsystemBase {
      */
     public double getCurrentAngle() {
         if (encoder != null) {
-            return encoder.getPosition();
+            // encoder returns rotations; convert to degrees accounting for gear ratio
+            return encoder.getPosition() * 360.0 / RobotMap.Turret.GEAR_RATIO;
         }
         return targetAngleDegrees;
     }
@@ -203,6 +182,20 @@ public abstract class TurretSubsystem extends SubsystemBase {
     
     @Override
     public void periodic() {
+        // If not in manual control, run software PID to compute motor output
+        if (!manualControlEnabled && pidController != null && motor != null && encoder != null) {
+            double output = pidController.calculate(getCurrentAngle());
+            // Clamp output to percent output range
+            output = Math.max(-1.0, Math.min(1.0, output));
+            // Safety limits: don't drive past physical limits
+            double currentAngle = getCurrentAngle();
+            if ((currentAngle >= RobotMap.Turret.MAX_ROTATION_DEGREES && output > 0) ||
+                (currentAngle <= RobotMap.Turret.MIN_ROTATION_DEGREES && output < 0)) {
+                output = 0.0;
+            }
+            motor.set(output);
+        }
+
         updateShuffleboard();
     }
     
