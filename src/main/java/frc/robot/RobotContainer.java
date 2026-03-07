@@ -45,7 +45,7 @@ public class RobotContainer {
     public static TemplateSubsystem mySubsystem;
 
     // define shooter subsystem
-    private Shooter shooter;
+    public static Shooter shooter;
     public static TurretLeft turretLeft;
     public static TurretRight turretRight;
 
@@ -78,6 +78,9 @@ public class RobotContainer {
         drivesystem.setDefaultCommand(new ManualDrive());
         odometry = new Odometry();
         mySubsystem = new TemplateSubsystem();
+
+        // Create shooter subsystem
+        shooter = new Shooter();
 
         // Create turret subsystems
         turretLeft = new TurretLeft();
@@ -145,15 +148,16 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new AutoTrackGoal();  // this isn't right,  we will pick a proper one later, but for now we just want to test that the command scheduling and subsystem default commands work in autonomous
-    
-      
-    // Example: Move robot forward 1 meter, no rotation
-    // return new frc.robot.commands.MoveRobotRelative(
-    // 1.0, // maxSpeed
-    // 0.5, // maxAccel (used as maxRotSpeed)
-    // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
-    // );
+        return new AutoTrackGoal(); // this isn't right, we will pick a proper one later, but for now we just want
+                                    // to test that the command scheduling and subsystem default commands work in
+                                    // autonomous
+
+        // Example: Move robot forward 1 meter, no rotation
+        // return new frc.robot.commands.MoveRobotRelative(
+        // 1.0, // maxSpeed
+        // 0.5, // maxAccel (used as maxRotSpeed)
+        // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
+        // );
     }
 
     /**
