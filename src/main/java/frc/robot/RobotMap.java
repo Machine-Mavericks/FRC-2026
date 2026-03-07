@@ -1,21 +1,20 @@
 package frc.robot;
 
-
 /**
  * Mapping and creation of hardware on the robot
  */
 public class RobotMap {
-    
+
     /**
      * Inner class to hold CAN ID constants.
      */
     public static class CANID {
-        
+
         // CAN IDs for Swerve Cancoders
         public static final int LF_CANCODER = 9;
         public static final int RF_CANCODER = 10;
         public static final int LR_CANCODER = 11;
-        public static final int RR_CANCODER  = 12;
+        public static final int RR_CANCODER = 12;
         // CAN IDs for Steer Motors
         public static final int LF_STEER_MOTOR = 2;
         public static final int RF_STEER_MOTOR = 4;
@@ -26,11 +25,11 @@ public class RobotMap {
         public static final int RF_DRIVE_MOTOR = 3;
         public static final int LR_DRIVE_MOTOR = 5;
         public static final int RR_DRIVE_MOTOR = 7;
-                
+
         // CAN ID for CTR Pigeon Gyro
         public static final int PIGEON = 14;
-       
-        //Hopper motors
+
+        // Hopper motors
         public static final int HOPPER_RIGHT = 21;
         public static final int HOPPER_LEFT = 22;
 
@@ -39,7 +38,7 @@ public class RobotMap {
     /**
      * Inner class to hold RoboRIO I/O connection constants
      */
-  public static class DIO {
+    public static class DIO {
         // Deadwheel odometry pods
 
         // public static final int LEFTENCODER_A = 1;
@@ -50,22 +49,25 @@ public class RobotMap {
         // public static final int REARENCODER_B = 2;
         public static final int photoSensor = 9;
 
-        
+        // Hopper arm limit switches (not yet installed — uncomment when wired)
+        // public static final int HOPPER_LIMIT_DOWN = 6; // TODO: assign correct DIO
+        // port
+        // public static final int HOPPER_LIMIT_UP = 7; // TODO: assign correct DIO port
+
     }
 
     public static class PWMPorts {
         /** PWM Port for led strip */
-        
 
         // PWM port for camera tilting subsystem
-        //public static final int CAMERA_SERVO_ID = 1;
-    } 
+        // public static final int CAMERA_SERVO_ID = 1;
+    }
 
     /**
      * Inner class to hold RoboRIO analog input constants
      */
     public static class AINPorts {
-        
+
         // IDs for NEO Swerve steer position sensors
         public static final int NEO_LF_STEER_SENSOR = 0;
         public static final int NEO_RF_STEER_SENSOR = 1;
