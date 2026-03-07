@@ -33,6 +33,10 @@ public class RobotMap {
         public static final int LEFT_TURRET_MOTOR = 15;
         public static final int RIGHT_TURRET_MOTOR = 16;
 
+        // Hopper motors
+        public static final int HOPPER_RIGHT = 21;
+        public static final int HOPPER_LEFT = 22;
+
     }
 
     /**

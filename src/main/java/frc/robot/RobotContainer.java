@@ -1,5 +1,6 @@
 package frc.robot;
 
+import frc.robot.commands.IncrementShootersSpeed;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
@@ -9,13 +10,13 @@ import frc.robot.commands.ManualTurretControl;
 import frc.robot.subsystems.HubTargetingSubsystem;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Pigeon;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.TemplateSubsystem;
 import frc.robot.subsystems.TurretLeft;
 import frc.robot.subsystems.TurretRight;
 import frc.robot.subsystems.Odometry;
 import frc.robot.utils.AutoFunctions;
-import frc.robot.utils.ElevatorPositions;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,6 +43,9 @@ public class RobotContainer {
     public static SwerveDrive drivesystem;
     public static Odometry odometry;
     public static TemplateSubsystem mySubsystem;
+
+    // define shooter subsystem
+    private Shooter shooter;
     public static TurretLeft turretLeft;
     public static TurretRight turretRight;
 
@@ -124,6 +128,14 @@ public class RobotContainer {
         // to use a trigger as a button - note: analog triggers should be debounced as
         // well
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
+
+        // TODO change these for operator controlling
+        driverOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
+        driverOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
+        driverOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
+        driverOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
+
+        driverOp.leftBumper().onTrue(new InstantCommand(() -> shooter.shooterSpeed()));
     }
 
     /**
@@ -133,12 +145,15 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // Example: Move robot forward 1 meter, no rotation
-        return new frc.robot.commands.MoveRobotRelative(
-                1.0, // maxSpeed
-                0.5, // maxAccel (used as maxRotSpeed)
-                new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
-        );
+        return new AutoTrackGoal();  // this isn't right,  we will pick a proper one later, but for now we just want to test that the command scheduling and subsystem default commands work in autonomous
+    
+      
+    // Example: Move robot forward 1 meter, no rotation
+    // return new frc.robot.commands.MoveRobotRelative(
+    // 1.0, // maxSpeed
+    // 0.5, // maxAccel (used as maxRotSpeed)
+    // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
+    // );
     }
 
     /**
