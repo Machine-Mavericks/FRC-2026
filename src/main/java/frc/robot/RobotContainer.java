@@ -14,8 +14,13 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.TemplateSubsystem;
 import frc.robot.subsystems.TurretLeft;
+import frc.robot.subsystems.TurretLeft;
 import frc.robot.subsystems.TurretRight;
 import frc.robot.subsystems.Odometry;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Hopper;
+import frc.robot.commands.IntakeSequence;
+import frc.robot.commands.ShootSequence;
 import frc.robot.utils.AutoFunctions;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,9 +50,12 @@ public class RobotContainer {
     public static TemplateSubsystem mySubsystem;
 
     // define shooter subsystem
+    // define shooter subsystem
     public static Shooter shooter;
     public static TurretLeft turretLeft;
     public static TurretRight turretRight;
+    public static IntakeSubsystem intake;
+    public static Hopper hopper;
 
     // AutoTrackGoal is the default command on both turrets; exposed as a static
     // field so isReadyToShoot() and getCalculatedShooterRPM() are reachable from
@@ -88,8 +96,13 @@ public class RobotContainer {
         shooter = new Shooter();
 
         // Create turret subsystems
+        // Create turret subsystems
         turretLeft = new TurretLeft();
         turretRight = new TurretRight();
+
+        // Create intake and hopper subsystems
+        intake = new IntakeSubsystem();
+        hopper = new Hopper();
 
         // Set default command for turrets (auto-tracking)
         autoTrack = new AutoTrackGoal();
@@ -143,12 +156,12 @@ public class RobotContainer {
         driverOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
         driverOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
 
-        // Fire only when turrets are on-target and Limelight confirms aim.
+        // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
-        driverOp.leftBumper()
-                .and(() -> RobotContainer.autoTrack.isReadyToShoot())
-                .onTrue(new InstantCommand(
-                        () -> shooter.shooterSpeed(RobotContainer.autoTrack.getCalculatedShooterRPM())));
+        driverOp.leftBumper().whileTrue(new ShootSequence(shooter, hopper));
+
+        // Intake control - hold right bumper to intake and store
+        driverOp.rightBumper().whileTrue(new IntakeSequence(intake, hopper));
     }
 
     /**

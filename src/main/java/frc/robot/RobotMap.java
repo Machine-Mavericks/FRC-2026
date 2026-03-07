@@ -177,4 +177,11 @@ public class RobotMap {
         public static final double INTAKE_SPEED = 0.8;
         public static final double OUTTAKE_SPEED = -0.5;
     }
+
+    /**
+     * Hopper subsystem constants
+     */
+    public static class Hopper {
+        public static final double HOPPER_SPEED = 0.5;
+    }
 }

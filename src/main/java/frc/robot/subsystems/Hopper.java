@@ -57,8 +57,14 @@ public class Hopper extends SubsystemBase {
     // values or control the subsystem
 
     public void downHopper() {
+        hopperMotorRight.set(-RobotMap.Hopper.HOPPER_SPEED);
+    }
 
-        
+    public void upHopper() {
+        hopperMotorRight.set(RobotMap.Hopper.HOPPER_SPEED);
+    }
 
+    public void stop() {
+        hopperMotorRight.set(0);
     }
 }
