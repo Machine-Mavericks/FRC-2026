@@ -40,6 +40,10 @@ public class RobotMap {
         public static final int HOPPER_RIGHT = 21;
         public static final int HOPPER_LEFT = 22;
 
+        // Intake motors
+        public static final int INTAKE_MASTER = 23;
+        public static final int INTAKE_FOLLOWER = 24;
+
     }
 
     /**
@@ -166,4 +170,11 @@ public class RobotMap {
         public static final double LIMELIGHT_MOUNT_ANGLE_DEG = 30.0;
     }
 
+    /**
+     * Intake subsystem constants
+     */
+    public static class Intake {
+        public static final double INTAKE_SPEED = 0.8;
+        public static final double OUTTAKE_SPEED = -0.5;
+    }
 }
