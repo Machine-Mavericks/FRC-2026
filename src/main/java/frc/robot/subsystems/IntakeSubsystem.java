@@ -46,6 +46,11 @@ public class IntakeSubsystem extends SubsystemBase {
         masterMotor.set(0.0);
     }
 
+    /** Returns master motor velocity in RPS — useful for diagnostics and smoke tests. */
+    public double getVelocityRPS() {
+        return masterMotor.getVelocity().getValueAsDouble();
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run

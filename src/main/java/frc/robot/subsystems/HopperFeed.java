@@ -36,4 +36,9 @@ public class HopperFeed extends SubsystemBase {
             motor.set(0.0);
         }
     }
+
+    /** Returns motor velocity in RPS — useful for diagnostics and smoke tests. */
+    public double getVelocityRPS() {
+        return motor.getVelocity().getValueAsDouble();
+    }
 }

@@ -53,6 +53,12 @@ public class Uptake extends SubsystemBase {
         }
     }
 
+    /** Returns master motor velocity in RPS — useful for diagnostics and smoke tests. Returns 0 if hardware is absent. */
+    public double getVelocityRPS() {
+        if (masterMotor == null) return 0.0;
+        return masterMotor.getVelocity().getValueAsDouble();
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run

@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.tests.HardwareTestSuite;
 //import frc.robot.commands.TiltAlgaeRemover;
 
 //import frc.robot.utils.AlgaePositions;
@@ -20,6 +21,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+  private HardwareTestSuite m_testSuite;
 
 
   //private boolean isAlgaeTiltInitialized = false;
@@ -31,6 +33,9 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer(this);
+
+    // Build the hardware test suite (creates the "Hardware Tests" Shuffleboard tab).
+    m_testSuite = new HardwareTestSuite();
   }
 
   /**
@@ -96,9 +101,19 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
   }
 
-  /** This function is called periodically during test mode. */
+  /**
+   * Called periodically in Test mode.
+   * Press the OPERATOR START button to trigger the full hardware smoke-test sequence.
+   * Watch the "Hardware Tests" Shuffleboard tab for PASS / FAIL results.
+   */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    // Rising-edge detection: getStartButtonPressed() returns true only on the first
+    // call after the button is pressed, preventing the test from being scheduled twice.
+    if (RobotContainer.toolOp.getHID().getStartButtonPressed()) {
+      CommandScheduler.getInstance().schedule(m_testSuite.buildTestSequence());
+    }
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
