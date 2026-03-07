@@ -26,7 +26,7 @@ This 3D transform is pushed to the cameras **from the RoboRIO** over NetworkTabl
 *   Enter these values into the arrays in `[Forward, Side, Up, Roll, Pitch, Yaw]` order.
 
 **Tolerance (`HubTargetingSubsystem.java`):**
-*   `TARGET_TX_TOLERANCE_DEG`: This determines how perfectly the turrets need to be aligned before `isReadyToShoot()` allows the hopper to fire. It is currently set to `2.0` degrees. If the turrets have structural backlash and struggle to hit the `2.0` mark perfectly, you may need to increase this slightly so the robot doesn't get "stuck" refusing to fire.
+*   `TARGET_TX_TOLERANCE_DEG`: This determines how perfectly the turrets need to be aligned before `isReadyToShoot()` allows the intake arm to fire. It is currently set to `2.0` degrees. If the turrets have structural backlash and struggle to hit the `2.0` mark perfectly, you may need to increase this slightly so the robot doesn't get "stuck" refusing to fire.
 
 ---
 
@@ -56,16 +56,49 @@ The independent left and right turrets need precise PID tuning to aim quickly wi
 
 ---
 
-## 4. Hopper & Uptake Tuning
+## 4. IntakeArm & Uptake Tuning
 
-The Hopper needs to forcefully push the game pieces into the Uptake, which speeds them into the flywheels. 
+The IntakeArm has a finite range of travel and uses Motion Magic (TalonFX on-controller closed-loop) to move to commanded positions. Software soft limits, stator current limiting, and optional hardware limit switches protect the mechanism.
 
-**Parameters to Tune (`RobotMap.Hopper` / `RobotMap.Uptake`):**
-*   `HOPPER_SPEED` / `UPTAKE_SPEED`: Currently set to simple percent-outputs (`0.5` and `0.8`). If the balls are jamming, or conversely, if they are entering the shooter so violently they drop the flywheel speed too much before the second ball fires, adjust these feed rates.
-*   **Stall Voltage & Current Limits (`Hopper.java` / `Uptake.java`):**
-    *   Currently, the Hopper and Uptake do *not* have current limits cleanly exposed in `RobotMap`. 
-    *   **Action Required:** In the subsystem constructors, use `config.CurrentLimits.SupplyCurrentLimit` on the TalonFX configurations. 
-    *   *Why?* If a ball jams in the hopper or uptake, you want the motor to safely stall (current limit kicks in) rather than burning out the motor or snapping a belt. A good starting point is `30A` for a feeder mechanism.
+### 4a. Soft Limits (Range of Travel)
+
+**Parameters to Tune (`RobotMap.IntakeArm`):**
+*   `FORWARD_SOFT_LIMIT` *(currently `20.0` rotations — **MUST TUNE**)* — motor rotations from home corresponding to the arm fully deployed (down). 
+    *   **How to measure:** With the arm at `REVERSE_SOFT_LIMIT` (home/retracted), zero the encoder via `zeroEncoder()`. Slowly drive the arm to its fully deployed position and read `currentPose` from Shuffleboard/Epilogue logs. Enter that rotation count here.
+*   `REVERSE_SOFT_LIMIT` *(currently `0.0` rotations)* — motor rotations at the fully retracted (home/stowed) position. If home is not naturally zero after zeroing, adjust accordingly.
+
+> [!WARNING]
+> Until these are set from real measurements, the soft limits will not correctly protect the mechanism. Drive the arm very slowly the first time under power.
+
+### 4b. Motion Magic PID Tuning
+
+Motion Magic gains are set inline in `IntakeArm.java` (not yet in `RobotMap`). Move them to `RobotMap.IntakeArm` once stable.
+
+| Constant | Current Value | Description |
+|---|---|---|
+| `Slot0.kP` | `12.0` | Proportional gain — increase if arm is sluggish, decrease if it oscillates |
+| `Slot0.kD` | `0.1` | Derivative gain — increase to dampen overshoot at end of motion |
+| `MotionMagicCruiseVelocity` | `5` rot/s | Max cruise velocity — reduce to slow arm travel |
+| `MotionMagicAcceleration` | `10` rot/s² | Ramp-up/down rate — reduce if arm jerks on start/stop |
+
+*Tip:* Use Phoenix Tuner X's "Motion Magic" plot to visualize the `commandedPose` vs `currentPose` traces. A good tune shows the position tracking without overshoot or oscillation.
+
+### 4c. Encoder Zeroing Procedure
+
+The arm encoder must be zeroed at a known reference position at the start of each match (or on robot enable). Call `IntakeArm.zeroEncoder()` when the arm is physically at the retracted/stowed hard stop.
+
+*   Consider calling `zeroEncoder()` during robot initialization if the arm homes against a hard stop on enable, or via an operator button before the match.
+*   If hardware limit switches are wired to the TalonFX's limit switch ports, `isAtReverseLimit()` can trigger auto-zeroing.
+
+### 4d. Stator Current Limit
+
+**Parameter (`RobotMap.IntakeArm`):**
+*   `STATOR_CURRENT_LIMIT` *(currently `40.0` A)* — protects the motor from stall damage when the arm reaches a hard stop. Lower values provide more protection but reduce peak torque. `30–50 A` is a reasonable range for an arm mechanism.
+
+### 4e. Uptake Feed Rate
+
+**Parameter (`RobotMap.Uptake`):**
+*   `UPTAKE_SPEED` *(currently `0.8`)* — simple percent output. If balls are jamming, reduce speed. If flywheel speed drops too much before the second shot, reduce speed to smooth feeding.
 
 ---
 

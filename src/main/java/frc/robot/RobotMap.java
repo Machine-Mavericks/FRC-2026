@@ -36,9 +36,9 @@ public class RobotMap {
         // Shooter motor
         public static final int SHOOTER = 20;
 
-        // Hopper motors
-        public static final int HOPPER_RIGHT = 21;
-        public static final int HOPPER_LEFT = 22;
+        // IntakeArm motors
+        public static final int INTAKE_ARM_RIGHT = 21;
+        public static final int INTAKE_ARM_LEFT = 22;
 
         // Intake motors
         public static final int INTAKE_MASTER = 23;
@@ -230,10 +230,21 @@ public class RobotMap {
     }
 
     /**
-     * Hopper subsystem constants
+     * IntakeArm subsystem constants
      */
-    public static class Hopper {
-        public static final double HOPPER_SPEED = 0.5;
+    public static class IntakeArm {
+        public static final double INTAKE_ARM_SPEED = 0.5;
+        /** Maximum arm position in motor rotations (fully deployed/down) — TUNE */
+        public static final double FORWARD_SOFT_LIMIT = 20.0;
+        /** Minimum arm position in motor rotations (fully retracted/up) — TUNE */
+        public static final double REVERSE_SOFT_LIMIT = 0.0;
+        /** Stator current limit (amps) to protect motor from stall damage */
+        public static final double STATOR_CURRENT_LIMIT = 40.0;
+
+        /** Target position (rotations) when arm is deployed for intaking — TUNE */
+        public static final double DEPLOYED_POSITION = FORWARD_SOFT_LIMIT;
+        /** Target position (rotations) when arm is stowed after intaking — TUNE */
+        public static final double STOWED_POSITION = REVERSE_SOFT_LIMIT;
     }
 
     /**

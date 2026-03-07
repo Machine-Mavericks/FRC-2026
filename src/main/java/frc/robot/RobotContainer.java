@@ -21,7 +21,7 @@ import frc.robot.subsystems.ShooterDisabled;
 import frc.robot.subsystems.UptakeDisabled;
 import frc.robot.subsystems.Odometry;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.IntakeArm;
 import frc.robot.subsystems.Uptake;
 import frc.robot.commands.IntakeSequence;
 import frc.robot.commands.ShootSequence;
@@ -60,7 +60,7 @@ public class RobotContainer {
     public static TurretLeft turretLeft;
     public static TurretRight turretRight;
     public static IntakeSubsystem intake;
-    public static Hopper hopper;
+    public static IntakeArm intakeArm;
     public static Uptake uptake;
 
     // AutoTrackGoal is the default command on both turrets; exposed as a static
@@ -119,9 +119,9 @@ public class RobotContainer {
         // Right turret (present) and other subsystems
         turretRight = new TurretRight();
 
-        // Create intake and hopper subsystems
+        // Create intake subsystems
         intake = new IntakeSubsystem();
-        hopper = new Hopper();
+        intakeArm = new IntakeArm();
 
         // Set default command for turrets (auto-tracking)
         autoTrack = new AutoTrackGoal();
@@ -177,10 +177,11 @@ public class RobotContainer {
 
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
-        toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, hopper, uptake));
+        toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm, uptake));
 
-        // Intake control - hold right bumper to intake and store
-        toolOp.rightBumper().whileTrue(new IntakeSequence(intake, hopper));
+        // Intake control - toggle right bumper: first press deploys arm + runs intake,
+        // second press stops intake and stows arm.
+        toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm));
     }
 
     /**
