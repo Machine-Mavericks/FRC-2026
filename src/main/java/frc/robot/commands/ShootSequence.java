@@ -45,6 +45,15 @@ public class ShootSequence extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        // Do not spin up or feed if our alliance's hub is currently inactive —
+        // scoring fuel would earn zero points.
+        if (!RobotContainer.hubTargeting.isHubActive()) {
+            shooter.stop();
+            intakeArm.stop();
+            uptake.stop();
+            return;
+        }
+
         // Continuously update the target RPM in case distance changes
         shooter.shooterSpeed(RobotContainer.autoTrack.getCalculatedShooterRPM());
 
