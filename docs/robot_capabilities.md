@@ -48,7 +48,7 @@ Controlling the Mavericks robot is a team effort. The controls are split securel
 | :--- | :--- | :--- |
 | **Right Trigger** (Hold) | **🔥 FIRE (Shoot Sequence)** | The ultimate button. Holding this runs the Uptake and Hopper, firing the cargo once the Shooter reaches the auto-calculated RPM. |
 | **Right Bumper** | **📥 Toggle Intake** | Press once to drop the arm and suck in cargo. Press again to turn off and retract. |
-| **Left Bumper** (Hold) | **✋ Manual Turret** | Overrides the Limelight Auto-Tracking. Holding this lets you aim manually if vision is lost. |
+| **Left Bumper** (Hold) | **✋ Manual Turret** | Overrides Limelight Auto-Tracking. While holding, use **Left/Right Stick Y-axes** to independently control the Left/Right turrets. |
 
 #### 🔧 Shooter Trim Controls
 Sometimes the match dynamics change (battery sag, ball wear). The Operator can "trim" the auto-calculated target RPM up or down on the fly!
