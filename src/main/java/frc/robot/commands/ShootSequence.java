@@ -22,7 +22,8 @@ public class ShootSequence extends Command {
      *
      * @param shooter   The shooter subsystem to run.
      * @param intakeArm The intake arm subsystem to feed balls into the shooter.
-     * @param uptake    The uptake subsystem to feed balls into the shooter flywheels.
+     * @param uptake    The uptake subsystem to feed balls into the shooter
+     *                  flywheels.
      */
     public ShootSequence(Shooter shooter, IntakeArm intakeArm, Uptake uptake) {
         this.shooter = shooter;
@@ -45,14 +46,6 @@ public class ShootSequence extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // Do not spin up or feed if our alliance's hub is currently inactive —
-        // scoring fuel would earn zero points.
-        if (!RobotContainer.hubTargeting.isHubActive()) {
-            shooter.stop();
-            intakeArm.stop();
-            uptake.stop();
-            return;
-        }
 
         // Continuously update the target RPM in case distance changes
         shooter.shooterSpeed(RobotContainer.autoTrack.getCalculatedShooterRPM());
