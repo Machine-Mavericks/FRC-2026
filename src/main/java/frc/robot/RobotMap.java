@@ -153,9 +153,9 @@ public class RobotMap {
         // --------------- HUB AprilTag IDs (2026 Game Manual, p.34) ---------------
         // AprilTags are placed on all 4 faces of each alliance HUB.
         // Blue alliance HUB tags (confirm exact IDs from field layout diagram p.35)
-        public static final int[] BLUE_HUB_TAG_IDS = { 2, 3, 4, 5, 8, 9 };
+        public static final int[] BLUE_HUB_TAG_IDS = { 18, 19, 20, 21, 24, 25, 26, 27 };
         // Red alliance HUB tags
-        public static final int[] RED_HUB_TAG_IDS = { 10, 11, 18, 19, 20, 21 };
+        public static final int[] RED_HUB_TAG_IDS = { 2, 3, 4, 5, 8, 9, 10, 11 };
 
         // Legacy single-tag constants (kept for backward compatibility)
         public static final int BLUE_GOAL_TAG_ID = 9;
