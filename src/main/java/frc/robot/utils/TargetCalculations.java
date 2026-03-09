@@ -159,6 +159,46 @@ public class TargetCalculations {
         return isRedAlliance ? RobotMap.Vision.RED_GOAL_TAG_ID : RobotMap.Vision.BLUE_GOAL_TAG_ID;
     }
 
+    /**
+     * Determine if the robot is currently in the neutral zone based on its pose.
+     *
+     * @param robotPose Current pose of the robot on the field
+     * @return True if the robot is within the defined neutral zone X coordinates
+     */
+    public static boolean isInNeutralZone(Pose2d robotPose) {
+        double x = robotPose.getX();
+        return x >= RobotMap.Vision.NEUTRAL_ZONE_X_MIN && x <= RobotMap.Vision.NEUTRAL_ZONE_X_MAX;
+    }
+
+    /**
+     * Calculate the turret angle needed to point to our alliance's "safe area"
+     * when we are in the neutral zone.
+     *
+     * @param robotPose     Current pose of the robot
+     * @param turretOffsetX Turret X offset (m)
+     * @param turretOffsetY Turret Y offset (m)
+     * @param isRedAlliance True if on the red alliance
+     * @return Target angle in degrees for the turret
+     */
+    public static double calculateNeutralZoneAimAngle(
+            Pose2d robotPose,
+            double turretOffsetX,
+            double turretOffsetY,
+            boolean isRedAlliance) {
+        Pose2d safeTarget = isRedAlliance ? getRedSafeTargetPose() : getBlueSafeTargetPose();
+        return getTargetAngleForTurret(robotPose, turretOffsetX, turretOffsetY, safeTarget);
+    }
+
+    /** @return Safe target Pose2d for the blue alliance when in neutral zone */
+    public static Pose2d getBlueSafeTargetPose() {
+        return new Pose2d(RobotMap.Vision.BLUE_SAFE_TARGET_X, RobotMap.Vision.BLUE_SAFE_TARGET_Y, new Rotation2d());
+    }
+
+    /** @return Safe target Pose2d for the red alliance when in neutral zone */
+    public static Pose2d getRedSafeTargetPose() {
+        return new Pose2d(RobotMap.Vision.RED_SAFE_TARGET_X, RobotMap.Vision.RED_SAFE_TARGET_Y, new Rotation2d());
+    }
+
     // -------------------------------------------------------------------------
     // Direct Limelight mode (camera-angle-based, requires tag in view)
     // -------------------------------------------------------------------------

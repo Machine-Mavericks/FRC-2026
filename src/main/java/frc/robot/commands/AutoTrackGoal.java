@@ -54,11 +54,51 @@ public class AutoTrackGoal extends Command {
 
     @Override
     public void execute() {
+        Pose2d robotPose = getRobotPoseFromOdometry();
+        boolean inNeutralZone = (robotPose != null) && TargetCalculations.isInNeutralZone(robotPose);
+
+        boolean isRedAlliance = false;
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            isRedAlliance = (alliance.get() == Alliance.Red);
+        }
 
         // ------------------------------------------------------------------
-        // Priority 1: Direct Limelight mode — AprilTag in view
+        // Priority 1: Neutral Zone (highest priority: avoid hub)
         // ------------------------------------------------------------------
-        if (RobotContainer.hubTargeting.isHubTagVisible()) {
+        if (inNeutralZone) {
+            targetVisible = false; // We are purposely ignoring the Limelight tag
+            lastRobotPose = robotPose;
+
+            double leftTurretAngle = TargetCalculations.calculateNeutralZoneAimAngle(
+                    robotPose,
+                    RobotMap.Turret.LEFT_TURRET_X_OFFSET,
+                    RobotMap.Turret.LEFT_TURRET_Y_OFFSET,
+                    isRedAlliance);
+
+            double rightTurretAngle = TargetCalculations.calculateNeutralZoneAimAngle(
+                    robotPose,
+                    RobotMap.Turret.RIGHT_TURRET_X_OFFSET,
+                    RobotMap.Turret.RIGHT_TURRET_Y_OFFSET,
+                    isRedAlliance);
+
+            Pose2d safeTarget = isRedAlliance ? TargetCalculations.getRedSafeTargetPose()
+                    : TargetCalculations.getBlueSafeTargetPose();
+            double distance = TargetCalculations.getDistanceToGoal(robotPose, safeTarget);
+            calculatedShooterRPM = ShooterCalculations.getShooterRPM(distance);
+
+            RobotContainer.turretLeft.setTargetAngle(leftTurretAngle);
+            RobotContainer.turretRight.setTargetAngle(rightTurretAngle);
+
+            SmartDashboard.putString("Tracking Mode", "Neutral Zone Safe");
+            SmartDashboard.putNumber("Tx Error (deg)", 0.0);
+            SmartDashboard.putNumber("Hub Distance (m)", distance); // Distance to safe target
+
+        }
+        // ------------------------------------------------------------------
+        // Priority 2: Direct Limelight mode — AprilTag in view
+        // ------------------------------------------------------------------
+        else if (RobotContainer.hubTargeting.isHubTagVisible()) {
             targetVisible = true;
 
             // tx is the horizontal angle error from camera center to tag center.
@@ -79,12 +119,11 @@ public class AutoTrackGoal extends Command {
             SmartDashboard.putNumber("Tx Error (deg)", txError);
             SmartDashboard.putNumber("Hub Distance (m)", RobotContainer.hubTargeting.getDistanceToHub());
 
-            // ------------------------------------------------------------------
-            // Priority 2: Field-coordinate mode — use odometry
-            // ------------------------------------------------------------------
-        } else {
-            Pose2d robotPose = getRobotPoseFromOdometry();
-
+        }
+        // ------------------------------------------------------------------
+        // Priority 3: Field-coordinate mode — use odometry
+        // ------------------------------------------------------------------
+        else {
             if (robotPose == null) {
                 // Nothing we can do — hold current position
                 targetVisible = false;
@@ -95,13 +134,6 @@ public class AutoTrackGoal extends Command {
 
             lastRobotPose = robotPose;
             targetVisible = false; // tag not confirmed visible
-
-            // Determine which HUB to aim at
-            boolean isRedAlliance = false;
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent()) {
-                isRedAlliance = (alliance.get() == Alliance.Red);
-            }
 
             Pose2d goalPose = TargetCalculations.getTargetGoalPose(isRedAlliance);
 
@@ -180,6 +212,13 @@ public class AutoTrackGoal extends Command {
     public boolean isReadyToShoot() {
         boolean turretsOnTarget = RobotContainer.turretLeft.atSetpoint()
                 && RobotContainer.turretRight.atSetpoint();
+
+        Pose2d robotPose = getRobotPoseFromOdometry();
+        boolean inNeutralZone = (robotPose != null) && TargetCalculations.isInNeutralZone(robotPose);
+
+        if (inNeutralZone) {
+            return turretsOnTarget; // Just need turrets to be at safe angle
+        }
 
         if (RobotContainer.hubTargeting.isHubTagVisible()) {
             // In direct mode, also require that the camera confirms we're aimed correctly

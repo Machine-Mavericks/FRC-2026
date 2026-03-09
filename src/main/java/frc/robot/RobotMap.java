@@ -171,6 +171,17 @@ public class RobotMap {
         public static final double RED_GOAL_X = 12.51; // field_len(~16.54) - 4.03
         public static final double RED_GOAL_Y = 4.04;
 
+        // --------------- Neutral Zone Constants ---------------
+        // Based on a ~16.54m field, Neutral Zone is approximately the middle area.
+        public static final double NEUTRAL_ZONE_X_MIN = 5.50; // Approximated
+        public static final double NEUTRAL_ZONE_X_MAX = 11.04; // Approximated
+
+        // Where to aim if shooting from the neutral zone (to avoid hitting the hub)
+        public static final double BLUE_SAFE_TARGET_X = 2.0; // Deep in blue territory
+        public static final double BLUE_SAFE_TARGET_Y = 4.04; // Center
+        public static final double RED_SAFE_TARGET_X = 14.54; // Deep in red territory
+        public static final double RED_SAFE_TARGET_Y = 4.04; // Center
+
         // --------------- Physical Height Constants (2026 Game Manual, p.22 & p.34)
         // ---------------
         /** HUB opening (top of hexagonal goal) height above carpet: 72" */
