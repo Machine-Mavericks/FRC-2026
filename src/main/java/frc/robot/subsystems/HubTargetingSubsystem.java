@@ -51,7 +51,6 @@ public class HubTargetingSubsystem extends SubsystemBase {
     private double m_distanceMeters = -1.0;
     private double m_shooterRPM = 0.0;
     private boolean m_isRedAlliance = false;
-    private boolean m_hubActive = true;
 
     // ---- Shuffleboard ----
     private GenericEntry m_sbTagVisible;
@@ -61,7 +60,6 @@ public class HubTargetingSubsystem extends SubsystemBase {
     private GenericEntry m_sbDistance;
     private GenericEntry m_sbRPM;
     private GenericEntry m_sbOnTarget;
-    private GenericEntry m_sbHubActive;
 
     public HubTargetingSubsystem() {
         initializeShuffleboard();
@@ -76,7 +74,6 @@ public class HubTargetingSubsystem extends SubsystemBase {
         // Determine alliance
         var alliance = DriverStation.getAlliance();
         m_isRedAlliance = alliance.isPresent() && alliance.get() == Alliance.Red;
-        m_hubActive = computeHubActive(alliance);
 
         // Read raw Limelight values
         m_txDegrees = RobotContainer.limelightShooter.getHorizontalTargetOffsetAngle();
@@ -164,17 +161,6 @@ public class HubTargetingSubsystem extends SubsystemBase {
     }
 
     /**
-     * Returns true when our alliance's HUB is currently active (scoring fuel
-     * counts). Uses FMS game data and match time to determine the current shift.
-     * Assumes the hub is active when data is unavailable (fail-open).
-     *
-     * @return true if our hub is active and shooting will earn points
-     */
-    public boolean isHubActive() {
-        return m_hubActive;
-    }
-
-    /**
      * @return True when the horizontal angle error is within
      *         TARGET_TX_TOLERANCE_DEG.
      *         Use this (combined with turret atSetpoint()) to gate the shoot
@@ -205,7 +191,6 @@ public class HubTargetingSubsystem extends SubsystemBase {
         m_sbTagVisible = statusLayout.add("Hub Tag Visible", false).getEntry();
         m_sbTagId = statusLayout.add("Tag ID", -1).getEntry();
         m_sbOnTarget = statusLayout.add("Aimed at Hub", false).getEntry();
-        m_sbHubActive = statusLayout.add("Hub Active", true).getEntry();
 
         // Limelight angles column
         ShuffleboardLayout anglesLayout = tab.getLayout("Camera Angles", BuiltInLayouts.kList)
@@ -228,85 +213,6 @@ public class HubTargetingSubsystem extends SubsystemBase {
         m_sbDistance.setDouble(m_distanceMeters > 0 ? m_distanceMeters : 0.0);
         m_sbRPM.setDouble(m_shooterRPM);
         m_sbOnTarget.setBoolean(isAimedAtHub());
-        m_sbHubActive.setBoolean(m_hubActive);
     }
 
-    /**
-     * Computes whether our alliance's hub is currently active based on FMS game
-     * data and match time, following the 2026 game rules.
-     *
-     * Game data is a single character sent ~3 seconds after AUTO ends:
-     *   'R' = Red alliance's hub goes inactive first (Shift 1)
-     *   'B' = Blue alliance's hub goes inactive first (Shift 1)
-     *
-     * Hubs alternate active/inactive each shift. Both hubs are active during
-     * AUTO, TRANSITION SHIFT, and END GAME.
-     */
-    private boolean computeHubActive(java.util.Optional<Alliance> alliance) {
-        // If not attached to FMS, always allow shooting (lab/practice override)
-        if (!DriverStation.isFMSAttached()) {
-            return true;
-        }
-        // No alliance info means robot is not properly configured — assume active.
-        if (alliance.isEmpty()) {
-            return true;
-        }
-        // Hub is always active during AUTO.
-        if (DriverStation.isAutonomousEnabled()) {
-            return true;
-        }
-        // Outside of an enabled teleop period there is no active hub.
-        if (!DriverStation.isTeleopEnabled()) {
-            return false;
-        }
-
-        double matchTime = DriverStation.getMatchTime();
-        String gameData = DriverStation.getGameSpecificMessage();
-
-        // No game data yet (sent ~3 s after AUTO) — we're likely in the TRANSITION
-        // SHIFT where both hubs are active anyway.
-        if (gameData.isEmpty()) {
-            return true;
-        }
-
-        // 'R' means Red's hub goes inactive first (Shift 1); active in Shifts 2 & 4.
-        boolean redInactiveFirst;
-        switch (gameData.charAt(0)) {
-            case 'R' -> redInactiveFirst = true;
-            case 'B' -> redInactiveFirst = false;
-            default -> {
-                // Corrupt data — assume hub is active.
-                return true;
-            }
-        }
-
-        // shift1Active: is OUR hub active during Shift 1?
-        //   Red hub active in Shift 1  when Blue was the winner (redInactiveFirst=false)
-        //   Blue hub active in Shift 1 when Red was the winner  (redInactiveFirst=true)
-        boolean shift1Active = switch (alliance.get()) {
-            case Red  -> !redInactiveFirst;
-            case Blue ->  redInactiveFirst;
-        };
-
-        // Match time counts down from total teleop time (140 s).
-        // Transition Shift: 2:20–2:10  → matchTime 140–130
-        // Shift 1:          2:10–1:45  → matchTime 130–105
-        // Shift 2:          1:45–1:20  → matchTime 105–80
-        // Shift 3:          1:20–0:55  → matchTime 80–55
-        // Shift 4:          0:55–0:30  → matchTime 55–30
-        // End Game:         0:30–0:00  → matchTime 30–0
-        if (matchTime > 130) {
-            return true;          // TRANSITION SHIFT — both hubs active
-        } else if (matchTime > 105) {
-            return shift1Active;  // SHIFT 1
-        } else if (matchTime > 80) {
-            return !shift1Active; // SHIFT 2
-        } else if (matchTime > 55) {
-            return shift1Active;  // SHIFT 3
-        } else if (matchTime > 30) {
-            return !shift1Active; // SHIFT 4
-        } else {
-            return true;          // END GAME — both hubs active
-        }
-    }
 }
