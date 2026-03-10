@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.IntakeArm;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Uptake;
 
@@ -14,24 +13,21 @@ import frc.robot.subsystems.Uptake;
 public class ShootSequence extends Command {
 
     private final Shooter shooter;
-    private final IntakeArm intakeArm;
     private final Uptake uptake;
 
     /**
      * Creates a new ShootSequence.
      *
-     * @param shooter   The shooter subsystem to run.
-     * @param intakeArm The intake arm subsystem to feed balls into the shooter.
-     * @param uptake    The uptake subsystem to feed balls into the shooter
-     *                  flywheels.
+     * @param shooter The shooter subsystem to run.
+     * @param uptake  The uptake subsystem to feed balls into the shooter
+     *                flywheels.
      */
-    public ShootSequence(Shooter shooter, IntakeArm intakeArm, Uptake uptake) {
+    public ShootSequence(Shooter shooter, Uptake uptake) {
         this.shooter = shooter;
-        this.intakeArm = intakeArm;
         this.uptake = uptake;
 
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(shooter, intakeArm, uptake);
+        addRequirements(shooter, uptake);
     }
 
     // Called when the command is initially scheduled.
@@ -39,7 +35,6 @@ public class ShootSequence extends Command {
     public void initialize() {
         // We calculate and command the target RPM based on Limelight distance
         shooter.shooterSpeed(RobotContainer.autoTrack.getCalculatedShooterRPM());
-        intakeArm.stop(); // Stop intake arm initially while shooter spins up
         uptake.stop();
     }
 
@@ -52,10 +47,8 @@ public class ShootSequence extends Command {
 
         // Use autoTrack's built-in alignment and speed check to determine when to fire
         if (RobotContainer.autoTrack.isReadyToShoot()) {
-            intakeArm.moveTo(frc.robot.RobotMap.IntakeArm.STOWED_POSITION); // Feed exactly when ready
             uptake.feedShooter();
         } else {
-            intakeArm.stop(); // Wait for flywheels/alignment
             uptake.stop();
         }
     }
@@ -64,7 +57,6 @@ public class ShootSequence extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.stop();
-        intakeArm.stop();
         uptake.stop();
     }
 
