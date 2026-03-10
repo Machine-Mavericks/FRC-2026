@@ -274,6 +274,6 @@ public class RobotMap {
      */
     public static class HopperFeed {
         /** Default feed speed (percent output, 0.0 – 1.0). Tunable via Shuffleboard. */
-        public static final double DEFAULT_SPEED = 0.5;
+        public static final double DEFAULT_SPEED = 0.20;
     }
 }
