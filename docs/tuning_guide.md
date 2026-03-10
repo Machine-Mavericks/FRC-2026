@@ -73,9 +73,10 @@ The IntakeArm has a finite range of travel and uses Motion Magic (TalonFX on-con
 We have built dedicated tuning controls into **Test Mode** (in `Robot.java`) to make this safe and easy. 
 
 **Step 1: Set Position / Zero Encoders**
+You MUST do this first so the robot knows where horizontal is.
 1. Enable the robot in **Test Mode**.
-2. **If the arm is booted straight up (stowed):** Press the **Start** button on the Operator controller. This forces the encoder to the `STOWED_POSITION` (+90 deg).
-3. **If measuring manual zero:** Move the arm so it is perfectly horizontal, then press the **Back** button on the Operator controller to zero the encoders.
+2. **OPTION A (Easy Way):** If you let the arm boot up resting naturally against its straight-up (stowed) hard stop, simply press the **Start** button on the Operator controller. This forces the encoder to the `STOWED_POSITION` (+90 deg).
+3. **OPTION B (Manual Way):** If you physically moved the arm so it is perfectly horizontal before enabling, press the **Back** button on the Operator controller to zero the encoders (0 deg).
 
 **Step 2: Tune Gravity Feedforward ($kG$)**
 1. Ensure the arm is free to move.
