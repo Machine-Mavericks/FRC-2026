@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -26,13 +27,14 @@ public class HopperFeed extends SubsystemBase {
     public HopperFeed() {
         motor = new TalonFX(RobotMap.CANID.HOPPER_FEED);
 
-        motor.getConfigurator().apply(new TalonFXConfiguration()
-            .withOpenLoopRamps(
-                new OpenLoopRampsConfigs()
-                    .withVoltageOpenLoopRampPeriod(Seconds.of(10))
-                    .withDutyCycleOpenLoopRampPeriod(Seconds.of(10))
-            )
-        );
+        StatusCode status = motor.getConfigurator().apply(new TalonFXConfiguration()
+                .withOpenLoopRamps(
+                        new OpenLoopRampsConfigs()
+                                .withVoltageOpenLoopRampPeriod(Seconds.of(10))
+                                .withDutyCycleOpenLoopRampPeriod(Seconds.of(10))));
+        if (!status.isOK()) {
+            System.out.println("Could not apply config: " + status.getName());
+        }
 
         ShuffleboardTab tab = Shuffleboard.getTab("HopperFeed");
         speedEntry = tab.add("Feed Speed", RobotMap.HopperFeed.DEFAULT_SPEED)
@@ -43,7 +45,7 @@ public class HopperFeed extends SubsystemBase {
 
     @Override
     public void periodic() {
-       
+
     }
 
     /** Returns motor velocity in RPS — useful for diagnostics and smoke tests. */
@@ -51,11 +53,11 @@ public class HopperFeed extends SubsystemBase {
         return motor.getVelocity().getValueAsDouble();
     }
 
-    public void feed(){
+    public void feed() {
         motor.set(RobotMap.HopperFeed.DEFAULT_SPEED);
     }
 
-    public void stop(){
+    public void stop() {
         motor.set(0.0);
     }
 }

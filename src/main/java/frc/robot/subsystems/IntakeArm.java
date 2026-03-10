@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ForwardLimitValue;
@@ -51,7 +52,10 @@ public class IntakeArm extends SubsystemBase {
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         intakeArmMotorLeft.setControl(new Follower(intakeArmMotorRight.getDeviceID(), MotorAlignmentValue.Opposed));
-        intakeArmMotorRight.getConfigurator().apply(config);
+        StatusCode status = intakeArmMotorRight.getConfigurator().apply(config);
+        if (!status.isOK()) {
+            System.out.println("Could not apply config: " + status.getName());
+        }
 
         mmRequest = new MotionMagicVoltage(0.0);
     }
@@ -88,7 +92,9 @@ public class IntakeArm extends SubsystemBase {
         intakeArmMotorRight.set(0);
     }
 
-    /** Zero the encoder at the current position — call when arm is at a known home */
+    /**
+     * Zero the encoder at the current position — call when arm is at a known home
+     */
     public void zeroEncoder() {
         intakeArmMotorRight.setPosition(0.0);
     }
@@ -98,7 +104,9 @@ public class IntakeArm extends SubsystemBase {
         return intakeArmMotorRight.getForwardLimit().getValue() == ForwardLimitValue.ClosedToGround;
     }
 
-    /** Returns true if the reverse (retracted) hardware limit switch is triggered */
+    /**
+     * Returns true if the reverse (retracted) hardware limit switch is triggered
+     */
     public boolean isAtReverseLimit() {
         return intakeArmMotorRight.getReverseLimit().getValue() == ReverseLimitValue.ClosedToGround;
     }
