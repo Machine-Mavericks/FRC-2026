@@ -248,15 +248,17 @@ public class RobotMap {
     public static class IntakeArm {
         public static final double INTAKE_ARM_SPEED = 0.2;// was 0.5
         /**
-         * Maximum arm position in mechanism rotations (60 degrees) (fully
+         * Maximum arm position in mechanism rotations (0 degrees from horizontal)
+         * (fully
          * deployed/down) — TUNE
          */
-        public static final double FORWARD_SOFT_LIMIT = 60.0 / 360.0;
+        public static final double FORWARD_SOFT_LIMIT = 0.0 / 360.0;
         /**
-         * Minimum arm position in mechanism rotations (0 degrees) (fully retracted/up)
+         * Minimum arm position in mechanism rotations (-90 degrees from horizontal)
+         * (fully retracted/up)
          * — TUNE
          */
-        public static final double REVERSE_SOFT_LIMIT = 0.0;
+        public static final double REVERSE_SOFT_LIMIT = -90.0 / 360.0;
         /** Stator current limit (amps) to protect motor from stall damage */
         public static final double STATOR_CURRENT_LIMIT = 40.0;
 

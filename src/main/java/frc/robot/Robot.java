@@ -13,70 +13,83 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import frc.robot.utils.AlgaePositions;
 
 /**
- * The methods in this class are called automatically corresponding to each mode, as described in
- * the TimedRobot documentation. If you change the name of this class or the package after creating
+ * The methods in this class are called automatically corresponding to each
+ * mode, as described in
+ * the TimedRobot documentation. If you change the name of this class or the
+ * package after creating
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-  //private HardwareTestSuite m_testSuite;
+  // private HardwareTestSuite m_testSuite;
 
-
-  //private boolean isAlgaeTiltInitialized = false;
+  // private boolean isAlgaeTiltInitialized = false;
   /**
-   * This function is run when the robot is first started up and should be used for any
+   * This function is run when the robot is first started up and should be used
+   * for any
    * initialization code.
    */
   public Robot() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // Instantiate our RobotContainer. This will perform all our button bindings,
+    // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer(this);
 
-    // Build the hardware test suite (creates the "Hardware Tests" Shuffleboard tab).
-    //m_testSuite = new HardwareTestSuite();
+    // Build the hardware test suite (creates the "Hardware Tests" Shuffleboard
+    // tab).
+    // m_testSuite = new HardwareTestSuite();
   }
 
   /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+   * This function is called every 20 ms, no matter the mode. Use this for items
+   * like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and
    * SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // Runs the Scheduler. This is responsible for polling buttons, adding
+    // newly-scheduled
+    // commands, running already-scheduled commands, removing finished or
+    // interrupted commands,
+    // and running subsystem periodic() methods. This must be called from the
+    // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
-  ///** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  /// ** This autonomous runs the autonomous command selected by your {@link
+  /// RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    
 
     // Get and schedule the autonomous command
     // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     // if (m_autonomousCommand != null) {
-    //   edu.wpi.first.wpilibj2.command.CommandScheduler.getInstance().schedule(m_autonomousCommand);
+    // edu.wpi.first.wpilibj2.command.CommandScheduler.getInstance().schedule(m_autonomousCommand);
     // }
-   
+
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
   public void teleopInit() {
@@ -88,12 +101,13 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    //RobotContainer.odometry.EnableApriltagProcessing(true);
+    // RobotContainer.odometry.EnableApriltagProcessing(true);
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
   public void testInit() {
@@ -103,23 +117,39 @@ public class Robot extends TimedRobot {
 
   /**
    * Called periodically in Test mode.
-   * Press the OPERATOR START button to trigger the full hardware smoke-test sequence.
+   * Press the OPERATOR START button to trigger the full hardware smoke-test
+   * sequence.
    * Watch the "Hardware Tests" Shuffleboard tab for PASS / FAIL results.
    */
   @Override
   public void testPeriodic() {
-    // Rising-edge detection: getStartButtonPressed() returns true only on the first
-    // call after the button is pressed, preventing the test from being scheduled twice.
-    // if (RobotContainer.toolOp.getHID().getStartButtonPressed()) {
-    //   CommandScheduler.getInstance().schedule(m_testSuite.buildTestSequence());
-    // }
+    // IntakeArm Tuning Controls
+
+    // 1. Position Setup (Use these to synchronize the encoder before tuning)
+    if (RobotContainer.toolOp.back().getAsBoolean()) {
+      RobotContainer.intakeArm.zeroEncoder();
+      System.out.println("Test Mode: IntakeArm encoders zeroed (Horizontal)");
+    }
+    if (RobotContainer.toolOp.start().getAsBoolean()) {
+      RobotContainer.intakeArm.setStowedPosition();
+      System.out.println("Test Mode: IntakeArm encoders set to STOWED (-90 deg)");
+    }
+
+    // 2. Motion Magic Testing (Use these to test kG and kP)
+    if (RobotContainer.toolOp.getHID().getPOV() == 0) { // D-Pad Up
+      RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.STOWED_POSITION);
+    } else if (RobotContainer.toolOp.getHID().getPOV() == 180) { // D-Pad Down
+      RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.DEPLOYED_POSITION);
+    }
   }
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 }

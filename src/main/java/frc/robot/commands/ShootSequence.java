@@ -52,7 +52,7 @@ public class ShootSequence extends Command {
 
         // Use autoTrack's built-in alignment and speed check to determine when to fire
         if (RobotContainer.autoTrack.isReadyToShoot()) {
-            intakeArm.upIntakeArm(); // Feed exactly when ready
+            intakeArm.moveTo(frc.robot.RobotMap.IntakeArm.STOWED_POSITION); // Feed exactly when ready
             uptake.feedShooter();
         } else {
             intakeArm.stop(); // Wait for flywheels/alignment

@@ -180,21 +180,18 @@ public class RobotContainer {
 
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
-        //toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm, uptake)); // test next 
+        // toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm,
+        // uptake)); // test next
 
         // Intake control - toggle right bumper: first press deploys arm + runs intake,
         // second press stops intake and stows arm.
-<<<<<<< HEAD
-        toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm));
+        // toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); //
+        // test next
+        toolOp.leftBumper().whileTrue(new InstantCommand(() -> RobotContainer.intake.intake()));
+        toolOp.rightBumper().whileTrue(new InstantCommand(() -> RobotContainer.intake.outtake()));
 
-=======
-        //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
-        toolOp.leftBumper().whileTrue(new InstantCommand(()->RobotContainer.intake.intake()));
-        toolOp.rightBumper().whileTrue(new InstantCommand(()->RobotContainer.intake.outtake()));
-        
-        toolOp.leftBumper().onFalse(new InstantCommand(()->RobotContainer.intake.stop()));
-        toolOp.rightBumper().onFalse(new InstantCommand(()->RobotContainer.intake.stop()));
->>>>>>> 4503ac21cedb3b69daa49af237ee116b4674cf01
+        toolOp.leftBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
+        toolOp.rightBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
     }
 
     /**
@@ -203,18 +200,19 @@ public class RobotContainer {
      * 
      * @return the command to run in autonomous
      */
-    //public Command getAutonomousCommand() {
-        //return new AutoTrackGoal(); // this isn't right, we will pick a proper one later, but for now we just want
-                                    // to test that the command scheduling and subsystem default commands work in
-                                    // autonomous
+    // public Command getAutonomousCommand() {
+    // return new AutoTrackGoal(); // this isn't right, we will pick a proper one
+    // later, but for now we just want
+    // to test that the command scheduling and subsystem default commands work in
+    // autonomous
 
-        // Example: Move robot forward 1 meter, no rotation
-        // return new frc.robot.commands.MoveRobotRelative(
-        // 1.0, // maxSpeed
-        // 0.5, // maxAccel (used as maxRotSpeed)
-        // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
-        // );
-    //}
+    // Example: Move robot forward 1 meter, no rotation
+    // return new frc.robot.commands.MoveRobotRelative(
+    // 1.0, // maxSpeed
+    // 0.5, // maxAccel (used as maxRotSpeed)
+    // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
+    // );
+    // }
 
     /**
      * Helper: concatenate two int arrays into one (used to combine blue + red HUB

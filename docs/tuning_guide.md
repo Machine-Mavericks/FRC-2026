@@ -60,37 +60,44 @@ The independent left and right turrets need precise PID tuning to aim quickly wi
 
 The IntakeArm has a finite range of travel and uses Motion Magic (TalonFX on-controller closed-loop) to move to commanded positions. Software soft limits, stator current limiting, and optional hardware limit switches protect the mechanism.
 
-### 4a. Soft Limits (Range of Travel)
+### 4a. Zeroing and Soft Limits (Horizontal = 0)
+
+**Important Concept:** To properly calculate gravity feedforward, the arm's angle relative to gravity must be known. In this codebase, **0 rotations = PERFECTLY HORIZONTAL**.
 
 **Parameters to Tune (`RobotMap.IntakeArm`):**
-*   `FORWARD_SOFT_LIMIT` *(currently `20.0` rotations — **MUST TUNE**)* — motor rotations from home corresponding to the arm fully deployed (down). 
-    *   **How to measure:** With the arm at `REVERSE_SOFT_LIMIT` (home/retracted), zero the encoder via `zeroEncoder()`. Slowly drive the arm to its fully deployed position and read `currentPose` from Shuffleboard/Epilogue logs. Enter that rotation count here.
-*   `REVERSE_SOFT_LIMIT` *(currently `0.0` rotations)* — motor rotations at the fully retracted (home/stowed) position. If home is not naturally zero after zeroing, adjust accordingly.
+*   `FORWARD_SOFT_LIMIT` *(currently `90.0 / 360.0` rotations)* — motor rotations at the fully retracted (home/stowed) straight-up position.
+*   `REVERSE_SOFT_LIMIT` *(currently `0.0 / 360.0` rotations)* — motor rotations corresponding to the arm fully deployed (down). 
 
-> [!WARNING]
-> Until these are set from real measurements, the soft limits will not correctly protect the mechanism. Drive the arm very slowly the first time under power.
+### 4b. Tuning Procedure (using Test Mode)
 
-### 4b. Motion Magic PID Tuning
+We have built dedicated tuning controls into **Test Mode** (in `Robot.java`) to make this safe and easy. 
 
-Motion Magic gains are set inline in `IntakeArm.java` (not yet in `RobotMap`). Move them to `RobotMap.IntakeArm` once stable.
+**Step 1: Set Position / Zero Encoders**
+1. Enable the robot in **Test Mode**.
+2. **If the arm is booted straight up (stowed):** Press the **Start** button on the Operator controller. This forces the encoder to the `STOWED_POSITION` (+90 deg).
+3. **If measuring manual zero:** Move the arm so it is perfectly horizontal, then press the **Back** button on the Operator controller to zero the encoders.
+
+**Step 2: Tune Gravity Feedforward ($kG$)**
+1. Ensure the arm is free to move.
+2. In Phoenix Tuner X, find `Slot0` for the IntakeArm motors.
+3. Slowly increase `kG` (starting from 0.0).
+4. Find the *minimum* voltage value where `kG` alone can hold the arm horizontal against gravity without dropping. Record this value in `IntakeArm.java`.
+
+**Step 3: Tune Motion Magic PID**
+1. While still in Test Mode, use the **Operator D-Pad** to snap between positions:
+   * **D-Pad Up:** Move to `STOWED_POSITION`
+   * **D-Pad Down:** Move to `DEPLOYED_POSITION`
+2. Adjust `kP` (currently `12.0`) and `kD` (currently `0.1`) in `IntakeArm.java` until the arm snaps cleanly without violent overshoot or sluggishness.
 
 | Constant | Current Value | Description |
 |---|---|---|
+| `Slot0.kG` | `0.0` | Gravity feedforward — Voltage to hold arm horizontal (**MUST TUNE**) |
 | `Slot0.kP` | `12.0` | Proportional gain — increase if arm is sluggish, decrease if it oscillates |
 | `Slot0.kD` | `0.1` | Derivative gain — increase to dampen overshoot at end of motion |
 | `MotionMagicCruiseVelocity` | `5` rot/s | Max cruise velocity — reduce to slow arm travel |
 | `MotionMagicAcceleration` | `10` rot/s² | Ramp-up/down rate — reduce if arm jerks on start/stop |
 
-*Tip:* Use Phoenix Tuner X's "Motion Magic" plot to visualize the `commandedPose` vs `currentPose` traces. A good tune shows the position tracking without overshoot or oscillation.
-
-### 4c. Encoder Zeroing Procedure
-
-The arm encoder must be zeroed at a known reference position at the start of each match (or on robot enable). Call `IntakeArm.zeroEncoder()` when the arm is physically at the retracted/stowed hard stop.
-
-*   Consider calling `zeroEncoder()` during robot initialization if the arm homes against a hard stop on enable, or via an operator button before the match.
-*   If hardware limit switches are wired to the TalonFX's limit switch ports, `isAtReverseLimit()` can trigger auto-zeroing.
-
-### 4d. Stator Current Limit
+### 4c. Stator Current Limit
 
 **Parameter (`RobotMap.IntakeArm`):**
 *   `STATOR_CURRENT_LIMIT` *(currently `40.0` A)* — protects the motor from stall damage when the arm reaches a hard stop. Lower values provide more protection but reduce peak torque. `30–50 A` is a reasonable range for an arm mechanism.

@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ForwardLimitValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -41,6 +42,8 @@ public class IntakeArm extends SubsystemBase {
 
         configLeft.Slot0.kP = 12.0;
         configLeft.Slot0.kD = 0.1;
+        configLeft.Slot0.kG = 0.0; // TUNE: Voltage required to hold arm horizontal
+        configLeft.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         configLeft.MotionMagic.MotionMagicCruiseVelocity = 5;
         configLeft.MotionMagic.MotionMagicAcceleration = 10;
 
@@ -65,6 +68,8 @@ public class IntakeArm extends SubsystemBase {
 
         configRight.Slot0.kP = 12.0;
         configRight.Slot0.kD = 0.1;
+        configRight.Slot0.kG = 0.0; // TUNE: Voltage required to hold arm horizontal
+        configRight.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         configRight.MotionMagic.MotionMagicCruiseVelocity = 5;
         configRight.MotionMagic.MotionMagicAcceleration = 10;
 
@@ -149,10 +154,23 @@ public class IntakeArm extends SubsystemBase {
     }
 
     /**
-     * Zero the encoder at the current position — call when arm is at a known home
+     * IMPORTANT: With horizontal = 0, call this when the arm is PERFECTLY
+     * HORIZONTAL.
+     * Alternatively, if booting up in the Stowed/Up position, use
+     * setPosition(RobotMap.IntakeArm.STOWED_POSITION).
      */
     public void zeroEncoder() {
         intakeArmMotorRight.setPosition(0.0);
+        intakeArmMotorLeft.setPosition(0.0);
+    }
+
+    /**
+     * Set the encoder to the STOWED position. Call this if the robot boots up with
+     * the arm straight up.
+     */
+    public void setStowedPosition() {
+        intakeArmMotorRight.setPosition(RobotMap.IntakeArm.STOWED_POSITION);
+        intakeArmMotorLeft.setPosition(RobotMap.IntakeArm.STOWED_POSITION);
     }
 
     /** Returns true if the forward (deployed) hardware limit switch is triggered */
