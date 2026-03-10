@@ -37,12 +37,12 @@ public class RobotMap {
         public static final int SHOOTER = 20;
 
         // IntakeArm motors
-        public static final int INTAKE_ARM_RIGHT = 21;
-        public static final int INTAKE_ARM_LEFT = 22;
+        public static final int INTAKE_ARM_RIGHT = 23;
+        public static final int INTAKE_ARM_LEFT = 24;
 
         // Intake motors
-        public static final int INTAKE_MASTER = 23;
-        public static final int INTAKE_FOLLOWER = 24;
+        public static final int INTAKE_SPIN = 28;
+    
 
         // Uptake motors
         public static final int UPTAKE_MASTER = 25;
@@ -239,15 +239,15 @@ public class RobotMap {
      * Intake subsystem constants
      */
     public static class Intake {
-        public static final double INTAKE_SPEED = 0.8;
-        public static final double OUTTAKE_SPEED = -0.5;
+        public static final double INTAKE_SPEED = 0.8; // was 0.8
+        public static final double OUTTAKE_SPEED = -0.5; // was -0.5
     }
 
     /**
      * IntakeArm subsystem constants
      */
     public static class IntakeArm {
-        public static final double INTAKE_ARM_SPEED = 0.5;
+        public static final double INTAKE_ARM_SPEED = 0.2;// was 0.5
         /** Maximum arm position in motor rotations (fully deployed/down) — TUNE */
         public static final double FORWARD_SOFT_LIMIT = 20.0;
         /** Minimum arm position in motor rotations (fully retracted/up) — TUNE */
@@ -274,6 +274,6 @@ public class RobotMap {
      */
     public static class HopperFeed {
         /** Default feed speed (percent output, 0.0 – 1.0). Tunable via Shuffleboard. */
-        public static final double DEFAULT_SPEED = 0.5;
+        public static final double DEFAULT_SPEED = 0.0;// was 0.5 
     }
 }

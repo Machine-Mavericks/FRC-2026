@@ -52,8 +52,13 @@ public class IntakeArm extends SubsystemBase {
 
         intakeArmMotorLeft.setControl(new Follower(intakeArmMotorRight.getDeviceID(), MotorAlignmentValue.Opposed));
         intakeArmMotorRight.getConfigurator().apply(config);
+        
 
         mmRequest = new MotionMagicVoltage(0.0);
+
+        TalonFXConfiguration folowerConfig = new TalonFXConfiguration();
+        folowerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        intakeArmMotorLeft.getConfigurator().apply(folowerConfig); // for left motor
     }
 
     /**

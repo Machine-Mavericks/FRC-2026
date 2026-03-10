@@ -185,6 +185,7 @@ public class RobotContainer {
         // Intake control - toggle right bumper: first press deploys arm + runs intake,
         // second press stops intake and stows arm.
         toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm));
+
     }
 
     /**
@@ -193,8 +194,8 @@ public class RobotContainer {
      * 
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
-        return new AutoTrackGoal(); // this isn't right, we will pick a proper one later, but for now we just want
+    //public Command getAutonomousCommand() {
+        //return new AutoTrackGoal(); // this isn't right, we will pick a proper one later, but for now we just want
                                     // to test that the command scheduling and subsystem default commands work in
                                     // autonomous
 
@@ -204,7 +205,7 @@ public class RobotContainer {
         // 0.5, // maxAccel (used as maxRotSpeed)
         // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
         // );
-    }
+    //}
 
     /**
      * Helper: concatenate two int arrays into one (used to combine blue + red HUB

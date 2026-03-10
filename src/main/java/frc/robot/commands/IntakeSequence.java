@@ -14,7 +14,7 @@ import frc.robot.subsystems.IntakeSubsystem;
  */
 public class IntakeSequence extends Command {
 
-    private final IntakeSubsystem intake;
+   // private final IntakeSubsystem intake;
     private final IntakeArm intakeArm;
 
     /**
@@ -24,7 +24,7 @@ public class IntakeSequence extends Command {
      * @param intakeArm The intake arm subsystem to run.
      */
     public IntakeSequence(IntakeSubsystem intake, IntakeArm intakeArm) {
-        this.intake = intake;
+        //this.intake = intake;
         this.intakeArm = intakeArm;
 
         // Use addRequirements() here to declare subsystem dependencies.
@@ -35,7 +35,7 @@ public class IntakeSequence extends Command {
     @Override
     public void initialize() {
         intakeArm.moveTo(frc.robot.RobotMap.IntakeArm.DEPLOYED_POSITION);
-        intake.intake();
+        //intake.intake();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -47,7 +47,7 @@ public class IntakeSequence extends Command {
     // Stop rollers and stow arm when canceled (second button press).
     @Override
     public void end(boolean interrupted) {
-        intake.stop();
+       // intake.stop();
         // Return arm to stowed position via Motion Magic; do not call stop() on arm
         // here so the position hold remains active until the arm reaches home.
         intakeArm.moveTo(frc.robot.RobotMap.IntakeArm.STOWED_POSITION);

@@ -67,10 +67,10 @@ public class Robot extends TimedRobot {
     
 
     // Get and schedule the autonomous command
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    if (m_autonomousCommand != null) {
-      edu.wpi.first.wpilibj2.command.CommandScheduler.getInstance().schedule(m_autonomousCommand);
-    }
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // if (m_autonomousCommand != null) {
+    //   edu.wpi.first.wpilibj2.command.CommandScheduler.getInstance().schedule(m_autonomousCommand);
+    // }
    
   }
 
