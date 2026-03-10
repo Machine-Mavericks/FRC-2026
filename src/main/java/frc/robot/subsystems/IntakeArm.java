@@ -6,6 +6,7 @@ import com.ctre.phoenix6.signals.ForwardLimitValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.ReverseLimitValue;
+import com.revrobotics.spark.FeedbackSensor;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
@@ -18,47 +19,75 @@ public class IntakeArm extends SubsystemBase {
 
     TalonFX intakeArmMotorRight = new TalonFX(RobotMap.CANID.INTAKE_ARM_RIGHT);
     TalonFX intakeArmMotorLeft = new TalonFX(RobotMap.CANID.INTAKE_ARM_LEFT);
+
+    private static final double MECHANISM_RATIO = (12.0 / 58.0)*(27.0/56.0)*(16.0/40.0);
+
+
     @Logged
     private double commandedPose;
     @Logged
-    public double currentPose;
+    public double leftCurrentPose;
+    @Logged
+    public double rightCurrentPose;
     @Logged
     private double statorCurrent;
 
-    private final MotionMagicVoltage mmRequest;
+  
     // Local objects and variables here
     // These are for things that only belong to, and used by, the subsystem
 
     /** Place code here to initialize subsystem */
     public IntakeArm() {
-        TalonFXConfiguration config = new TalonFXConfiguration();
+        TalonFXConfiguration configLeft = new TalonFXConfiguration();
 
-        config.Slot0.kP = 12.0;
-        config.Slot0.kD = 0.1;
-        config.MotionMagic.MotionMagicCruiseVelocity = 5;
-        config.MotionMagic.MotionMagicAcceleration = 10;
+        configLeft.Slot0.kP = 12.0;
+        configLeft.Slot0.kD = 0.1;
+        configLeft.MotionMagic.MotionMagicCruiseVelocity = 5;
+        configLeft.MotionMagic.MotionMagicAcceleration = 10;
 
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        configLeft.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         // Soft limits to constrain the finite range of arm travel
-        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = RobotMap.IntakeArm.FORWARD_SOFT_LIMIT;
-        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = RobotMap.IntakeArm.REVERSE_SOFT_LIMIT;
+        configLeft.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        configLeft.SoftwareLimitSwitch.ForwardSoftLimitThreshold = RobotMap.IntakeArm.FORWARD_SOFT_LIMIT;
+        configLeft.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        configLeft.SoftwareLimitSwitch.ReverseSoftLimitThreshold = RobotMap.IntakeArm.REVERSE_SOFT_LIMIT;
 
         // Stator current limit to protect motor from stall at hard stops
-        config.CurrentLimits.StatorCurrentLimit = RobotMap.IntakeArm.STATOR_CURRENT_LIMIT;
-        config.CurrentLimits.StatorCurrentLimitEnable = true;
+        configLeft.CurrentLimits.StatorCurrentLimit = RobotMap.IntakeArm.STATOR_CURRENT_LIMIT;
+        configLeft.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        intakeArmMotorLeft.setControl(new Follower(intakeArmMotorRight.getDeviceID(), MotorAlignmentValue.Opposed));
-        intakeArmMotorRight.getConfigurator().apply(config);
-        
+        configLeft.Feedback.withSensorToMechanismRatio(1 / MECHANISM_RATIO);
 
-        mmRequest = new MotionMagicVoltage(0.0);
+        intakeArmMotorLeft.getConfigurator().apply(configLeft);
+    
 
-        TalonFXConfiguration folowerConfig = new TalonFXConfiguration();
-        folowerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        intakeArmMotorLeft.getConfigurator().apply(folowerConfig); // for left motor
+
+        TalonFXConfiguration configRight= new TalonFXConfiguration();
+
+        configRight.Slot0.kP = 12.0;
+        configRight.Slot0.kD = 0.1;
+        configRight.MotionMagic.MotionMagicCruiseVelocity = 5;
+        configRight.MotionMagic.MotionMagicAcceleration = 10;
+
+        configRight.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        // Soft limits to constrain the finite range of arm travel
+        configRight.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        configRight.SoftwareLimitSwitch.ForwardSoftLimitThreshold = RobotMap.IntakeArm.FORWARD_SOFT_LIMIT;
+        configRight.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        configRight.SoftwareLimitSwitch.ReverseSoftLimitThreshold = RobotMap.IntakeArm.REVERSE_SOFT_LIMIT;
+
+        // Stator current limit to protect motor from stall at hard stops
+        configRight.CurrentLimits.StatorCurrentLimit = RobotMap.IntakeArm.STATOR_CURRENT_LIMIT;
+        configRight.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        configRight.Feedback.withSensorToMechanismRatio(1 / MECHANISM_RATIO);
+
+        intakeArmMotorRight.getConfigurator().apply(configRight);
+    
+
+    
     }
 
     /**
@@ -67,7 +96,10 @@ public class IntakeArm extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        currentPose = intakeArmMotorRight.getPosition().getValueAsDouble();
+        leftCurrentPose = intakeArmMotorLeft.getPosition().getValueAsDouble();
+        statorCurrent = intakeArmMotorLeft.getStatorCurrent().getValueAsDouble();
+
+        rightCurrentPose = intakeArmMotorRight.getPosition().getValueAsDouble();
         statorCurrent = intakeArmMotorRight.getStatorCurrent().getValueAsDouble();
     }
 
@@ -77,8 +109,14 @@ public class IntakeArm extends SubsystemBase {
 
     /** Move to a specific position (rotations) using Motion Magic */
     public void moveTo(double position) {
-        commandedPose = position;
-        intakeArmMotorRight.setControl(mmRequest.withPosition(position));
+        double lowestAngle= Math.min(leftCurrentPose, rightCurrentPose);
+        double targetPos = lowestAngle + 50;
+        if (targetPos > 500){
+            targetPos = 500;// 2090
+        }
+        intakeArmMotorLeft.setPosition(targetPos);
+        intakeArmMotorRight.setPosition(targetPos);
+
     }
 
     public void downIntakeArm() {

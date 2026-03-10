@@ -243,21 +243,21 @@ public class HardwareTestSuite {
         return Commands.sequence(
             Commands.runOnce(() -> {
                 e_intakeArm.setString(RUNNING);
-                startPos[0] = RobotContainer.intakeArm.currentPose;
+                startPos[0] = RobotContainer.intakeArm.leftCurrentPose;
             }),
             Commands.runEnd(
                 () -> RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.STOWED_POSITION),
                 () -> { /* hold commanded position */ },
                 RobotContainer.intakeArm
             ).withTimeout(2.5)
-             .until(() -> Math.abs(RobotContainer.intakeArm.currentPose
+             .until(() -> Math.abs(RobotContainer.intakeArm.leftCurrentPose
                                    - RobotMap.IntakeArm.STOWED_POSITION) < 0.5),
             Commands.runOnce(() -> {
-                double err = Math.abs(RobotContainer.intakeArm.currentPose
+                double err = Math.abs(RobotContainer.intakeArm.leftCurrentPose
                                       - RobotMap.IntakeArm.STOWED_POSITION);
                 if (err < 2.0) {
                     recordPass(e_intakeArm,
-                            String.format("pos=%.2f rot (err=%.2f)", RobotContainer.intakeArm.currentPose, err));
+                            String.format("pos=%.2f rot (err=%.2f)", RobotContainer.intakeArm.leftCurrentPose, err));
                 } else {
                     recordFail(e_intakeArm,
                             String.format("err=%.2f rot (start=%.2f) — check encoder/motor", err, startPos[0]));
