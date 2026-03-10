@@ -42,7 +42,6 @@ public class RobotMap {
 
         // Intake motors
         public static final int INTAKE_SPIN = 28;
-    
 
         // Uptake motors
         public static final int UPTAKE_MASTER = 25;
@@ -248,9 +247,15 @@ public class RobotMap {
      */
     public static class IntakeArm {
         public static final double INTAKE_ARM_SPEED = 0.2;// was 0.5
-        /** Maximum arm position in motor rotations (fully deployed/down) — TUNE */
-        public static final double FORWARD_SOFT_LIMIT = 20.0;
-        /** Minimum arm position in motor rotations (fully retracted/up) — TUNE */
+        /**
+         * Maximum arm position in mechanism rotations (60 degrees) (fully
+         * deployed/down) — TUNE
+         */
+        public static final double FORWARD_SOFT_LIMIT = 60.0 / 360.0;
+        /**
+         * Minimum arm position in mechanism rotations (0 degrees) (fully retracted/up)
+         * — TUNE
+         */
         public static final double REVERSE_SOFT_LIMIT = 0.0;
         /** Stator current limit (amps) to protect motor from stall damage */
         public static final double STATOR_CURRENT_LIMIT = 40.0;
@@ -274,6 +279,6 @@ public class RobotMap {
      */
     public static class HopperFeed {
         /** Default feed speed (percent output, 0.0 – 1.0). Tunable via Shuffleboard. */
-        public static final double DEFAULT_SPEED = 0.0;// was 0.5 
+        public static final double DEFAULT_SPEED = 0.0;// was 0.5
     }
 }

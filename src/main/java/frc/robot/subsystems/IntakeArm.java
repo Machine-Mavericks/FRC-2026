@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ForwardLimitValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.ReverseLimitValue;
@@ -20,8 +21,7 @@ public class IntakeArm extends SubsystemBase {
     TalonFX intakeArmMotorRight = new TalonFX(RobotMap.CANID.INTAKE_ARM_RIGHT);
     TalonFX intakeArmMotorLeft = new TalonFX(RobotMap.CANID.INTAKE_ARM_LEFT);
 
-    private static final double MECHANISM_RATIO = (12.0 / 58.0)*(27.0/56.0)*(16.0/40.0);
-
+    private static final double MECHANISM_RATIO = (12.0 / 58.0) * (27.0 / 56.0) * (16.0 / 40.0);
 
     @Logged
     private double commandedPose;
@@ -32,7 +32,6 @@ public class IntakeArm extends SubsystemBase {
     @Logged
     private double statorCurrent;
 
-  
     // Local objects and variables here
     // These are for things that only belong to, and used by, the subsystem
 
@@ -46,6 +45,7 @@ public class IntakeArm extends SubsystemBase {
         configLeft.MotionMagic.MotionMagicAcceleration = 10;
 
         configLeft.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        configLeft.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         // Soft limits to constrain the finite range of arm travel
         configLeft.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
@@ -60,10 +60,8 @@ public class IntakeArm extends SubsystemBase {
         configLeft.Feedback.withSensorToMechanismRatio(1 / MECHANISM_RATIO);
 
         intakeArmMotorLeft.getConfigurator().apply(configLeft);
-    
 
-
-        TalonFXConfiguration configRight= new TalonFXConfiguration();
+        TalonFXConfiguration configRight = new TalonFXConfiguration();
 
         configRight.Slot0.kP = 12.0;
         configRight.Slot0.kD = 0.1;
@@ -85,9 +83,7 @@ public class IntakeArm extends SubsystemBase {
         configRight.Feedback.withSensorToMechanismRatio(1 / MECHANISM_RATIO);
 
         intakeArmMotorRight.getConfigurator().apply(configRight);
-    
 
-    
     }
 
     /**
@@ -107,31 +103,54 @@ public class IntakeArm extends SubsystemBase {
     // this is where rest of program can access functions to return
     // values or control the subsystem
 
+    private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
+
     /** Move to a specific position (rotations) using Motion Magic */
     public void moveTo(double position) {
-        double lowestAngle= Math.min(leftCurrentPose, rightCurrentPose);
-        double targetPos = lowestAngle + 50;
-        if (targetPos > 500){
-            targetPos = 500;// 2090
+        double currentPosForLimiting;
+        double targetPos;
+
+        if (position > leftCurrentPose && position > rightCurrentPose) {
+            // Moving positive: slowest motor is the one with the minimum position
+            currentPosForLimiting = Math.min(leftCurrentPose, rightCurrentPose);
+            // Limit the lead to at most 5 degrees (5.0 / 360.0 rotations) ahead of the
+            // slower motor
+            targetPos = Math.min(position, currentPosForLimiting + (5.0 / 360.0));
+        } else if (position < leftCurrentPose && position < rightCurrentPose) {
+            // Moving negative: slowest motor is the one with the maximum position
+            currentPosForLimiting = Math.max(leftCurrentPose, rightCurrentPose);
+            // Limit the lead to at most 5 degrees (5.0 / 360.0 rotations) behind the slower
+            // motor
+            targetPos = Math.max(position, currentPosForLimiting - (5.0 / 360.0));
+        } else {
+            // Motors straddle the target or are already there
+            targetPos = position;
         }
-        intakeArmMotorLeft.setPosition(targetPos);
-        intakeArmMotorRight.setPosition(targetPos);
 
+        intakeArmMotorLeft.setControl(m_mmReq.withPosition(targetPos));
+        intakeArmMotorRight.setControl(m_mmReq.withPosition(targetPos));
     }
 
-    public void downIntakeArm() {
-        intakeArmMotorRight.set(-RobotMap.IntakeArm.INTAKE_ARM_SPEED);
-    }
+    /*
+     * should be using moveTo() instead with
+     * frc.robot.RobotMap.IntakeArm.DEPLOYED_POSITION
+     * or frc.robot.RobotMap.IntakeArm.STOWED_POSITION
+     */
+    // public void downIntakeArm() {
+    // intakeArmMotorRight.set(-RobotMap.IntakeArm.INTAKE_ARM_SPEED);
+    // }
 
-    public void upIntakeArm() {
-        intakeArmMotorRight.set(RobotMap.IntakeArm.INTAKE_ARM_SPEED);
-    }
+    // public void upIntakeArm() {
+    // intakeArmMotorRight.set(RobotMap.IntakeArm.INTAKE_ARM_SPEED);
+    // }
 
     public void stop() {
         intakeArmMotorRight.set(0);
     }
 
-    /** Zero the encoder at the current position — call when arm is at a known home */
+    /**
+     * Zero the encoder at the current position — call when arm is at a known home
+     */
     public void zeroEncoder() {
         intakeArmMotorRight.setPosition(0.0);
     }
@@ -141,7 +160,9 @@ public class IntakeArm extends SubsystemBase {
         return intakeArmMotorRight.getForwardLimit().getValue() == ForwardLimitValue.ClosedToGround;
     }
 
-    /** Returns true if the reverse (retracted) hardware limit switch is triggered */
+    /**
+     * Returns true if the reverse (retracted) hardware limit switch is triggered
+     */
     public boolean isAtReverseLimit() {
         return intakeArmMotorRight.getReverseLimit().getValue() == ReverseLimitValue.ClosedToGround;
     }
