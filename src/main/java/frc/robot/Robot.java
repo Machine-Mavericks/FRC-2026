@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.tests.HardwareTestSuite;
+//import frc.robot.tests.HardwareTestSuite;
 //import frc.robot.commands.TiltAlgaeRemover;
 
 //import frc.robot.utils.AlgaePositions;
@@ -21,7 +21,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-  private HardwareTestSuite m_testSuite;
+  //private HardwareTestSuite m_testSuite;
 
 
   //private boolean isAlgaeTiltInitialized = false;
@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer(this);
 
     // Build the hardware test suite (creates the "Hardware Tests" Shuffleboard tab).
-    m_testSuite = new HardwareTestSuite();
+    //m_testSuite = new HardwareTestSuite();
   }
 
   /**
@@ -67,10 +67,10 @@ public class Robot extends TimedRobot {
     
 
     // Get and schedule the autonomous command
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    if (m_autonomousCommand != null) {
-      edu.wpi.first.wpilibj2.command.CommandScheduler.getInstance().schedule(m_autonomousCommand);
-    }
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // if (m_autonomousCommand != null) {
+    //   edu.wpi.first.wpilibj2.command.CommandScheduler.getInstance().schedule(m_autonomousCommand);
+    // }
    
   }
 
@@ -110,9 +110,9 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     // Rising-edge detection: getStartButtonPressed() returns true only on the first
     // call after the button is pressed, preventing the test from being scheduled twice.
-    if (RobotContainer.toolOp.getHID().getStartButtonPressed()) {
-      CommandScheduler.getInstance().schedule(m_testSuite.buildTestSequence());
-    }
+    // if (RobotContainer.toolOp.getHID().getStartButtonPressed()) {
+    //   CommandScheduler.getInstance().schedule(m_testSuite.buildTestSequence());
+    // }
   }
 
   /** This function is called once when the robot is first started up. */

@@ -180,11 +180,16 @@ public class RobotContainer {
 
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
-        toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm, uptake));
+        //toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm, uptake)); // test next 
 
         // Intake control - toggle right bumper: first press deploys arm + runs intake,
         // second press stops intake and stows arm.
-        toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm));
+        //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
+        toolOp.leftBumper().whileTrue(new InstantCommand(()->RobotContainer.intake.intake()));
+        toolOp.rightBumper().whileTrue(new InstantCommand(()->RobotContainer.intake.outtake()));
+        
+        toolOp.leftBumper().onFalse(new InstantCommand(()->RobotContainer.intake.stop()));
+        toolOp.rightBumper().onFalse(new InstantCommand(()->RobotContainer.intake.stop()));
     }
 
     /**
