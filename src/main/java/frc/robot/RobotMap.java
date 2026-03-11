@@ -260,7 +260,7 @@ public class RobotMap {
          */
         public static final double REVERSE_SOFT_LIMIT = -90.0 / 360.0;
         /** Stator current limit (amps) to protect motor from stall damage */
-        public static final double STATOR_CURRENT_LIMIT = 40.0;
+        public static final double STATOR_CURRENT_LIMIT = 20.0;
 
         /** Target position (rotations) when arm is deployed for intaking — TUNE */
         public static final double DEPLOYED_POSITION = FORWARD_SOFT_LIMIT;
