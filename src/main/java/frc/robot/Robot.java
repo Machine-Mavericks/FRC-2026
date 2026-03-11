@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 //import frc.robot.utils.AlgaePositions;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * The methods in this class are called automatically corresponding to each
  * mode, as described in
@@ -23,6 +26,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+  private final SendableChooser<String> m_testChooser = new SendableChooser<>();
   // private HardwareTestSuite m_testSuite;
 
   // private boolean isAlgaeTiltInitialized = false;
@@ -36,6 +40,13 @@ public class Robot extends TimedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer(this);
+
+    m_testChooser.setDefaultOption("IntakeArm", "IntakeArm");
+    m_testChooser.addOption("Turrets", "Turrets");
+    m_testChooser.addOption("Shooter", "Shooter");
+    m_testChooser.addOption("Uptake", "Uptake");
+    m_testChooser.addOption("IntakeSubsystem", "IntakeSubsystem");
+    SmartDashboard.putData("Test Subsystem", m_testChooser);
 
     // Build the hardware test suite (creates the "Hardware Tests" Shuffleboard
     // tab).
@@ -123,44 +134,83 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    // --- IntakeArm Tuning Controls ---
+    String testSubsystem = m_testChooser.getSelected();
+    if (testSubsystem == null) return;
 
-    // 1. Position Setup (Use these to synchronize the encoder before tuning)
-    if (RobotContainer.toolOp.back().getAsBoolean()) {
-      RobotContainer.intakeArm.zeroEncoder();
-      System.out.println("Test Mode: IntakeArm encoders zeroed (Horizontal)");
-    }
-    if (RobotContainer.toolOp.start().getAsBoolean()) {
-      RobotContainer.intakeArm.setStowedPosition();
-      System.out.println("Test Mode: IntakeArm encoders set to STOWED (-90 deg)");
-    }
+    switch (testSubsystem) {
+      case "IntakeArm":
+        // --- IntakeArm Tuning Controls ---
+        // 1. Position Setup (Use these to synchronize the encoder before tuning)
+        if (RobotContainer.toolOp.back().getAsBoolean()) {
+          RobotContainer.intakeArm.zeroEncoder();
+          System.out.println("Test Mode: IntakeArm encoders zeroed (Horizontal)");
+        }
+        if (RobotContainer.toolOp.start().getAsBoolean()) {
+          RobotContainer.intakeArm.setStowedPosition();
+          System.out.println("Test Mode: IntakeArm encoders set to STOWED (-90 deg)");
+        }
 
-    // 2. Motion Magic Testing (Use these to test kG and kP)
-    if (RobotContainer.toolOp.getHID().getPOV() == 0) { // D-Pad Up
-      RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.STOWED_POSITION);
-    } else if (RobotContainer.toolOp.getHID().getPOV() == 180) { // D-Pad Down
-      RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.DEPLOYED_POSITION);
-    }
+        // 2. Motion Magic Testing (Use these to test kG and kP)
+        if (RobotContainer.toolOp.getHID().getPOV() == 0) { // D-Pad Up
+          RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.STOWED_POSITION);
+        } else if (RobotContainer.toolOp.getHID().getPOV() == 180) { // D-Pad Down
+          RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.DEPLOYED_POSITION);
+        }
+        break;
 
-    // --- Turret Tuning Controls ---
+      case "Turrets":
+        // --- Turret Tuning Controls ---
+        // 1. Position Setup (Zero encoders when pointing straight ahead)
+        if (RobotContainer.toolOp.leftBumper().getAsBoolean()) {
+          RobotContainer.turretLeft.resetEncoder();
+          RobotContainer.turretRight.resetEncoder();
+          System.out.println("Test Mode: Turret encoders zeroed (Straight Ahead)");
+        }
 
-    // 1. Position Setup (Zero encoders when pointing straight ahead)
-    if (RobotContainer.toolOp.leftBumper().getAsBoolean()) {
-      RobotContainer.turretLeft.resetEncoder();
-      RobotContainer.turretRight.resetEncoder();
-      System.out.println("Test Mode: Turret encoders zeroed (Straight Ahead)");
-    }
+        // 2. PID Tracking Testing (Snap to angles)
+        if (RobotContainer.toolOp.a().getAsBoolean()) {
+          RobotContainer.turretLeft.setTargetAngle(0.0);
+          RobotContainer.turretRight.setTargetAngle(0.0);
+        } else if (RobotContainer.toolOp.getHID().getPOV() == 270) { // D-Pad Left
+          RobotContainer.turretLeft.setTargetAngle(RobotMap.Turret.MIN_ROTATION_DEGREES);
+          RobotContainer.turretRight.setTargetAngle(RobotMap.Turret.MIN_ROTATION_DEGREES);
+        } else if (RobotContainer.toolOp.getHID().getPOV() == 90) { // D-Pad Right
+          RobotContainer.turretLeft.setTargetAngle(RobotMap.Turret.MAX_ROTATION_DEGREES);
+          RobotContainer.turretRight.setTargetAngle(RobotMap.Turret.MAX_ROTATION_DEGREES);
+        }
+        break;
 
-    // 2. PID Tracking Testing (Snap to angles)
-    if (RobotContainer.toolOp.a().getAsBoolean()) {
-      RobotContainer.turretLeft.setTargetAngle(0.0);
-      RobotContainer.turretRight.setTargetAngle(0.0);
-    } else if (RobotContainer.toolOp.getHID().getPOV() == 270) { // D-Pad Left
-      RobotContainer.turretLeft.setTargetAngle(RobotMap.Turret.MIN_ROTATION_DEGREES);
-      RobotContainer.turretRight.setTargetAngle(RobotMap.Turret.MIN_ROTATION_DEGREES);
-    } else if (RobotContainer.toolOp.getHID().getPOV() == 90) { // D-Pad Right
-      RobotContainer.turretLeft.setTargetAngle(RobotMap.Turret.MAX_ROTATION_DEGREES);
-      RobotContainer.turretRight.setTargetAngle(RobotMap.Turret.MAX_ROTATION_DEGREES);
+      case "Shooter":
+        // --- Shooter Tuning Controls ---
+        if (RobotContainer.toolOp.y().getAsBoolean()) {
+          RobotContainer.shooter.shooterSpeed(60.0); // Test target speed: 60 RPS
+        } else {
+          RobotContainer.shooter.stop();
+        }
+        break;
+
+      case "Uptake":
+        // --- Uptake Tuning Controls ---
+        if (RobotContainer.toolOp.rightBumper().getAsBoolean()) {
+          RobotContainer.uptake.feedShooter();
+        } else {
+          RobotContainer.uptake.stop();
+        }
+        break;
+
+      case "IntakeSubsystem":
+        // --- IntakeSubsystem Tuning Controls ---
+        if (RobotContainer.toolOp.leftBumper().getAsBoolean()) {
+          RobotContainer.intake.intake();
+        } else if (RobotContainer.toolOp.rightBumper().getAsBoolean()) {
+          RobotContainer.intake.outtake();
+        } else {
+          RobotContainer.intake.stop();
+        }
+        break;
+
+      default:
+        break;
     }
   }
 
