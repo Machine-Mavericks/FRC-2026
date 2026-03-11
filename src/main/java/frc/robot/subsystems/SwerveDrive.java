@@ -438,6 +438,18 @@ public class SwerveDrive extends SubsystemBase {
 
 
 
+    /**
+     * Returns the average absolute drive motor velocity across all four swerve
+     * modules in wheel RPS. Used by the hardware smoke-test suite to confirm
+     * the drive system is responding.
+     */
+    public double getAverageDriveVelocityRPS() {
+        return (Math.abs(m_LFDriveMotor.getVelocity().getValueAsDouble())
+              + Math.abs(m_RFDriveMotor.getVelocity().getValueAsDouble())
+              + Math.abs(m_LRDriveMotor.getVelocity().getValueAsDouble())
+              + Math.abs(m_RRDriveMotor.getVelocity().getValueAsDouble())) / 4.0;
+    }
+
     // returns positions of all swerve modules
     public SwerveModulePosition[] GetSwerveDistances() {
  

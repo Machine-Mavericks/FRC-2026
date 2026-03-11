@@ -13,115 +13,129 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
 
 public class Shooter extends SubsystemBase {
-    
-    //TODO change motor id
-    TalonFX shooterMotor = new TalonFX(20);
-    
-    
-    public double velocity;
-    
-    public double wheelRPM;
-    
-    public double commanded;
-    
-    public double currentSpeed;
 
-    public double targetSpeed;
+  TalonFX shooterMotor;
 
-    /**
+  public double velocity;
+
+  public double wheelRPM;
+
+  public double commanded;
+
+  public double currentSpeed;
+
+  public double targetSpeed;
+
+  /**
    * Total ratio from motor to flywheel <br/>
    * Represents how many wheel rotations occur for one motor rotation <br/>
    * 12T pulley to 24T pulley, then 30T gear to 26T gear
    */
-    private static final double MECHANISM_RATIO = (12 / 24d) * (30 / 26d);
+  private static final double MECHANISM_RATIO = (12 / 24d) * (30 / 26d);
 
-    
   /**
    * Feedforward value, in RPS per Volt
    */
   private static final double FEEDFORWARD = 0.013;
 
   public Shooter() {
+    this(false);
+  }
 
-    TalonFXConfiguration config = new TalonFXConfiguration()
-      .withFeedback(
-        new FeedbackConfigs()
-          // CTRE Needs reduction ration (N:1) instead of actual ratio
-          .withSensorToMechanismRatio(1 / MECHANISM_RATIO)
-      ).withMotorOutput(
-        new MotorOutputConfigs()
-        .withInverted(InvertedValue.Clockwise_Positive)
-        .withNeutralMode(NeutralModeValue.Coast)
-      ).withSlot0(new Slot0Configs()
-        .withKP(1.25) // was 1.25
-        .withKI(2.0)
-        .withKD(0)
-        .withKV(FEEDFORWARD)
-      ).withClosedLoopRamps(new ClosedLoopRampsConfigs()
-        .withVoltageClosedLoopRampPeriod(Seconds.of(1))
-      );
+  /**
+   * Create a Shooter, optionally skipping hardware initialization.
+   */
+  public Shooter(boolean skipHardware) {
+    if (!skipHardware) {
+      shooterMotor = new TalonFX(RobotMap.CANID.SHOOTER);
+
+      TalonFXConfiguration config = new TalonFXConfiguration()
+          .withFeedback(
+              new FeedbackConfigs()
+                  // CTRE Needs reduction ration (N:1) instead of actual ratio
+                  .withSensorToMechanismRatio(1 / MECHANISM_RATIO))
+          .withMotorOutput(new MotorOutputConfigs()
+              .withInverted(InvertedValue.Clockwise_Positive).withNeutralMode(NeutralModeValue.Coast))
+          .withSlot0(new Slot0Configs().withKP(1.25) // was 1.25
+              .withKI(2.0).withKD(0).withKV(FEEDFORWARD))
+          .withClosedLoopRamps(new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Seconds.of(1)));
 
       shooterMotor.getConfigurator().apply(config);
+    } else {
+      shooterMotor = null;
+    }
   }
 
   public void shooterSpeed(double speed) {
-    if (speed < 15) { // in RPS
-      shooterMotor.set(0);
-    } else {
-      shooterMotor.setControl(new VelocityVoltage(speed));
+    if (shooterMotor != null) {
+      if (speed < 15) { // in RPS
+        shooterMotor.set(0);
+      } else {
+        shooterMotor.setControl(new VelocityVoltage(speed));
+      }
     }
 
+    // Always update bookkeeping fields even when hardware is absent
     commanded = speed;
   }
 
-  public void shooterSpeed() {
-    targetSpeed = CalculateSpeed(3.0);
-    shooterMotor.setControl(new VelocityVoltage(targetSpeed));
-  }
-
   public void stop() {
-    shooterMotor.set(0);
-    
+    if (shooterMotor != null) {
+      shooterMotor.set(0);
+    }
+
     commanded = 0;
   }
 
   public double CalculateSpeed(double distance) { // saying its metres
     double x = distance;
-    return 2.9382 * x*x -7.1015 * x + 51.427;
+    return 2.9382 * x * x - 7.1015 * x + 51.427;
   }
-
 
   @Override
   public void periodic() {
+    if (shooterMotor != null) {
+      currentSpeed = shooterMotor.get();
 
-    currentSpeed = shooterMotor.get();
+      // Get velocity in rotations per second (RPS) from the Motor
+      double velocity = shooterMotor.getVelocity().getValueAsDouble();
+      double wheelRPM = velocity * 60;
 
-    // Get velocity in rotations per second (RPS) from the Motor
-    double velocity = shooterMotor.getVelocity().getValueAsDouble();
-    double wheelRPM = velocity*60;
-
-    this.velocity = velocity;
-    this.wheelRPM = wheelRPM;
+      this.velocity = velocity;
+      this.wheelRPM = wheelRPM;
+    } else {
+      // No hardware: keep existing internal values
+    }
   }
 
-  //IDK if we are actually gonna do simulation but ill leave it here just in case 
+  // IDK if we are actually gonna do simulation but ill leave it here just in case
   @Override
   public void simulationPeriodic() {
     // Code here would run each cycle while simulating the robot.
   }
 
   public double getBolts() {
-    return shooterMotor.getMotorVoltage().getValueAsDouble();
+    if (shooterMotor != null) {
+      return shooterMotor.getMotorVoltage().getValueAsDouble();
+    }
+    return 0.0;
   }
 
   public double getBusVolts() {
-    return shooterMotor.getSupplyVoltage().getValueAsDouble();
+    if (shooterMotor != null) {
+      return shooterMotor.getSupplyVoltage().getValueAsDouble();
+    }
+    return 0.0;
   }
 
   public double getCurrent() {
-    return shooterMotor.getStatorCurrent().getValueAsDouble();
+    if (shooterMotor != null) {
+      return shooterMotor.getStatorCurrent().getValueAsDouble();
+    }
+    return 0.0;
   }
 
   public double getVelocity() {
