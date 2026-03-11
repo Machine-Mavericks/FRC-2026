@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -26,13 +28,19 @@ public class HopperFeed extends SubsystemBase {
     public HopperFeed() {
         motor = new TalonFX(RobotMap.CANID.HOPPER_FEED);
 
-        motor.getConfigurator().apply(new TalonFXConfiguration()
-            .withOpenLoopRamps(
-                new OpenLoopRampsConfigs()
-                    .withVoltageOpenLoopRampPeriod(Seconds.of(10))
-                    .withDutyCycleOpenLoopRampPeriod(Seconds.of(10))
-            )
-        );
+        // motor.getConfigurator().apply(new TalonFXConfiguration()
+        //     .withOpenLoopRamps(
+        //         new OpenLoopRampsConfigs()
+        //             .withVoltageOpenLoopRampPeriod(Seconds.of(10))
+        //             .withDutyCycleOpenLoopRampPeriod(Seconds.of(10))
+        //     )
+        // );
+
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 1;
+        config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        motor.getConfigurator().apply(config);
 
         ShuffleboardTab tab = Shuffleboard.getTab("HopperFeed");
         speedEntry = tab.add("Feed Speed", RobotMap.HopperFeed.DEFAULT_SPEED)

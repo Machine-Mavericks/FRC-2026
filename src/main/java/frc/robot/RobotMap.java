@@ -197,13 +197,13 @@ public class RobotMap {
          * actual
          * robot
          */
-        public static final double SHOOTER_LIMELIGHT_MOUNT_HEIGHT_M = 0.60;
+        public static final double SHOOTER_LIMELIGHT_MOUNT_HEIGHT_M = 0.56;
         /**
          * Upward tilt angle of Shooter Limelight from horizontal (degrees) — measure on
          * actual
          * robot
          */
-        public static final double SHOOTER_LIMELIGHT_MOUNT_ANGLE_DEG = 30.0;
+        public static final double SHOOTER_LIMELIGHT_MOUNT_ANGLE_DEG = 25.0;// this could be wrong
 
         // --------------- Limelight 3D Poses (OVERRIDE WEB UI) ---------------
         // These arrays configure the physical location of the cameras relative
