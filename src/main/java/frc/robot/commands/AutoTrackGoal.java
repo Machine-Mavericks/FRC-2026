@@ -221,8 +221,9 @@ public class AutoTrackGoal extends Command {
         }
 
         if (RobotContainer.hubTargeting.isHubTagVisible()) {
-            // In direct mode, also require that the camera confirms we're aimed correctly
-            return turretsOnTarget && RobotContainer.hubTargeting.isAimedAtHub();
+            // In direct mode, we just need the turrets to be on target since they track
+            // independently
+            return turretsOnTarget;
         }
 
         // In field-coordinate mode, just check turret setpoints

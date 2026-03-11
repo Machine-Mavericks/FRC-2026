@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Uptake;
+import frc.robot.subsystems.HopperFeed;
 
 /**
  * Automates the process of shooting a ball by spinning the shooter flywheels
@@ -14,20 +15,23 @@ public class ShootSequence extends Command {
 
     private final Shooter shooter;
     private final Uptake uptake;
+    private final HopperFeed hopperFeed;
 
     /**
      * Creates a new ShootSequence.
      *
-     * @param shooter The shooter subsystem to run.
-     * @param uptake  The uptake subsystem to feed balls into the shooter
-     *                flywheels.
+     * @param shooter    The shooter subsystem to run.
+     * @param uptake     The uptake subsystem to feed balls into the shooter
+     *                   flywheels.
+     * @param hopperFeed The hopper feed subsystem to feed balls into the uptake.
      */
-    public ShootSequence(Shooter shooter, Uptake uptake) {
+    public ShootSequence(Shooter shooter, Uptake uptake, HopperFeed hopperFeed) {
         this.shooter = shooter;
         this.uptake = uptake;
+        this.hopperFeed = hopperFeed;
 
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(shooter, uptake);
+        addRequirements(shooter, uptake, hopperFeed);
     }
 
     // Called when the command is initially scheduled.
@@ -36,6 +40,7 @@ public class ShootSequence extends Command {
         // We calculate and command the target RPM based on Limelight distance
         shooter.shooterSpeed(RobotContainer.autoTrack.getCalculatedShooterRPM());
         uptake.stop();
+        hopperFeed.stop();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -48,8 +53,10 @@ public class ShootSequence extends Command {
         // Use autoTrack's built-in alignment and speed check to determine when to fire
         if (RobotContainer.autoTrack.isReadyToShoot()) {
             uptake.feedShooter();
+            hopperFeed.feed();
         } else {
             uptake.stop();
+            hopperFeed.stop();
         }
     }
 
@@ -58,6 +65,7 @@ public class ShootSequence extends Command {
     public void end(boolean interrupted) {
         shooter.stop();
         uptake.stop();
+        hopperFeed.stop();
     }
 
     // Returns true when the command should end.
