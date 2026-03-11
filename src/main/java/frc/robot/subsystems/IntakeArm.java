@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -131,6 +132,11 @@ public class IntakeArm extends SubsystemBase {
             // Motors straddle the target or are already there
             targetPos = position;
         }
+
+        // Clamp the target position to prevent the closed-loop controller from driving
+        // into the hardware/software limits
+        targetPos = MathUtil.clamp(targetPos, RobotMap.IntakeArm.REVERSE_SOFT_LIMIT,
+                RobotMap.IntakeArm.FORWARD_SOFT_LIMIT);
 
         intakeArmMotorLeft.setControl(m_mmReq.withPosition(targetPos));
         intakeArmMotorRight.setControl(m_mmReq.withPosition(targetPos));
