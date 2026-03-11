@@ -110,13 +110,13 @@ public class RobotContainer {
         if (frc.robot.RobotMap.Features.ENABLE_LEFT_TURRET) {
             shooter = new Shooter();
             turretLeft = new TurretLeft();
-            uptake = new Uptake();
         } else {
             // Left turret hardware missing -> provide software stubs
             shooter = new ShooterDisabled();
             turretLeft = new TurretDisabled();
-            uptake = new UptakeDisabled();
         }
+        
+        uptake = new Uptake(false);
 
         // Right turret (present) and other subsystems
         turretRight = new TurretRight();
@@ -185,10 +185,10 @@ public class RobotContainer {
         // Intake control - toggle right bumper: first press deploys arm + runs intake,
         // second press stops intake and stows arm.
         //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
-        toolOp.leftBumper().whileTrue(new InstantCommand(()->RobotContainer.hopperFeed.feed()));
+        toolOp.leftBumper().whileTrue(new InstantCommand(()->RobotContainer.uptake.feedShooter()));
         //toolOp.rightBumper().whileTrue(new InstantCommand(()->RobotContainer.intake.outtake()));
 
-        toolOp.leftBumper().onFalse(new InstantCommand(()->RobotContainer.hopperFeed.stop()));
+        toolOp.leftBumper().onFalse(new InstantCommand(()->RobotContainer.uptake.stop()));
         //toolOp.rightBumper().onFalse(new InstantCommand(()->RobotContainer.intake.stop()));
     }
 

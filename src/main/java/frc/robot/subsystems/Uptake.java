@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -27,6 +29,13 @@ public class Uptake extends SubsystemBase {
             masterMotor = new TalonFX(RobotMap.CANID.UPTAKE_MASTER);
             followerMotor = new TalonFX(RobotMap.CANID.UPTAKE_FOLLOWER);
 
+            TalonFXConfiguration config = new TalonFXConfiguration();
+            config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 1;
+            config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
+            config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+           masterMotor.getConfigurator().apply(config);
+           followerMotor.getConfigurator().apply(config);
+
             // Geared 9:1, follower follows master
             followerMotor.setControl(new Follower(masterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
         } else {
@@ -39,18 +48,16 @@ public class Uptake extends SubsystemBase {
      * Runs the uptake forward to feed a ball into the shooter.
      */
     public void feedShooter() {
-        if (masterMotor != null) {
-            masterMotor.set(RobotMap.Uptake.UPTAKE_SPEED);
-        }
+         masterMotor.set(RobotMap.Uptake.UPTAKE_SPEED);
+        
     }
 
     /**
      * Stops the uptake motors.
      */
     public void stop() {
-        if (masterMotor != null) {
+       
             masterMotor.set(0.0);
-        }
     }
 
     /** Returns master motor velocity in RPS — useful for diagnostics and smoke tests. Returns 0 if hardware is absent. */
