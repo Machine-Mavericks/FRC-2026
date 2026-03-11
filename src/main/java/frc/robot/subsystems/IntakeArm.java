@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -99,10 +100,16 @@ public class IntakeArm extends SubsystemBase {
     @Override
     public void periodic() {
         leftCurrentPose = intakeArmMotorLeft.getPosition().getValueAsDouble();
-        statorCurrent = intakeArmMotorLeft.getStatorCurrent().getValueAsDouble();
+        double leftStatorCurrent = intakeArmMotorLeft.getStatorCurrent().getValueAsDouble();
 
         rightCurrentPose = intakeArmMotorRight.getPosition().getValueAsDouble();
-        statorCurrent = intakeArmMotorRight.getStatorCurrent().getValueAsDouble();
+        double rightStatorCurrent = intakeArmMotorRight.getStatorCurrent().getValueAsDouble();
+
+        SmartDashboard.putNumber("Arm/leftPosition", leftCurrentPose);
+        SmartDashboard.putNumber("Arm/rightPosition", rightCurrentPose);
+        SmartDashboard.putNumber("Arm/rightCurrent", leftStatorCurrent);
+        SmartDashboard.putNumber("Arm/leftCurrent", rightStatorCurrent);
+
     }
 
     // place special subsystem methods here
