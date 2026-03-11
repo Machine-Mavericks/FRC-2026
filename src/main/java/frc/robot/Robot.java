@@ -123,7 +123,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    // IntakeArm Tuning Controls
+    // --- IntakeArm Tuning Controls ---
 
     // 1. Position Setup (Use these to synchronize the encoder before tuning)
     if (RobotContainer.toolOp.back().getAsBoolean()) {
@@ -140,6 +140,27 @@ public class Robot extends TimedRobot {
       RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.STOWED_POSITION);
     } else if (RobotContainer.toolOp.getHID().getPOV() == 180) { // D-Pad Down
       RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.DEPLOYED_POSITION);
+    }
+
+    // --- Turret Tuning Controls ---
+
+    // 1. Position Setup (Zero encoders when pointing straight ahead)
+    if (RobotContainer.toolOp.leftBumper().getAsBoolean()) {
+      RobotContainer.turretLeft.resetEncoder();
+      RobotContainer.turretRight.resetEncoder();
+      System.out.println("Test Mode: Turret encoders zeroed (Straight Ahead)");
+    }
+
+    // 2. PID Tracking Testing (Snap to angles)
+    if (RobotContainer.toolOp.a().getAsBoolean()) {
+      RobotContainer.turretLeft.setTargetAngle(0.0);
+      RobotContainer.turretRight.setTargetAngle(0.0);
+    } else if (RobotContainer.toolOp.getHID().getPOV() == 270) { // D-Pad Left
+      RobotContainer.turretLeft.setTargetAngle(RobotMap.Turret.MIN_ROTATION_DEGREES);
+      RobotContainer.turretRight.setTargetAngle(RobotMap.Turret.MIN_ROTATION_DEGREES);
+    } else if (RobotContainer.toolOp.getHID().getPOV() == 90) { // D-Pad Right
+      RobotContainer.turretLeft.setTargetAngle(RobotMap.Turret.MAX_ROTATION_DEGREES);
+      RobotContainer.turretRight.setTargetAngle(RobotMap.Turret.MAX_ROTATION_DEGREES);
     }
   }
 
