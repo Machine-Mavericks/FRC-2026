@@ -54,6 +54,23 @@ The independent left and right turrets need precise PID tuning to aim quickly wi
 *   `LEFT_TURRET_X_OFFSET`, `LEFT_TURRET_Y_OFFSET`, etc: Used for Odometry fallback targeting. Measure the physical distance from the exact center of the robot to the center of rotation for each turret.
 *   `kP, kI, kD`: Standard PID gains. The current values are placeholders. Tune these using Phoenix Tuner first to ensure the turrets snap to their targets without excessive jitter.
 
+### 3a. Tuning Procedure (using Test Mode)
+
+We have built dedicated tuning controls into **Test Mode** (in `Robot.java`) to make this safe and easy.
+
+**Step 1: Set Position / Zero Encoders**
+You MUST do this first so the robot knows where straight ahead is.
+1. Enable the robot in **Test Mode**.
+2. Manually rotate the turrets so they are pointing perfectly straight ahead.
+3. Press the **Left Bumper** on the Operator controller to zero the encoders (0 deg).
+
+**Step 2: Tune PID Gains**
+1. While still in Test Mode, use the **Operator A Button and D-Pad** to snap between positions:
+   * **A Button:** Move to `0.0` (Center)
+   * **D-Pad Left:** Move to `MIN_ROTATION_DEGREES` (-90 deg)
+   * **D-Pad Right:** Move to `MAX_ROTATION_DEGREES` (90 deg)
+2. Adjust `kP` (currently `0.05`), `kI` (currently `0.0`), and `kD` (currently `0.001`) in `RobotMap.Turret` until the turrets snap cleanly without violent overshoot or sluggishness.
+
 ---
 
 ## 4. IntakeArm & Uptake Tuning
