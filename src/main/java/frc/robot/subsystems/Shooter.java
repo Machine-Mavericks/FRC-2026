@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -63,7 +64,10 @@ public class Shooter extends SubsystemBase {
               .withKI(2.0).withKD(0).withKV(FEEDFORWARD))
           .withClosedLoopRamps(new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Seconds.of(1)));
 
-      shooterMotor.getConfigurator().apply(config);
+      StatusCode status = shooterMotor.getConfigurator().apply(config);
+      if (!status.isOK()) {
+        System.out.println("Could not apply config: " + status.getName());
+      }
     } else {
       shooterMotor = null;
     }
