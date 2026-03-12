@@ -185,11 +185,17 @@ public class RobotContainer {
         // Intake control - toggle right bumper: first press deploys arm + runs intake,
         // second press stops intake and stows arm.
         //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
-        toolOp.leftBumper().whileTrue(new InstantCommand(()->RobotContainer.uptake.feedShooter()));
-        //toolOp.rightBumper().whileTrue(new InstantCommand(()->RobotContainer.intake.outtake()));
+        toolOp.leftBumper().whileTrue(new InstantCommand(()->{
+            RobotContainer.uptake.feedShooter();
+            RobotContainer.hopperFeed.feed();
+        }));
+        toolOp.rightBumper().whileTrue(new InstantCommand(()->RobotContainer.intake.intake()));
 
-        toolOp.leftBumper().onFalse(new InstantCommand(()->RobotContainer.uptake.stop()));
-        //toolOp.rightBumper().onFalse(new InstantCommand(()->RobotContainer.intake.stop()));
+        toolOp.leftBumper().onFalse(new InstantCommand(()->{
+            RobotContainer.uptake.stop();
+            RobotContainer.hopperFeed.stop();
+        }));
+        toolOp.rightBumper().onFalse(new InstantCommand(()->RobotContainer.intake.stop()));
     }
 
     /**
