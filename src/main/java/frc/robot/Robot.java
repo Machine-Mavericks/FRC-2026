@@ -166,15 +166,15 @@ public class Robot extends TimedRobot {
         // --- Turret Tuning Controls ---
         // 1. Position Setup (Zero encoders when pointing straight ahead)
         if (RobotContainer.toolOp.leftBumper().getAsBoolean()) {
-          RobotContainer.turretLeft.resetEncoder();
-          RobotContainer.turretRight.resetEncoder();
+          RobotContainer.turretLeft.resetEncoder();// should do nothing 
+          RobotContainer.turretRight.resetEncoder();// should do somthing
           System.out.println("Test Mode: Turret encoders zeroed (Straight Ahead)");
         }
 
         // 2. PID Tracking Testing (Snap to angles)
         if (RobotContainer.toolOp.a().getAsBoolean()) {
-          RobotContainer.turretLeft.setTargetAngle(0.0);
-          RobotContainer.turretRight.setTargetAngle(0.0);
+          RobotContainer.turretLeft.setTargetAngle(0.0);// should do nothing 
+          RobotContainer.turretRight.setTargetAngle(0.0);// should do somthing
         } else if (RobotContainer.toolOp.getHID().getPOV() == 270) { // D-Pad Left
           RobotContainer.turretLeft.setTargetAngle(RobotMap.Turret.MIN_ROTATION_DEGREES);
           RobotContainer.turretRight.setTargetAngle(RobotMap.Turret.MIN_ROTATION_DEGREES);

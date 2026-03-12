@@ -130,7 +130,7 @@ public class RobotContainer {
         hopperFeed = new HopperFeed();
 
         // Set default command for turrets (auto-tracking)
-        autoTrack = new AutoTrackGoal();
+       // autoTrack = new AutoTrackGoal();
         // turretLeft.setDefaultCommand(autoTrack);// reanable after tuning 
         // turretRight.setDefaultCommand(autoTrack);// reanable after tuning 
 
@@ -176,10 +176,10 @@ public class RobotContainer {
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
 
         // Operator controlling shooter speeds
-        toolOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
-        toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
-        toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
-        toolOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
+        // toolOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
+        // toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
+        // toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
+        // toolOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
 
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
@@ -190,13 +190,13 @@ public class RobotContainer {
         // second press stops intake and stows arm.
         // toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); //
         // test next
-        toolOp.leftBumper().whileTrue(new InstantCommand(() -> RobotContainer.intake.intake()));
-        toolOp.rightBumper().whileTrue(new InstantCommand(() -> RobotContainer.intake.outtake()));
+        // toolOp.leftBumper().whileTrue(new InstantCommand(() -> RobotContainer.intake.intake()));
+        // toolOp.rightBumper().whileTrue(new InstantCommand(() -> RobotContainer.intake.outtake()));
 
-        toolOp.leftBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
-        toolOp.rightBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
+        // toolOp.leftBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
+        // toolOp.rightBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
 
-        toolOp.start().onTrue(new InstantCommand(() -> RobotContainer.intakeArm.zeroEncoder()));
+        // toolOp.start().onTrue(new InstantCommand(() -> RobotContainer.intakeArm.zeroEncoder()));
     }
 
     /**

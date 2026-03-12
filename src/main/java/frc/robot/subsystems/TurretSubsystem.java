@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 
@@ -25,7 +28,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
     protected final String name;
     protected double targetAngleDegrees = 0.0;
     protected boolean manualControlEnabled = false;
-    
+    private static final double MECHANISM_RATIO = (1.0 / 5.0) * (18.0 / 120.0);
     // Shuffleboard
     protected ShuffleboardTab tab;
     
@@ -54,9 +57,14 @@ public abstract class TurretSubsystem extends SubsystemBase {
         if (!skipHardware) {
             // Initialize motor (REVLib new API)
             motor = new SparkMax(motorCANID, MotorType.kBrushless);
+            SparkMaxConfig config = new SparkMaxConfig();
+            config.encoder.positionConversionFactor(MECHANISM_RATIO);
+
+            motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
             // Get encoder (returns rotations) and create a software PID controller
             encoder = motor.getEncoder();
+            resetEncoder();
             pidController = new PIDController(RobotMap.Turret.kP, RobotMap.Turret.kI, RobotMap.Turret.kD);
             pidController.setTolerance(RobotMap.Turret.POSITION_TOLERANCE);
 
@@ -109,7 +117,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
     public double getCurrentAngle() {
         if (encoder != null) {
             // encoder returns rotations; convert to degrees accounting for gear ratio
-            return encoder.getPosition() * 360.0 / RobotMap.Turret.GEAR_RATIO;
+            return encoder.getPosition() * 360.0;
         }
         return targetAngleDegrees;
     }
@@ -186,7 +194,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
         if (!manualControlEnabled && pidController != null && motor != null && encoder != null) {
             double output = pidController.calculate(getCurrentAngle());
             // Clamp output to percent output range
-            output = Math.max(-1.0, Math.min(1.0, output));
+            output = Math.max(-0.2, Math.min(0.2, output));
             // Safety limits: don't drive past physical limits
             double currentAngle = getCurrentAngle();
             if ((currentAngle >= RobotMap.Turret.MAX_ROTATION_DEGREES && output > 0) ||

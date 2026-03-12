@@ -113,11 +113,11 @@ public class RobotMap {
      */
     public static class Turret {
         // Rotation limits (degrees from forward position)
-        public static final double MAX_ROTATION_DEGREES = 90.0;
-        public static final double MIN_ROTATION_DEGREES = -90.0;
+        public static final double MAX_ROTATION_DEGREES = 30.0;// was 90.0;
+        public static final double MIN_ROTATION_DEGREES = -30.0; // was -90.0;
 
         // PID gains for turret position control
-        public static final double kP = 0.05;
+        public static final double kP = 0.025;
         public static final double kI = 0.0;
         public static final double kD = 0.001;
         public static final double kIZone = 0.0;
