@@ -127,7 +127,7 @@ public class RobotMap {
         public static final double POSITION_TOLERANCE = 2.0;
 
         // Manual control speed limit (percent output)
-        public static final double MANUAL_SPEED_LIMIT = 0.3;
+        public static final double MANUAL_SPEED_LIMIT = 0.1;// was 0.3
 
         // Gear ratio (motor rotations per turret rotation)
         public static final double GEAR_RATIO = 100.0; // Adjust based on actual mechanism
@@ -252,7 +252,7 @@ public class RobotMap {
          * (fully
          * deployed/down) — TUNE
          */
-        public static final double FORWARD_SOFT_LIMIT = 0.0 / 360.0;
+        public static final double FORWARD_SOFT_LIMIT = -5.0 / 360.0;
         /**
          * Minimum arm position in mechanism rotations (-90 degrees from horizontal)
          * (fully retracted/up)

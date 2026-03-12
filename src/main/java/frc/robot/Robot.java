@@ -137,6 +137,9 @@ public class Robot extends TimedRobot {
     String testSubsystem = m_testChooser.getSelected();
     if (testSubsystem == null) return;
 
+   // RobotContainer.intakeArm.debug(0.1);
+
+    
     switch (testSubsystem) {
       case "IntakeArm":
         // --- IntakeArm Tuning Controls ---
@@ -153,6 +156,7 @@ public class Robot extends TimedRobot {
         // 2. Motion Magic Testing (Use these to test kG and kP)
         if (RobotContainer.toolOp.getHID().getPOV() == 0) { // D-Pad Up
           RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.STOWED_POSITION);
+          System.out.println("test mode: hit the stowed position");
         } else if (RobotContainer.toolOp.getHID().getPOV() == 180) { // D-Pad Down
           RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.DEPLOYED_POSITION);
         }
@@ -212,6 +216,7 @@ public class Robot extends TimedRobot {
       default:
         break;
     }
+         
   }
 
   /** This function is called once when the robot is first started up. */

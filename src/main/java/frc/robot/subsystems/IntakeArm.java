@@ -76,6 +76,7 @@ public class IntakeArm extends SubsystemBase {
         configRight.MotionMagic.MotionMagicAcceleration = 10;
 
         configRight.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        configRight.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         // Soft limits to constrain the finite range of arm travel
         configRight.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
@@ -112,6 +113,11 @@ public class IntakeArm extends SubsystemBase {
 
     }
 
+    public void debug(double speed) {
+        intakeArmMotorRight.set(speed);
+        intakeArmMotorLeft. set(speed);
+    }
+
     // place special subsystem methods here
     // this is where rest of program can access functions to return
     // values or control the subsystem
@@ -138,6 +144,7 @@ public class IntakeArm extends SubsystemBase {
         } else {
             // Motors straddle the target or are already there
             targetPos = position;
+            System.out.println("already at target ");
         }
 
         // Clamp the target position to prevent the closed-loop controller from driving

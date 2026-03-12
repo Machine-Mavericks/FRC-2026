@@ -27,6 +27,9 @@ import frc.robot.subsystems.Uptake;
 import frc.robot.commands.IntakeSequence;
 import frc.robot.commands.ShootSequence;
 import frc.robot.utils.AutoFunctions;
+
+import java.util.spi.ToolProvider;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -128,8 +131,8 @@ public class RobotContainer {
 
         // Set default command for turrets (auto-tracking)
         autoTrack = new AutoTrackGoal();
-        turretLeft.setDefaultCommand(autoTrack);
-        turretRight.setDefaultCommand(autoTrack);
+        // turretLeft.setDefaultCommand(autoTrack);// reanable after tuning 
+        // turretRight.setDefaultCommand(autoTrack);// reanable after tuning 
 
         // attach commands to controller buttons
         configureBindings();
@@ -150,7 +153,7 @@ public class RobotContainer {
         // operator controls
 
         // Manual turret control - hold left bumper to override auto-tracking
-        toolOp.leftBumper().whileTrue(new ManualTurretControl());
+       // toolOp.leftBumper().whileTrue(new ManualTurretControl());  // re-enable when done tuning
 
         // description of commands available:
         // .onTrue - runs command when button changes from not-pressed to pressed.
@@ -192,6 +195,8 @@ public class RobotContainer {
 
         toolOp.leftBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
         toolOp.rightBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
+
+        toolOp.start().onTrue(new InstantCommand(() -> RobotContainer.intakeArm.zeroEncoder()));
     }
 
     /**
