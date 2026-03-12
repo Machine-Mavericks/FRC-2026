@@ -27,6 +27,7 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
   private final SendableChooser<String> m_testChooser = new SendableChooser<>();
+  private double m_armTestTarget = 0.0;
   // private HardwareTestSuite m_testSuite;
 
   // private boolean isAlgaeTiltInitialized = false;
@@ -124,6 +125,8 @@ public class Robot extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    // Initialize the test target to the current position to prevent sudden snaps on enable
+    m_armTestTarget = RobotContainer.intakeArm.leftCurrentPose;
   }
 
   /**
@@ -155,11 +158,16 @@ public class Robot extends TimedRobot {
 
         // 2. Motion Magic Testing (Use these to test kG and kP)
         if (RobotContainer.toolOp.getHID().getPOV() == 0) { // D-Pad Up
-          RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.STOWED_POSITION);
-          System.out.println("test mode: hit the stowed position");
+          m_armTestTarget = RobotMap.IntakeArm.STOWED_POSITION;
+          System.out.println("test mode: target set to STOWED");
         } else if (RobotContainer.toolOp.getHID().getPOV() == 180) { // D-Pad Down
-          RobotContainer.intakeArm.moveTo(RobotMap.IntakeArm.DEPLOYED_POSITION);
+          m_armTestTarget = RobotMap.IntakeArm.DEPLOYED_POSITION;
+          System.out.println("test mode: target set to DEPLOYED");
         }
+
+        // Use snapTo instead of moveTo for testing to allow full Motion Magic profiles
+        // (bypasses the 5-degree 'leash' logic)
+        RobotContainer.intakeArm.snapTo(m_armTestTarget);
         break;
 
       case "Turrets":

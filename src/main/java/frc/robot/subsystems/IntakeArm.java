@@ -144,12 +144,23 @@ public class IntakeArm extends SubsystemBase {
         } else {
             // Motors straddle the target or are already there
             targetPos = position;
-            System.out.println("already at target ");
         }
 
         // Clamp the target position to prevent the closed-loop controller from driving
         // into the hardware/software limits
         targetPos = MathUtil.clamp(targetPos, RobotMap.IntakeArm.REVERSE_SOFT_LIMIT,
+                RobotMap.IntakeArm.FORWARD_SOFT_LIMIT);
+
+        intakeArmMotorLeft.setControl(m_mmReq.withPosition(targetPos));
+        intakeArmMotorRight.setControl(m_mmReq.withPosition(targetPos));
+    }
+
+    /** 
+     * Move to a specific position (rotations) WITHOUT the 5-degree synchronization limit.
+     * Use this for PID tuning to see the full Motion Magic profile.
+     */
+    public void snapTo(double position) {
+        double targetPos = MathUtil.clamp(position, RobotMap.IntakeArm.REVERSE_SOFT_LIMIT,
                 RobotMap.IntakeArm.FORWARD_SOFT_LIMIT);
 
         intakeArmMotorLeft.setControl(m_mmReq.withPosition(targetPos));
@@ -171,6 +182,7 @@ public class IntakeArm extends SubsystemBase {
 
     public void stop() {
         intakeArmMotorRight.set(0);
+        intakeArmMotorLeft.set(0);
     }
 
     /**
