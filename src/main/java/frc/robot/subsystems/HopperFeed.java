@@ -1,6 +1,13 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Seconds;
+
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -21,6 +28,16 @@ public class HopperFeed extends SubsystemBase {
 
     public HopperFeed() {
         motor = new TalonFX(RobotMap.CANID.HOPPER_FEED);
+
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 1;
+        config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        StatusCode status = motor.getConfigurator().apply(config);
+
+        if (!status.isOK()) {
+            System.out.println("Could not apply config: " + status.getName());
+        }
 
         ShuffleboardTab tab = Shuffleboard.getTab("HopperFeed");
         speedEntry = tab.add("Feed Speed", RobotMap.HopperFeed.DEFAULT_SPEED)

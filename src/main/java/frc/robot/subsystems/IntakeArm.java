@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ForwardLimitValue;
@@ -91,7 +92,6 @@ public class IntakeArm extends SubsystemBase {
         configRight.Feedback.withSensorToMechanismRatio(1 / MECHANISM_RATIO);
 
         intakeArmMotorRight.getConfigurator().apply(configRight);
-
     }
 
     /**

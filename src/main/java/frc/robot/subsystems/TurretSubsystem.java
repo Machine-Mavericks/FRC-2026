@@ -105,7 +105,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
         if (!manualControlEnabled && pidController != null) {
             // Run software PID: set the setpoint (degrees). Actual motor output
             // is applied in periodic().
-            pidController.setSetpoint(angleDegrees);
+            // pidController.setSetpoint(angleDegrees);
         }
     }
     
@@ -201,7 +201,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
                 (currentAngle <= RobotMap.Turret.MIN_ROTATION_DEGREES && output < 0)) {
                 output = 0.0;
             }
-            //motor.set(output);
+            // motor.set(output);
         }
 
         updateShuffleboard();

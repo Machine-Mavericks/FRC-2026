@@ -4,7 +4,9 @@ import frc.robot.commands.IncrementShootersSpeed;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
+import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.TemplateCommand;
+import frc.robot.commands.UptakeAndFeed;
 import frc.robot.commands.AutoTrackGoal;
 import frc.robot.commands.FixOdometry;
 import frc.robot.commands.ManualTurretControl;
@@ -111,13 +113,13 @@ public class RobotContainer {
         if (frc.robot.RobotMap.Features.ENABLE_LEFT_TURRET) {
             shooter = new Shooter();
             turretLeft = new TurretLeft();
-            uptake = new Uptake();
         } else {
             // Left turret hardware missing -> provide software stubs
             shooter = new ShooterDisabled();
             turretLeft = new TurretDisabled();
-            uptake = new UptakeDisabled();
         }
+        
+        uptake = new Uptake(false);
 
         // Right turret (present) and other subsystems
         turretRight = new TurretRight();
@@ -187,9 +189,9 @@ public class RobotContainer {
 
         // Intake control - toggle right bumper: first press deploys arm + runs intake,
         // second press stops intake and stows arm.
-        toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm));
-
-
+        //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
+        toolOp.rightBumper().whileTrue(new UptakeAndFeed(hopperFeed,uptake));
+        toolOp.leftBumper().whileTrue(new RunIntakeCommand(intake));
     }
 
     /**

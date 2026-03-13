@@ -136,3 +136,13 @@ You MUST do this first so the robot knows where horizontal is.
         2. Read the absolute position from Phoenix Tuner.
         3. Input those offsets into the `MagnetOffset` configurations so the wheels read `0.0` when straight.
 *   `TRACK_WIDTH` / `TRACK_LENGTH`: Ensure these exactly match the physical wheel-center-to-wheel-center distances on your real robot, or autonomous rotation will be skewed.
+
+---
+
+## 6. HopperFeed Tuning
+
+The HopperFeed feeds game pieces toward the shooter. It uses a TalonFX and can be tuned via Shuffleboard.
+
+**Parameters to Tune:**
+*   `Feed Speed` (Shuffleboard Tab: "HopperFeed"): The default speed is `RobotMap.HopperFeed.DEFAULT_SPEED`. Adjust this from the dashboard if balls are jamming or not reaching the shooter fast enough.
+*   **Open Loop Ramps** (`HopperFeed.java`): The `VoltageOpenLoopRampPeriod` and `DutyCycleOpenLoopRampPeriod` are both set to 10 seconds. Reduce this if the hopper takes too long to reach full feeding speed.

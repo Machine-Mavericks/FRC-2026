@@ -1,12 +1,12 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -23,14 +23,18 @@ import frc.robot.RobotMap;
  * Uses two 1:1 geared motors.
  */
 public class IntakeSubsystem extends SubsystemBase {
+    private final TalonFX intakeMotor;
+    // private final TalonFX followerMotor;
 
-    TalonFX intakeMotor;
-    private static final double MECHANISM_RATIO = (1.0 / 1.0);
+    public IntakeSubsystem() {
+        intakeMotor = new TalonFX(RobotMap.CANID.INTAKE_SPIN);
+        intakeMotor.getConfigurator().apply(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
+        // followerMotor = new TalonFX(RobotMap.CANID.INTAKE_FOLLOWER);
 
-    //private static final double FEEDFORWARD = 0.013;
-
-    public IntakeSubsystem(){
-        this(false);
+        // 1:1 geared, follower follows master
+        // The second parameter is whether the follower should invert its
+        // direction compared to the master.
+        // followerMotor.setControl(new Follower(masterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
     // 1:1 geared, follower follows master
