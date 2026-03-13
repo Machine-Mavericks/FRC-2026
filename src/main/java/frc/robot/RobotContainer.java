@@ -5,6 +5,7 @@ import frc.robot.commands.ManualDrive;
 import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
 import frc.robot.commands.RunIntakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.commands.UptakeAndFeed;
 import frc.robot.commands.AutoTrackGoal;
@@ -179,7 +180,7 @@ public class RobotContainer {
         // Operator controlling shooter speeds
         toolOp.b().onTrue(new IncrementShootersSpeed(shooter, 1.0));
        // toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
-        toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 5.0));
+        // toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 5.0));
         toolOp.x().onTrue(new IncrementShootersSpeed(shooter, -1.0));
 
         //toolOp.a().whileTrue(new InstantCommand(()->shooter.shooterSpeed(shooter.CalculateSpeed())));
@@ -195,6 +196,7 @@ public class RobotContainer {
         //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
         toolOp.rightBumper().whileTrue(new UptakeAndFeed(hopperFeed,uptake));
         toolOp.leftBumper().whileTrue(new RunIntakeCommand(intake));
+        toolOp.y().whileTrue(new ShootCommand(shooter));
     }
 
     /**

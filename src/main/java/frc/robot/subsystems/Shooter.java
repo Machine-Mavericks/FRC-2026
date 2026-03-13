@@ -98,7 +98,7 @@ public class Shooter extends SubsystemBase {
 
   public double CalculateSpeed(double distance) { // saying its metres
     double x = distance;
-    return 5.7941 * x + 29.408;
+    return 1.266 * x * x - 4.1598 * x + 49.3;
   }
 
   @Override
