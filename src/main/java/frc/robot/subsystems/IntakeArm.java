@@ -125,46 +125,40 @@ public class IntakeArm extends SubsystemBase {
     private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
 
     /** Move to a specific position (rotations) using Motion Magic */
+    /**
+     * Move to a specific position (rotations) using Motion Magic. 
+     * Uses a 'Dynamic Leash' for synchronization: allows full Motion Magic profiles
+     * when motors are synced, but limits the lead if they drift apart.
+     */
     public void moveTo(double position) {
-        double currentPosForLimiting;
-        double targetPos;
+        double diff = rightCurrentPose - leftCurrentPose;
+        double targetPosLeft = position;
+        double targetPosRight = position;
 
-        if (position > leftCurrentPose && position > rightCurrentPose) {
-            // Moving positive: slowest motor is the one with the minimum position
-            currentPosForLimiting = Math.min(leftCurrentPose, rightCurrentPose);
-            // Limit the lead to at most 5 degrees (5.0 / 360.0 rotations) ahead of the
-            // slower motor
-            targetPos = Math.min(position, currentPosForLimiting + (5.0 / 360.0));
-        } else if (position < leftCurrentPose && position < rightCurrentPose) {
-            // Moving negative: slowest motor is the one with the maximum position
-            currentPosForLimiting = Math.max(leftCurrentPose, rightCurrentPose);
-            // Limit the lead to at most 5 degrees (5.0 / 360.0 rotations) behind the slower
-            // motor
-            targetPos = Math.max(position, currentPosForLimiting - (5.0 / 360.0));
-        } else {
-            // Motors straddle the target or are already there
-            targetPos = position;
+        // If motors are out of sync by more than ~1 degree (1.0/360.0), 
+        // leash the faster motor to stay near the slower one.
+        double syncTolerance = 1.0 / 360.0;
+        double leashLimit = 5.0 / 360.0;
+
+        if (Math.abs(diff) > syncTolerance) {
+            if (position > leftCurrentPose) { // Moving positive
+                // Leash the leading motor to stay within 5 degrees of the trailing one
+                targetPosLeft = Math.min(position, rightCurrentPose + leashLimit);
+                targetPosRight = Math.min(position, leftCurrentPose + leashLimit);
+            } else { // Moving negative
+                targetPosLeft = Math.max(position, rightCurrentPose - leashLimit);
+                targetPosRight = Math.max(position, leftCurrentPose - leashLimit);
+            }
         }
 
-        // Clamp the target position to prevent the closed-loop controller from driving
-        // into the hardware/software limits
-        targetPos = MathUtil.clamp(targetPos, RobotMap.IntakeArm.REVERSE_SOFT_LIMIT,
+        // Clamp positions to soft limits
+        targetPosLeft = MathUtil.clamp(targetPosLeft, RobotMap.IntakeArm.REVERSE_SOFT_LIMIT,
+                RobotMap.IntakeArm.FORWARD_SOFT_LIMIT);
+        targetPosRight = MathUtil.clamp(targetPosRight, RobotMap.IntakeArm.REVERSE_SOFT_LIMIT,
                 RobotMap.IntakeArm.FORWARD_SOFT_LIMIT);
 
-        intakeArmMotorLeft.setControl(m_mmReq.withPosition(targetPos));
-        intakeArmMotorRight.setControl(m_mmReq.withPosition(targetPos));
-    }
-
-    /** 
-     * Move to a specific position (rotations) WITHOUT the 5-degree synchronization limit.
-     * Use this for PID tuning to see the full Motion Magic profile.
-     */
-    public void snapTo(double position) {
-        double targetPos = MathUtil.clamp(position, RobotMap.IntakeArm.REVERSE_SOFT_LIMIT,
-                RobotMap.IntakeArm.FORWARD_SOFT_LIMIT);
-
-        intakeArmMotorLeft.setControl(m_mmReq.withPosition(targetPos));
-        intakeArmMotorRight.setControl(m_mmReq.withPosition(targetPos));
+        intakeArmMotorLeft.setControl(m_mmReq.withPosition(targetPosLeft));
+        intakeArmMotorRight.setControl(m_mmReq.withPosition(targetPosRight));
     }
 
     /*

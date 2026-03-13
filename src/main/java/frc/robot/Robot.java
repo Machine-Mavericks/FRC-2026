@@ -165,9 +165,9 @@ public class Robot extends TimedRobot {
           System.out.println("test mode: target set to DEPLOYED");
         }
 
-        // Use snapTo instead of moveTo for testing to allow full Motion Magic profiles
-        // (bypasses the 5-degree 'leash' logic)
-        RobotContainer.intakeArm.snapTo(m_armTestTarget);
+        // Use moveTo (now with Dynamic Leash) for testing. It allows full 
+        // Motion Magic profiles when sync'd, but protects against torsion.
+        RobotContainer.intakeArm.moveTo(m_armTestTarget);
         break;
 
       case "Turrets":
