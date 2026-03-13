@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
+import frc.robot.TalonLogger;
 import frc.robot.commands.ManualDrive;
 import frc.robot.utils.Utils;
 
@@ -173,6 +174,11 @@ public class SwerveDrive extends SubsystemBase {
         m_RFSteerMotor = new TalonFX(RobotMap.CANID.RF_STEER_MOTOR);
         m_LRSteerMotor = new TalonFX(RobotMap.CANID.LR_STEER_MOTOR);
         m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
+
+        SmartDashboard.putData("Left Front Steer", new TalonLogger(m_LFSteerMotor));
+        SmartDashboard.putData("Right Front Steer", new TalonLogger(m_RFSteerMotor));
+        SmartDashboard.putData("Left Rear Steer", new TalonLogger(m_LRSteerMotor));
+        SmartDashboard.putData("Right Rear Steer", new TalonLogger(m_RRSteerMotor));
 
         // turn on safety oversight of steer motors
         m_LFSteerMotor.setSafetyEnabled(false);

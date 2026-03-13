@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -51,7 +53,8 @@ public class Limelight extends SubsystemBase {
 
     public Pose2d getPose(){
         LimelightHelpers.PoseEstimate measurement;
-        if (DriverStation.getAlliance().get() == Alliance.Blue){
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get() == Alliance.Blue){
             measurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
         } else {
             measurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);      
