@@ -18,6 +18,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.TalonLogger;
 
 /** IntakeArm subsystem */
 public class IntakeArm extends SubsystemBase {
@@ -25,8 +26,9 @@ public class IntakeArm extends SubsystemBase {
     TalonFX intakeArmMotorRight = new TalonFX(RobotMap.CANID.INTAKE_ARM_RIGHT);
     TalonFX intakeArmMotorLeft = new TalonFX(RobotMap.CANID.INTAKE_ARM_LEFT);
 
+    
     private static final double MECHANISM_RATIO = (12.0 / 58.0) * (27.0 / 56.0) * (16.0 / 40.0);
-
+    
     @Logged
     private double commandedPose;
     @Logged
@@ -38,9 +40,13 @@ public class IntakeArm extends SubsystemBase {
 
     // Local objects and variables here
     // These are for things that only belong to, and used by, the subsystem
-
+    
     /** Place code here to initialize subsystem */
     public IntakeArm() {
+
+        SmartDashboard.putData("IntakeArm/ArmMotorRight", new TalonLogger(intakeArmMotorRight));
+        SmartDashboard.putData("IntakeArm/ArmMotorLeft", new TalonLogger(intakeArmMotorLeft));
+
         TalonFXConfiguration configLeft = new TalonFXConfiguration();
 
         configLeft.Slot0.kP = 12.0;

@@ -8,12 +8,15 @@ import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.networktables.IntegerArrayPublisher;
+import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.LimelightHelpers.RawTarget;
 
 
 public class Limelight extends SubsystemBase {
@@ -21,11 +24,13 @@ public class Limelight extends SubsystemBase {
     public final String name;
 
     private StructPublisher<Pose2d> posePublisher;
+    private IntegerPublisher tagPublisher;
 
     public Limelight(String name) {
         this.name = "limelight-" + name;
         posePublisher = NetworkTableInstance.getDefault()
             .getStructTopic(this.name + "/robotPose", Pose2d.struct).publish();
+        tagPublisher = NetworkTableInstance.getDefault().getIntegerTopic(this.name + "/visible tags").publish();
 
     }
 
@@ -41,6 +46,7 @@ public class Limelight extends SubsystemBase {
         return LimelightHelpers.getTargetCount(name) > 0;
     }
 
+
     @Override
     public void periodic(){
 
@@ -49,6 +55,7 @@ public class Limelight extends SubsystemBase {
         LimelightHelpers.SetRobotOrientation(name, yaw, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         posePublisher.set(getPose());
+        tagPublisher.set(LimelightHelpers.getTargetCount(name));
     }
 
     public Pose2d getPose(){
