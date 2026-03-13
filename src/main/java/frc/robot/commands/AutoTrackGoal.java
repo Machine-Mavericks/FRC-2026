@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
-import frc.robot.subsystems.Limelight.PoseEstimate;
 import frc.robot.utils.ShooterCalculations;
 import frc.robot.utils.TargetCalculations;
 
@@ -179,9 +178,9 @@ public class AutoTrackGoal extends Command {
     private Pose2d getRobotPoseFromOdometry() {
         // Try vision-based pose first (highest accuracy)
         if (RobotContainer.limelightShooter.isTargetPresent()) {
-            PoseEstimate estimate = RobotContainer.limelightShooter.getBotPoseOrbDetail();
-            if (estimate != null && estimate.pose != null) {
-                return estimate.pose.toPose2d();
+            Pose2d estimate = RobotContainer.limelightShooter.getPose();
+            if (estimate != null && estimate != null) {
+                return estimate;
             }
         }
 
@@ -221,8 +220,9 @@ public class AutoTrackGoal extends Command {
         }
 
         if (RobotContainer.hubTargeting.isHubTagVisible()) {
-            // In direct mode, also require that the camera confirms we're aimed correctly
-            return turretsOnTarget && RobotContainer.hubTargeting.isAimedAtHub();
+            // In direct mode, we just need the turrets to be on target since they track
+            // independently
+            return turretsOnTarget;
         }
 
         // In field-coordinate mode, just check turret setpoints

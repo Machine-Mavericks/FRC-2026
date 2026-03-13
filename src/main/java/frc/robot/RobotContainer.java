@@ -8,6 +8,7 @@ import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.commands.UptakeAndFeed;
 import frc.robot.commands.AutoTrackGoal;
+import frc.robot.commands.FixOdometry;
 import frc.robot.commands.ManualTurretControl;
 import frc.robot.subsystems.HubTargetingSubsystem;
 import frc.robot.subsystems.Limelight;
@@ -87,11 +88,11 @@ public class RobotContainer {
         // create instances of subsystems here
         gyro = new Pigeon();
 
-        limelightDrive = new Limelight(RobotMap.Vision.LIMELIGHT_DRIVE_NAME, false);
+        limelightDrive = new Limelight(RobotMap.Vision.LIMELIGHT_DRIVE_NAME);
         limelightDrive.setCameraPoseRobotSpace(RobotMap.Vision.DRIVE_LIMELIGHT_3D_POSE);
         // Create Limelight for AprilTag detection — filter to all HUB tags (both
         // alliances)
-        limelightShooter = new Limelight(RobotMap.Vision.LIMELIGHT_SHOOTER_NAME, true);
+        limelightShooter = new Limelight(RobotMap.Vision.LIMELIGHT_SHOOTER_NAME);
         limelightShooter.setCameraPoseRobotSpace(RobotMap.Vision.SHOOTER_LIMELIGHT_3D_POSE);
         int[] allHubTagIds = concatArrays(RobotMap.Vision.BLUE_HUB_TAG_IDS, RobotMap.Vision.RED_HUB_TAG_IDS);
         limelightShooter.SetFiducialIDFiltersOverride(allHubTagIds);
@@ -149,6 +150,8 @@ public class RobotContainer {
             odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
         }));
 
+        driverOp.start().onTrue(new FixOdometry());
+
         // operator controls
 
         // Manual turret control - hold left bumper to override auto-tracking
@@ -189,7 +192,6 @@ public class RobotContainer {
         //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
         toolOp.rightBumper().whileTrue(new UptakeAndFeed(hopperFeed,uptake));
         toolOp.leftBumper().whileTrue(new RunIntakeCommand(intake));
-
     }
 
     /**
@@ -198,8 +200,8 @@ public class RobotContainer {
      * 
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
-        return new AutoTrackGoal(); // this isn't right, we will pick a proper one later, but for now we just want
+    //public Command getAutonomousCommand() {
+        //return new AutoTrackGoal(); // this isn't right, we will pick a proper one later, but for now we just want
                                     // to test that the command scheduling and subsystem default commands work in
                                     // autonomous
 
@@ -209,7 +211,7 @@ public class RobotContainer {
         // 0.5, // maxAccel (used as maxRotSpeed)
         // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
         // );
-    }
+    //}
 
     /**
      * Helper: concatenate two int arrays into one (used to combine blue + red HUB

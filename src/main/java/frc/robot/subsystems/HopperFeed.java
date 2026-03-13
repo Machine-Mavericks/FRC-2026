@@ -18,8 +18,8 @@ import frc.robot.RobotMap;
 
 /**
  * HopperFeed subsystem - feeds game pieces from the hopper toward the shooter.
- * Single TalonFX with a 1:1 gear ratio. Runs continuously while the robot
- * is enabled at a speed configurable via Shuffleboard.
+ * Single TalonFX with a 1:1 gear ratio. Runs when shooting at a speed
+ * configurable via Shuffleboard.
  */
 public class HopperFeed extends SubsystemBase {
 

@@ -29,8 +29,8 @@ import frc.robot.utils.TargetCalculations;
  * ============================================================
  * TUNING CHECKLIST — do this before competition:
  * ============================================================
- * 1. Measure and update RobotMap.Vision.LIMELIGHT_MOUNT_HEIGHT_M
- * 2. Measure and update RobotMap.Vision.LIMELIGHT_MOUNT_ANGLE_DEG
+ * 1. Measure and update RobotMap.Vision.SHOOTER_LIMELIGHT_MOUNT_HEIGHT_M
+ * 2. Measure and update RobotMap.Vision.SHOOTER_LIMELIGHT_MOUNT_ANGLE_DEG
  * 3. Update RobotMap.Vision.BLUE/RED_HUB_TAG_IDS if the manual's
  * field diagram shows different IDs than the placeholder arrays.
  * 4. Tune ShooterCalculations.DISTANCE_RPM_TABLE on the real robot.
@@ -75,10 +75,10 @@ public class HubTargetingSubsystem extends SubsystemBase {
         var alliance = DriverStation.getAlliance();
         m_isRedAlliance = alliance.isPresent() && alliance.get() == Alliance.Red;
 
-        // Read raw Limelight values
-        m_txDegrees = RobotContainer.limelightShooter.getHorizontalTargetOffsetAngle();
-        m_tyDegrees = RobotContainer.limelightShooter.getVerticalTargetOffsetAngle();
-        m_bestTagId = (int) RobotContainer.limelightShooter.getPrimAprilTagID();
+        // // Read raw Limelight values
+        // m_txDegrees = RobotContainer.limelightShooter.getHorizontalTargetOffsetAngle();
+        // m_tyDegrees = RobotContainer.limelightShooter.getVerticalTargetOffsetAngle();
+        // m_bestTagId = (int) RobotContainer.limelightShooter.getPrimAprilTagID();
 
         // Check whether what the camera sees is actually one of our HUB's tags
         boolean limelightHasTarget = RobotContainer.limelightShooter.isTargetPresent();

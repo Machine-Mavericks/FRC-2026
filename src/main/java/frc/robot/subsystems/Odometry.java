@@ -11,15 +11,18 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Limelight.LimelightResults;
+import frc.robot.subsystems.Limelight;
 
 /** Subsystem */
 public class Odometry extends SubsystemBase {
@@ -37,15 +40,14 @@ public class Odometry extends SubsystemBase {
     // timer for pose estimator time-stamping
     private Timer PoseTimeStamp;
 
-    // latest apriltag detections
-    private LimelightResults TagResults;
-
     // time since last apriltag
     private Timer timeSinceLastTag;
 
     Pose2d currentPoseBeforeAdjustment;
 
     public boolean TagEnable = true;
+
+    StructPublisher<Pose2d> posePublisher;
 
     public Odometry() {
 
@@ -85,6 +87,10 @@ public class Odometry extends SubsystemBase {
         timeSinceLastTag.reset();
         timeSinceLastTag.start();
 
+        
+        posePublisher = NetworkTableInstance.getDefault()
+            .getStructTopic("Odometry/robotPose", Pose2d.struct).publish();
+
     }
 
     /**
@@ -104,9 +110,11 @@ public class Odometry extends SubsystemBase {
         // updateDeadWheelOdometry();
 
         // pose update using apriltag data
-        if (TagEnable) {
-            updateAprilTagOdometry(RobotContainer.limelightDrive);
-        }
+        // if (TagEnable) {
+        //     updateAprilTagOdometry(RobotContainer.limelightDrive);
+        // }
+
+        posePublisher.set(getPose2d());
 
         updateShuffleboard();
 
@@ -237,57 +245,64 @@ public class Odometry extends SubsystemBase {
     // ---------- Apriltag odometry methods ----------
 
     // helper function to updates drive wheel odometry - called by periodic()
-    private void updateAprilTagOdometry(Limelight camera) {
+    public void updateAprilTagOdometry(Limelight camera) {
 
         // get updates from camera
-        TagResults = camera.GetJSONResults();
 
-        // get time latency from camera
-        // double latency = 0.001*RobotContainer.camr.getLatencyContribution();
+        if (camera.isTargetPresent()){
+            Pose2d campose = camera.getPose();
+            
+            setPose(campose);
+        }
 
-        // if results is not empty and there is a list of apriltags
-        if (TagResults != null && TagResults.targets_Fiducials != null) {
-            for (int i = 0; i < TagResults.targets_Fiducials.length; ++i) {
+        // TagResults = camera.GetJSONResults();
 
-                int tagid = (int) Math.round(TagResults.targets_Fiducials[i].fiducialID);
+        // // get time latency from camera
+        // // double latency = 0.001*RobotContainer.camr.getLatencyContribution();
 
-                // if tag is part of coral reef then use it
-                if ((tagid >= 6 && tagid <= 11) || (tagid >= 17 && tagid <= 22)) {
-                    // set confidence level of apriltag detection
-                    // for now assume constant - may be refined later
-                    m_Estimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 0.1));
+        // // if results is not empty and there is a list of apriltags
+        // if (TagResults != null && TagResults.targets_Fiducials != null) {
+        //     for (int i = 0; i < TagResults.targets_Fiducials.length; ++i) {
 
-                    Pose3d pose = TagResults.targets_Fiducials[i].getCameraPose_TargetSpace();
-                    double distance = Math.sqrt(pose.getX() * pose.getX() + pose.getZ() * pose.getZ());
+        //         int tagid = (int) Math.round(TagResults.targets_Fiducials[i].fiducialID);
 
-                    // are we close to apriltag? if so, then use pose estimate
-                    if (distance <= 1.5)// was 1.75
-                    {
-                        // get field pose from limelight, convert to 2d, then convert to FRC coordinates
-                        Pose2d LLpose = TagResults.targets_Fiducials[i].getRobotPose_FieldSpace().toPose2d();
+        //         // // if tag is part of coral reef then use it
+                // if ((tagid >= 6 && tagid <= 11) || (tagid >= 17 && tagid <= 22)) {
+                //     // set confidence level of apriltag detection
+                //     // for now assume constant - may be refined later
+                //     m_Estimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 0.1));
 
-                        // get angle from gyro
-                        Rotation2d gyroangle = new Rotation2d(Math.toRadians(RobotContainer.gyro.getYawAngle()));
+                //     Pose3d pose = TagResults.targets_Fiducials[i].getCameraPose_TargetSpace();
+                //     double distance = Math.sqrt(pose.getX() * pose.getX() + pose.getZ() * pose.getZ());
 
-                        Pose2d fieldPose = new Pose2d(LLpose.getX() + 8.774176, LLpose.getY() + 4.0259, gyroangle);
+                //     // are we close to apriltag? if so, then use pose estimate
+                //     if (distance <= 1.5)// was 1.75
+                //     {
+                //         // get field pose from limelight, convert to 2d, then convert to FRC coordinates
+                //         Pose2d LLpose = TagResults.targets_Fiducials[i].getRobotPose_FieldSpace().toPose2d();
 
-                        // add in to our position estimator
-                        // assume lag time = camera latency + 20ms
-                        // m_Estimator.addVisionMeasurement(fieldPose, PoseTimeStamp.get()-latency -
-                        // 0.02);
-                    }
+                //         // get angle from gyro
+                //         Rotation2d gyroangle = new Rotation2d(Math.toRadians(RobotContainer.gyro.getYawAngle()));
 
-                    // m_test.setDouble(RobotContainer.camera.getLatencyContribution());
+                //         Pose2d fieldPose = new Pose2d(LLpose.getX() + 8.774176, LLpose.getY() + 4.0259, gyroangle);
 
-                } // end if tag belongs to coral reef
+                //         // add in to our position estimator
+                //         // assume lag time = camera latency + 20ms
+                //         // m_Estimator.addVisionMeasurement(fieldPose, PoseTimeStamp.get()-latency -
+                //         // 0.02);
+                //     }
 
-            } // end for
+                //     // m_test.setDouble(RobotContainer.camera.getLatencyContribution());
 
-            // m_test.setDouble(timeSinceLastTag.get());
+                // } // end if tag belongs to coral reef
+
+            // } // end for
+
+            // // m_test.setDouble(timeSinceLastTag.get());
             timeSinceLastTag.reset();
         }
 
-    }
+    
 
     // -------------------- Odometry Store/Recall Methods --------------------
 
@@ -364,7 +379,7 @@ public class Odometry extends SubsystemBase {
 
     /** Update subsystem shuffle board page with current odometry values */
     private void updateShuffleboard() {
-        Pose2d CurrentPose = getPose2d();
+        Pose2d CurrentPose = RobotContainer.limelightShooter.getPose();
         m_fieldXPos.setDouble(CurrentPose.getX());
         m_fieldYPos.setDouble(CurrentPose.getY());
         m_fieldAngle.setDouble(CurrentPose.getRotation().getDegrees());
@@ -376,12 +391,6 @@ public class Odometry extends SubsystemBase {
         m_DWfieldYPos.setDouble(DWfieldY);
         m_DWfieldAngle.setDouble(Math.toDegrees(DWfieldAngle));
 
-        // show detected tags
-        String tags = new String();
-        if (TagResults != null && TagResults.targets_Fiducials != null)
-            for (int i = 0; i < TagResults.targets_Fiducials.length; ++i)
-                tags = tags + (int) TagResults.targets_Fiducials[i].fiducialID + " ";
-        m_detectedtags.setString(tags);
     }
 
     public void EnableApriltagProcessing(boolean enable) {

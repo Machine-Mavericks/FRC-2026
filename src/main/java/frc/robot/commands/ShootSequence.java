@@ -2,9 +2,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.IntakeArm;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Uptake;
+import frc.robot.subsystems.HopperFeed;
 
 /**
  * Automates the process of shooting a ball by spinning the shooter flywheels
@@ -14,24 +14,24 @@ import frc.robot.subsystems.Uptake;
 public class ShootSequence extends Command {
 
     private final Shooter shooter;
-    private final IntakeArm intakeArm;
     private final Uptake uptake;
+    private final HopperFeed hopperFeed;
 
     /**
      * Creates a new ShootSequence.
      *
-     * @param shooter   The shooter subsystem to run.
-     * @param intakeArm The intake arm subsystem to feed balls into the shooter.
-     * @param uptake    The uptake subsystem to feed balls into the shooter
-     *                  flywheels.
+     * @param shooter    The shooter subsystem to run.
+     * @param uptake     The uptake subsystem to feed balls into the shooter
+     *                   flywheels.
+     * @param hopperFeed The hopper feed subsystem to feed balls into the uptake.
      */
-    public ShootSequence(Shooter shooter, IntakeArm intakeArm, Uptake uptake) {
+    public ShootSequence(Shooter shooter, Uptake uptake, HopperFeed hopperFeed) {
         this.shooter = shooter;
-        this.intakeArm = intakeArm;
         this.uptake = uptake;
+        this.hopperFeed = hopperFeed;
 
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(shooter, intakeArm, uptake);
+        addRequirements(shooter, uptake, hopperFeed);
     }
 
     // Called when the command is initially scheduled.
@@ -39,8 +39,8 @@ public class ShootSequence extends Command {
     public void initialize() {
         // We calculate and command the target RPM based on Limelight distance
         shooter.shooterSpeed(RobotContainer.autoTrack.getCalculatedShooterRPM());
-        intakeArm.stop(); // Stop intake arm initially while shooter spins up
         uptake.stop();
+        hopperFeed.stop();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -52,11 +52,11 @@ public class ShootSequence extends Command {
 
         // Use autoTrack's built-in alignment and speed check to determine when to fire
         if (RobotContainer.autoTrack.isReadyToShoot()) {
-            intakeArm.upIntakeArm(); // Feed exactly when ready
             uptake.feedShooter();
+            hopperFeed.feed();
         } else {
-            intakeArm.stop(); // Wait for flywheels/alignment
             uptake.stop();
+            hopperFeed.stop();
         }
     }
 
@@ -64,8 +64,8 @@ public class ShootSequence extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.stop();
-        intakeArm.stop();
         uptake.stop();
+        hopperFeed.stop();
     }
 
     // Returns true when the command should end.

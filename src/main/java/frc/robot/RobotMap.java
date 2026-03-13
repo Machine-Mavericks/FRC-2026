@@ -37,12 +37,11 @@ public class RobotMap {
         public static final int SHOOTER = 20;
 
         // IntakeArm motors
-        public static final int INTAKE_ARM_RIGHT = 21;
-        public static final int INTAKE_ARM_LEFT = 22;
+        public static final int INTAKE_ARM_RIGHT = 23;
+        public static final int INTAKE_ARM_LEFT = 24;
 
         // Intake motors
-        public static final int INTAKE_MASTER = 28;
-        //public static final int INTAKE_FOLLOWER = 24;
+        public static final int INTAKE_SPIN = 28;
 
         // Uptake motors
         public static final int UPTAKE_MASTER = 25;
@@ -114,11 +113,11 @@ public class RobotMap {
      */
     public static class Turret {
         // Rotation limits (degrees from forward position)
-        public static final double MAX_ROTATION_DEGREES = 90.0;
-        public static final double MIN_ROTATION_DEGREES = -90.0;
+        public static final double MAX_ROTATION_DEGREES = 30.0;// was 90.0;
+        public static final double MIN_ROTATION_DEGREES = -30.0; // was -90.0;
 
         // PID gains for turret position control
-        public static final double kP = 0.05;
+        public static final double kP = 0.025;
         public static final double kI = 0.0;
         public static final double kD = 0.001;
         public static final double kIZone = 0.0;
@@ -128,7 +127,7 @@ public class RobotMap {
         public static final double POSITION_TOLERANCE = 2.0;
 
         // Manual control speed limit (percent output)
-        public static final double MANUAL_SPEED_LIMIT = 0.3;
+        public static final double MANUAL_SPEED_LIMIT = 0.1;// was 0.3
 
         // Gear ratio (motor rotations per turret rotation)
         public static final double GEAR_RATIO = 100.0; // Adjust based on actual mechanism
@@ -147,8 +146,8 @@ public class RobotMap {
 
         // Limelight network table names (must match the names configured in the
         // cameras)
-        public static final String LIMELIGHT_DRIVE_NAME = "limelight-drive";
-        public static final String LIMELIGHT_SHOOTER_NAME = "limelight-shooter";
+        public static final String LIMELIGHT_DRIVE_NAME = "drive";
+        public static final String LIMELIGHT_SHOOTER_NAME = "shooter";
 
         // --------------- HUB AprilTag IDs (2026 Game Manual, p.34) ---------------
         // AprilTags are placed on all 4 faces of each alliance HUB.
@@ -239,21 +238,29 @@ public class RobotMap {
      * Intake subsystem constants
      */
     public static class Intake {
-        public static final double INTAKE_SPEED = 0.8;
-        public static final double OUTTAKE_SPEED = -0.5;
+        public static final double INTAKE_SPEED = 0.8; // was 0.8
+        public static final double OUTTAKE_SPEED = -0.5; // was -0.5
     }
 
     /**
      * IntakeArm subsystem constants
      */
     public static class IntakeArm {
-        public static final double INTAKE_ARM_SPEED = 0.5;
-        /** Maximum arm position in motor rotations (fully deployed/down) — TUNE */
-        public static final double FORWARD_SOFT_LIMIT = 20.0;
-        /** Minimum arm position in motor rotations (fully retracted/up) — TUNE */
-        public static final double REVERSE_SOFT_LIMIT = 0.0;
+        public static final double INTAKE_ARM_SPEED = 0.2;// was 0.5
+        /**
+         * Maximum arm position in mechanism rotations (0 degrees from horizontal)
+         * (fully
+         * deployed/down) — TUNE
+         */
+        public static final double FORWARD_SOFT_LIMIT = -5.0 / 360.0;
+        /**
+         * Minimum arm position in mechanism rotations (-90 degrees from horizontal)
+         * (fully retracted/up)
+         * — TUNE
+         */
+        public static final double REVERSE_SOFT_LIMIT = -90.0 / 360.0;
         /** Stator current limit (amps) to protect motor from stall damage */
-        public static final double STATOR_CURRENT_LIMIT = 40.0;
+        public static final double STATOR_CURRENT_LIMIT = 20.0;
 
         /** Target position (rotations) when arm is deployed for intaking — TUNE */
         public static final double DEPLOYED_POSITION = FORWARD_SOFT_LIMIT;

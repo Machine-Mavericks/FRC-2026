@@ -60,7 +60,7 @@ Two modes:
 isAimedAtHub() == isHubTagVisible() && |tx| <= TARGET_TX_TOLERANCE_DEG (2.0°)
 ```
 
-Gate your shoot command on `isAimedAtHub() && turret.atSetpoint()`.
+*Note: Since the robot has turrets that aim independently from the chassis orientation, you should **only** gate your shoot command on `turret.atSetpoint()`. The `isAimedAtHub()` method indicates if the chassis itself is pointed at the hub, which is not required for shooting.*
 
 ---
 
@@ -76,8 +76,8 @@ Gate your shoot command on `isAimedAtHub() && turret.atSetpoint()`.
 
 ## ⚠️ Tuning Checklist (before competition)
 
-1. **`RobotMap.Vision.LIMELIGHT_MOUNT_HEIGHT_M`** — measure camera center height above carpet
-2. **`RobotMap.Vision.LIMELIGHT_MOUNT_ANGLE_DEG`** — measure camera upward tilt angle
+1. **`RobotMap.Vision.SHOOTER_LIMELIGHT_MOUNT_HEIGHT_M`** — measure camera center height above carpet
+2. **`RobotMap.Vision.SHOOTER_LIMELIGHT_MOUNT_ANGLE_DEG`** — measure camera upward tilt angle
 3. **`RobotMap.Vision.BLUE/RED_HUB_TAG_IDS`** — verify against the game manual's field diagram
 4. **`ShooterCalculations.DISTANCE_RPM_TABLE`** — tune empirically; current values are placeholders
 5. **`TARGET_TX_TOLERANCE_DEG`** (in `HubTargetingSubsystem`) — loosen (e.g. 3°) if turret backlash causes hunting; tighten for more accuracy
@@ -87,3 +87,5 @@ Gate your shoot command on `isAimedAtHub() && turret.atSetpoint()`.
 ## Field-Coordinate Fallback
 
 When no tag is visible, `AutoTrackGoal` can call `TargetCalculations.getTargetAngleForTurret(robotPose, ...)` using odometry to keep the turret roughly pointed at the HUB. This is less accurate than the Limelight path but keeps the robot "warm" between tag sightings.
+
+Additionally, `TargetCalculations` provides a **Neutral Zone Aiming** fallback (`calculateNeutralZoneAimAngle`). When the robot is positioned within the neutral zone boundaries (`isInNeutralZone()`), this fallback can point the turret toward our alliance's "safe area" so the robot can shoot balls deep into its own zone without hitting the HUB.
