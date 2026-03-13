@@ -13,6 +13,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -59,7 +60,7 @@ public class Shooter extends SubsystemBase {
                   // CTRE Needs reduction ration (N:1) instead of actual ratio
                   .withSensorToMechanismRatio(1 / MECHANISM_RATIO))
           .withMotorOutput(new MotorOutputConfigs()
-              .withInverted(InvertedValue.Clockwise_Positive).withNeutralMode(NeutralModeValue.Coast))
+              .withInverted(InvertedValue.CounterClockwise_Positive).withNeutralMode(NeutralModeValue.Coast))
           .withSlot0(new Slot0Configs().withKP(1.25) // was 1.25
               .withKI(2.0).withKD(0).withKV(FEEDFORWARD))
           .withClosedLoopRamps(new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Seconds.of(1)));
@@ -74,6 +75,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shooterSpeed(double speed) {
+    SmartDashboard.putNumber("shooter/desierd", speed);
     if (shooterMotor != null) {
       if (speed < 15) { // in RPS
         shooterMotor.set(0);
@@ -96,11 +98,13 @@ public class Shooter extends SubsystemBase {
 
   public double CalculateSpeed(double distance) { // saying its metres
     double x = distance;
-    return 2.9382 * x * x - 7.1015 * x + 51.427;
+    return 5.7941 * x + 29.408;
   }
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("shooter/actual", shooterMotor.getVelocity().getValueAsDouble());
+    
     if (shooterMotor != null) {
       currentSpeed = shooterMotor.get();
 
@@ -110,6 +114,7 @@ public class Shooter extends SubsystemBase {
 
       this.velocity = velocity;
       this.wheelRPM = wheelRPM;
+      
     } else {
       // No hardware: keep existing internal values
     }

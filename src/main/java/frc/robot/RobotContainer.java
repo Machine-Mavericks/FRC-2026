@@ -105,17 +105,16 @@ public class RobotContainer {
         drivesystem.setDefaultCommand(new ManualDrive());
         odometry = new Odometry();
         mySubsystem = new TemplateSubsystem();
+        shooter = new Shooter();
 
         // Create shooter, turret, and uptake subsystems.
         // If left turret feature is disabled, instantiate no-op stubs so the
         // rest of the code (commands, default commands) can run without
         // null-checks or hardware present.
         if (frc.robot.RobotMap.Features.ENABLE_LEFT_TURRET) {
-            shooter = new Shooter();
             turretLeft = new TurretLeft();
         } else {
             // Left turret hardware missing -> provide software stubs
-            shooter = new ShooterDisabled();
             turretLeft = new TurretDisabled();
         }
         
@@ -178,11 +177,15 @@ public class RobotContainer {
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
 
         // Operator controlling shooter speeds
-        toolOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
-        toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
-        toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
-        toolOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
+        toolOp.b().onTrue(new IncrementShootersSpeed(shooter, 1.0));
+       // toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
+        toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 5.0));
+        toolOp.x().onTrue(new IncrementShootersSpeed(shooter, -1.0));
 
+        //toolOp.a().whileTrue(new InstantCommand(()->shooter.shooterSpeed(shooter.CalculateSpeed())));
+        toolOp.a().onFalse(new InstantCommand(()->shooter.shooterSpeed(0.0)));
+
+        toolOp.b().whileTrue(new InstantCommand(()->shooter.shooterSpeed(58.7)));
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
         //toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm, uptake)); // test next 
