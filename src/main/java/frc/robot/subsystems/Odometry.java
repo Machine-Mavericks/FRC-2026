@@ -341,6 +341,7 @@ public class Odometry extends SubsystemBase {
     private GenericEntry m_DWfieldYPos;
     private GenericEntry m_DWfieldAngle;
 
+    private GenericEntry m_detectedtags;
     private GenericEntry m_test;
 
     /** Initialize subsystem shuffleboard page and controls */
@@ -363,6 +364,7 @@ public class Odometry extends SubsystemBase {
         ShuffleboardLayout l2 = Tab.getLayout("Tag Info", BuiltInLayouts.kList);
         l2.withPosition(2, 0);
         l2.withSize(1, 4);
+        m_detectedtags = l2.add("Detections", new String()).getEntry();
         m_test = l2.add("Test", 0.0).getEntry();
 
         // deadwheel info

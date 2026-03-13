@@ -46,8 +46,7 @@ public class Pigeon extends SubsystemBase {
     
         // scaling factor for CTR Pigeon determine by test - Feb 5 2023
         // in 2023, best scaling factor was 0.99895833
-        // CTRE Phoenix 6 returns rotations, convert to degrees
-        double value = gyro.getYaw().getValueAsDouble()*360.0 + OffsetAdjust;
+        double value = gyro.getYaw().getValueAsDouble()*1.0 + OffsetAdjust;
     
         // convert continous number to -180 to +180deg to match NavX function call
         if (value > 0)
@@ -74,13 +73,13 @@ public class Pigeon extends SubsystemBase {
     /** Gets the pitch of the robot
     * @return current pitch value in deg */
     public double getPitchAngle() {
-        return gyro.getPitch().getValueAsDouble() * 360.0;
+        return gyro.getPitch().getValueAsDouble();
     }
 
     /** Get Roll
     * @return roll in deg */
     public double getRollAngle() {
-        return gyro.getRoll().getValueAsDouble() * 360.0;
+        return gyro.getRoll().getValueAsDouble();
     }
 
     /** X Acceleration
