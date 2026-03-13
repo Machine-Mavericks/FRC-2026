@@ -87,9 +87,8 @@ public class Odometry extends SubsystemBase {
         timeSinceLastTag.reset();
         timeSinceLastTag.start();
 
-        
         posePublisher = NetworkTableInstance.getDefault()
-            .getStructTopic("Odometry/robotPose", Pose2d.struct).publish();
+                .getStructTopic("Odometry/robotPose", Pose2d.struct).publish();
 
     }
 
@@ -111,7 +110,7 @@ public class Odometry extends SubsystemBase {
 
         // pose update using apriltag data
         // if (TagEnable) {
-        //     updateAprilTagOdometry(RobotContainer.limelightDrive);
+        // updateAprilTagOdometry(RobotContainer.limelightDrive);
         // }
 
         posePublisher.set(getPose2d());
@@ -249,9 +248,9 @@ public class Odometry extends SubsystemBase {
 
         // get updates from camera
 
-        if (camera.isTargetPresent()){
+        if (camera.isTargetPresent()) {
             Pose2d campose = camera.getPose();
-            
+
             setPose(campose);
         }
 
@@ -262,47 +261,50 @@ public class Odometry extends SubsystemBase {
 
         // // if results is not empty and there is a list of apriltags
         // if (TagResults != null && TagResults.targets_Fiducials != null) {
-        //     for (int i = 0; i < TagResults.targets_Fiducials.length; ++i) {
+        // for (int i = 0; i < TagResults.targets_Fiducials.length; ++i) {
 
-        //         int tagid = (int) Math.round(TagResults.targets_Fiducials[i].fiducialID);
+        // int tagid = (int) Math.round(TagResults.targets_Fiducials[i].fiducialID);
 
-        //         // // if tag is part of coral reef then use it
-                // if ((tagid >= 6 && tagid <= 11) || (tagid >= 17 && tagid <= 22)) {
-                //     // set confidence level of apriltag detection
-                //     // for now assume constant - may be refined later
-                //     m_Estimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 0.1));
+        // // // if tag is part of coral reef then use it
+        // if ((tagid >= 6 && tagid <= 11) || (tagid >= 17 && tagid <= 22)) {
+        // // set confidence level of apriltag detection
+        // // for now assume constant - may be refined later
+        // m_Estimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 0.1));
 
-                //     Pose3d pose = TagResults.targets_Fiducials[i].getCameraPose_TargetSpace();
-                //     double distance = Math.sqrt(pose.getX() * pose.getX() + pose.getZ() * pose.getZ());
+        // Pose3d pose = TagResults.targets_Fiducials[i].getCameraPose_TargetSpace();
+        // double distance = Math.sqrt(pose.getX() * pose.getX() + pose.getZ() *
+        // pose.getZ());
 
-                //     // are we close to apriltag? if so, then use pose estimate
-                //     if (distance <= 1.5)// was 1.75
-                //     {
-                //         // get field pose from limelight, convert to 2d, then convert to FRC coordinates
-                //         Pose2d LLpose = TagResults.targets_Fiducials[i].getRobotPose_FieldSpace().toPose2d();
+        // // are we close to apriltag? if so, then use pose estimate
+        // if (distance <= 1.5)// was 1.75
+        // {
+        // // get field pose from limelight, convert to 2d, then convert to FRC
+        // coordinates
+        // Pose2d LLpose =
+        // TagResults.targets_Fiducials[i].getRobotPose_FieldSpace().toPose2d();
 
-                //         // get angle from gyro
-                //         Rotation2d gyroangle = new Rotation2d(Math.toRadians(RobotContainer.gyro.getYawAngle()));
+        // // get angle from gyro
+        // Rotation2d gyroangle = new
+        // Rotation2d(Math.toRadians(RobotContainer.gyro.getYawAngle()));
 
-                //         Pose2d fieldPose = new Pose2d(LLpose.getX() + 8.774176, LLpose.getY() + 4.0259, gyroangle);
+        // Pose2d fieldPose = new Pose2d(LLpose.getX() + 8.774176, LLpose.getY() +
+        // 4.0259, gyroangle);
 
-                //         // add in to our position estimator
-                //         // assume lag time = camera latency + 20ms
-                //         // m_Estimator.addVisionMeasurement(fieldPose, PoseTimeStamp.get()-latency -
-                //         // 0.02);
-                //     }
+        // // add in to our position estimator
+        // // assume lag time = camera latency + 20ms
+        // // m_Estimator.addVisionMeasurement(fieldPose, PoseTimeStamp.get()-latency -
+        // // 0.02);
+        // }
 
-                //     // m_test.setDouble(RobotContainer.camera.getLatencyContribution());
+        // // m_test.setDouble(RobotContainer.camera.getLatencyContribution());
 
-                // } // end if tag belongs to coral reef
+        // } // end if tag belongs to coral reef
 
-            // } // end for
+        // } // end for
 
-            // // m_test.setDouble(timeSinceLastTag.get());
-            timeSinceLastTag.reset();
-        }
-
-    
+        // // m_test.setDouble(timeSinceLastTag.get());
+        timeSinceLastTag.reset();
+    }
 
     // -------------------- Odometry Store/Recall Methods --------------------
 
