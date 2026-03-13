@@ -10,6 +10,7 @@ import frc.robot.commands.TemplateCommand;
 import frc.robot.commands.UptakeAndFeed;
 import frc.robot.commands.AutoTrackGoal;
 import frc.robot.commands.FixOdometry;
+import frc.robot.commands.HopperJogBack;
 import frc.robot.commands.ManualTurretControl;
 import frc.robot.subsystems.HubTargetingSubsystem;
 import frc.robot.subsystems.Limelight;
@@ -197,6 +198,7 @@ public class RobotContainer {
         toolOp.rightBumper().whileTrue(new UptakeAndFeed(hopperFeed,uptake));
         toolOp.leftBumper().whileTrue(new RunIntakeCommand(intake));
         toolOp.y().whileTrue(new ShootCommand(shooter));
+        toolOp.back().whileTrue(new HopperJogBack(hopperFeed));
     }
 
     /**
