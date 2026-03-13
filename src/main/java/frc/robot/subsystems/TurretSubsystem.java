@@ -165,7 +165,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
             }
             
             if (motor != null) {
-                motor.set(speed);
+                //motor.set(speed);
             }
         }
     }
@@ -201,7 +201,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
                 (currentAngle <= RobotMap.Turret.MIN_ROTATION_DEGREES && output < 0)) {
                 output = 0.0;
             }
-            motor.set(output);
+            //motor.set(output);
         }
 
         updateShuffleboard();

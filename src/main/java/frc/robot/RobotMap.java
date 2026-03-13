@@ -146,8 +146,8 @@ public class RobotMap {
 
         // Limelight network table names (must match the names configured in the
         // cameras)
-        public static final String LIMELIGHT_DRIVE_NAME = "limelight-drive";
-        public static final String LIMELIGHT_SHOOTER_NAME = "limelight-shooter";
+        public static final String LIMELIGHT_DRIVE_NAME = "drive";
+        public static final String LIMELIGHT_SHOOTER_NAME = "shooter";
 
         // --------------- HUB AprilTag IDs (2026 Game Manual, p.34) ---------------
         // AprilTags are placed on all 4 faces of each alliance HUB.

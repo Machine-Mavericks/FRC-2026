@@ -27,9 +27,6 @@ import frc.robot.subsystems.Uptake;
 import frc.robot.commands.IntakeSequence;
 import frc.robot.commands.ShootSequence;
 import frc.robot.utils.AutoFunctions;
-
-import java.util.spi.ToolProvider;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -88,11 +85,11 @@ public class RobotContainer {
         // create instances of subsystems here
         gyro = new Pigeon();
 
-        limelightDrive = new Limelight(RobotMap.Vision.LIMELIGHT_DRIVE_NAME, false);
+        limelightDrive = new Limelight(RobotMap.Vision.LIMELIGHT_DRIVE_NAME);
         limelightDrive.setCameraPoseRobotSpace(RobotMap.Vision.DRIVE_LIMELIGHT_3D_POSE);
         // Create Limelight for AprilTag detection — filter to all HUB tags (both
         // alliances)
-        limelightShooter = new Limelight(RobotMap.Vision.LIMELIGHT_SHOOTER_NAME, true);
+        limelightShooter = new Limelight(RobotMap.Vision.LIMELIGHT_SHOOTER_NAME);
         limelightShooter.setCameraPoseRobotSpace(RobotMap.Vision.SHOOTER_LIMELIGHT_3D_POSE);
         int[] allHubTagIds = concatArrays(RobotMap.Vision.BLUE_HUB_TAG_IDS, RobotMap.Vision.RED_HUB_TAG_IDS);
         limelightShooter.SetFiducialIDFiltersOverride(allHubTagIds);
@@ -130,9 +127,9 @@ public class RobotContainer {
         hopperFeed = new HopperFeed();
 
         // Set default command for turrets (auto-tracking)
-       // autoTrack = new AutoTrackGoal();
-        // turretLeft.setDefaultCommand(autoTrack);// reanable after tuning 
-        // turretRight.setDefaultCommand(autoTrack);// reanable after tuning 
+        autoTrack = new AutoTrackGoal();
+        turretLeft.setDefaultCommand(autoTrack);
+        turretRight.setDefaultCommand(autoTrack);
 
         // attach commands to controller buttons
         configureBindings();
@@ -153,7 +150,7 @@ public class RobotContainer {
         // operator controls
 
         // Manual turret control - hold left bumper to override auto-tracking
-       // toolOp.leftBumper().whileTrue(new ManualTurretControl());  // re-enable when done tuning
+        toolOp.leftBumper().whileTrue(new ManualTurretControl());
 
         // description of commands available:
         // .onTrue - runs command when button changes from not-pressed to pressed.
@@ -176,27 +173,20 @@ public class RobotContainer {
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
 
         // Operator controlling shooter speeds
-        // toolOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
-        // toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
-        // toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
-        // toolOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
+        toolOp.b().onTrue(new IncrementShootersSpeed(shooter, 0.5));
+        toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
+        toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 15));
+        toolOp.x().onTrue(new IncrementShootersSpeed(shooter, -15));
 
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
-        // toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, uptake,
-        // hopperFeed)); // test next
+        //toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm, uptake)); // test next 
 
         // Intake control - toggle right bumper: first press deploys arm + runs intake,
         // second press stops intake and stows arm.
-        // toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); //
-        // test next
-        // toolOp.leftBumper().whileTrue(new InstantCommand(() -> RobotContainer.intake.intake()));
-        // toolOp.rightBumper().whileTrue(new InstantCommand(() -> RobotContainer.intake.outtake()));
+        toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm));
 
-        // toolOp.leftBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
-        // toolOp.rightBumper().onFalse(new InstantCommand(() -> RobotContainer.intake.stop()));
 
-        // toolOp.start().onTrue(new InstantCommand(() -> RobotContainer.intakeArm.zeroEncoder()));
     }
 
     /**
@@ -205,19 +195,18 @@ public class RobotContainer {
      * 
      * @return the command to run in autonomous
      */
-    // public Command getAutonomousCommand() {
-    // return new AutoTrackGoal(); // this isn't right, we will pick a proper one
-    // later, but for now we just want
-    // to test that the command scheduling and subsystem default commands work in
-    // autonomous
+    //public Command getAutonomousCommand() {
+        //return new AutoTrackGoal(); // this isn't right, we will pick a proper one later, but for now we just want
+                                    // to test that the command scheduling and subsystem default commands work in
+                                    // autonomous
 
-    // Example: Move robot forward 1 meter, no rotation
-    // return new frc.robot.commands.MoveRobotRelative(
-    // 1.0, // maxSpeed
-    // 0.5, // maxAccel (used as maxRotSpeed)
-    // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
-    // );
-    // }
+        // Example: Move robot forward 1 meter, no rotation
+        // return new frc.robot.commands.MoveRobotRelative(
+        // 1.0, // maxSpeed
+        // 0.5, // maxAccel (used as maxRotSpeed)
+        // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
+        // );
+    //}
 
     /**
      * Helper: concatenate two int arrays into one (used to combine blue + red HUB
