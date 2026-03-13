@@ -46,8 +46,8 @@ public class IntakeArm extends SubsystemBase {
         configLeft.Slot0.kD = 0.1;
         configLeft.Slot0.kG = 0.0; // TUNE: Voltage required to hold arm horizontal
         configLeft.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        configLeft.MotionMagic.MotionMagicCruiseVelocity = 5;
-        configLeft.MotionMagic.MotionMagicAcceleration = 10;
+        configLeft.MotionMagic.MotionMagicCruiseVelocity = 1;
+        configLeft.MotionMagic.MotionMagicAcceleration = 2;
 
         configLeft.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configLeft.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -72,8 +72,8 @@ public class IntakeArm extends SubsystemBase {
         configRight.Slot0.kD = 0.1;
         configRight.Slot0.kG = 0.0; // TUNE: Voltage required to hold arm horizontal
         configRight.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        configRight.MotionMagic.MotionMagicCruiseVelocity = 5;
-        configRight.MotionMagic.MotionMagicAcceleration = 10;
+        configRight.MotionMagic.MotionMagicCruiseVelocity = 1;
+        configRight.MotionMagic.MotionMagicAcceleration = 2;
 
         configRight.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configRight.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
