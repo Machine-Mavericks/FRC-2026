@@ -50,9 +50,9 @@ The shooter speed maps calculated distance to the goal directly to a desired fly
 The independent left and right turrets need precise PID tuning to aim quickly without oscillating.
 
 **Parameters to Tune (`RobotMap.Turret`):**
-*   `MAX_ROTATION_DEGREES` / `MIN_ROTATION_DEGREES`: Update these based on the physical hard stops of your mechanism to prevent the turrets from tearing out their own wires.
+*   `MAX_ROTATION_DEGREES` / `MIN_ROTATION_DEGREES`: Update these based on the physical hard stops of your mechanism. Currently set to `+/- 30.0` degrees.
 *   `LEFT_TURRET_X_OFFSET`, `LEFT_TURRET_Y_OFFSET`, etc: Used for Odometry fallback targeting. Measure the physical distance from the exact center of the robot to the center of rotation for each turret.
-*   `kP, kI, kD`: Standard PID gains. The current values are placeholders. Tune these using Phoenix Tuner first to ensure the turrets snap to their targets without excessive jitter.
+*   `kP, kI, kD`: Standard PID gains. Currently `kP` is `0.025`. Tune these using Phoenix Tuner first to ensure the turrets snap to their targets without excessive jitter.
 
 ### 3a. Tuning Procedure (using Test Mode)
 
@@ -67,9 +67,9 @@ You MUST do this first so the robot knows where straight ahead is.
 **Step 2: Tune PID Gains**
 1. While still in Test Mode, use the **Operator A Button and D-Pad** to snap between positions:
    * **A Button:** Move to `0.0` (Center)
-   * **D-Pad Left:** Move to `MIN_ROTATION_DEGREES` (-90 deg)
-   * **D-Pad Right:** Move to `MAX_ROTATION_DEGREES` (90 deg)
-2. Adjust `kP` (currently `0.05`), `kI` (currently `0.0`), and `kD` (currently `0.001`) in `RobotMap.Turret` until the turrets snap cleanly without violent overshoot or sluggishness.
+   * **D-Pad Left:** Move to `MIN_ROTATION_DEGREES` (-30 deg)
+   * **D-Pad Right:** Move to `MAX_ROTATION_DEGREES` (30 deg)
+2. Adjust `kP` (currently `0.025`), `kI` (currently `0.0`), and `kD` (currently `0.001`) in `RobotMap.Turret` until the turrets snap cleanly without violent overshoot or sluggishness.
 
 ---
 
@@ -82,8 +82,8 @@ The IntakeArm has a finite range of travel and uses Motion Magic (TalonFX on-con
 **Important Concept:** To properly calculate gravity feedforward, the arm's angle relative to gravity must be known. In this codebase, **0 rotations = PERFECTLY HORIZONTAL**.
 
 **Parameters to Tune (`RobotMap.IntakeArm`):**
-*   `FORWARD_SOFT_LIMIT` *(currently `90.0 / 360.0` rotations)* — motor rotations at the fully retracted (home/stowed) straight-up position.
-*   `REVERSE_SOFT_LIMIT` *(currently `0.0 / 360.0` rotations)* — motor rotations corresponding to the arm fully deployed (down). 
+*   `FORWARD_SOFT_LIMIT` *(currently `-10.0 / 360.0` rotations)* — motor rotations corresponding to the arm fully deployed (down). 
+*   `REVERSE_SOFT_LIMIT` *(currently `-80.0 / 360.0` rotations)* — motor rotations at the fully stowed (up) position. 
 
 ### 4b. Tuning Procedure (using Test Mode)
 
@@ -92,7 +92,7 @@ We have built dedicated tuning controls into **Test Mode** (in `Robot.java`) to 
 **Step 1: Set Position / Zero Encoders**
 You MUST do this first so the robot knows where horizontal is.
 1. Enable the robot in **Test Mode**.
-2. **OPTION A (Easy Way):** If you let the arm boot up resting naturally against its straight-up (stowed) hard stop, simply press the **Start** button on the Operator controller. This forces the encoder to the `STOWED_POSITION` (+90 deg).
+2. **OPTION A (Easy Way):** If you let the arm boot up resting naturally against its straight-up (stowed) hard stop, simply press the **Start** button on the Operator controller. This forces the encoder to the `STOWED_POSITION` (-80 deg).
 3. **OPTION B (Manual Way):** If you physically moved the arm so it is perfectly horizontal before enabling, press the **Back** button on the Operator controller to zero the encoders (0 deg).
 
 **Step 2: Tune Gravity Feedforward ($kG$)**
@@ -118,7 +118,7 @@ You MUST do this first so the robot knows where horizontal is.
 ### 4c. Stator Current Limit
 
 **Parameter (`RobotMap.IntakeArm`):**
-*   `STATOR_CURRENT_LIMIT` *(currently `40.0` A)* — protects the motor from stall damage when the arm reaches a hard stop. Lower values provide more protection but reduce peak torque. `30–50 A` is a reasonable range for an arm mechanism.
+*   `STATOR_CURRENT_LIMIT` *(currently `20.0` A)* — protects the motor from stall damage when the arm reaches a hard stop. Lower values provide more protection but reduce peak torque. `20–30 A` is a reasonable range for this mechanism.
 
 ### 4e. Uptake Feed Rate
 
