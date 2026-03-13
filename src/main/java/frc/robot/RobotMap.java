@@ -252,13 +252,13 @@ public class RobotMap {
          * (fully
          * deployed/down) — TUNE
          */
-        public static final double FORWARD_SOFT_LIMIT = -5.0 / 360.0;
+        public static final double FORWARD_SOFT_LIMIT = -10.0 / 360.0;
         /**
          * Minimum arm position in mechanism rotations (-90 degrees from horizontal)
          * (fully retracted/up)
          * — TUNE
          */
-        public static final double REVERSE_SOFT_LIMIT = -90.0 / 360.0;
+        public static final double REVERSE_SOFT_LIMIT = -80.0 / 360.0;
         /** Stator current limit (amps) to protect motor from stall damage */
         public static final double STATOR_CURRENT_LIMIT = 20.0;
 
