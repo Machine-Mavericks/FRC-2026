@@ -11,6 +11,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -44,6 +46,8 @@ public class Odometry extends SubsystemBase {
     Pose2d currentPoseBeforeAdjustment;
 
     public boolean TagEnable = true;
+
+    StructPublisher<Pose2d> posePublisher;
 
     public Odometry() {
 
@@ -83,6 +87,10 @@ public class Odometry extends SubsystemBase {
         timeSinceLastTag.reset();
         timeSinceLastTag.start();
 
+        
+        posePublisher = NetworkTableInstance.getDefault()
+            .getStructTopic("Odometry/robotPose", Pose2d.struct).publish();
+
     }
 
     /**
@@ -105,6 +113,8 @@ public class Odometry extends SubsystemBase {
         // if (TagEnable) {
         //     updateAprilTagOdometry(RobotContainer.limelightDrive);
         // }
+
+        posePublisher.set(getPose2d());
 
         updateShuffleboard();
 
@@ -235,11 +245,15 @@ public class Odometry extends SubsystemBase {
     // ---------- Apriltag odometry methods ----------
 
     // helper function to updates drive wheel odometry - called by periodic()
-    private void updateAprilTagOdometry(Limelight camera) {
+    public void updateAprilTagOdometry(Limelight camera) {
 
         // get updates from camera
 
-        camera.getPose();
+        if (camera.isTargetPresent()){
+            Pose2d campose = camera.getPose();
+            
+            setPose(campose);
+        }
 
         // TagResults = camera.GetJSONResults();
 

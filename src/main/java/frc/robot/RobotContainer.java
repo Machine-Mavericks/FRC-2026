@@ -6,6 +6,7 @@ import frc.robot.commands.MoveToPose;
 import frc.robot.commands.Pause;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.commands.AutoTrackGoal;
+import frc.robot.commands.FixOdometry;
 import frc.robot.commands.ManualTurretControl;
 import frc.robot.subsystems.HubTargetingSubsystem;
 import frc.robot.subsystems.Limelight;
@@ -146,6 +147,8 @@ public class RobotContainer {
             Rotation2d newHeading = AutoFunctions.redVsBlue(new Rotation2d(0.0));
             odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
         }));
+
+        driverOp.start().onTrue(new FixOdometry());
 
         // operator controls
 
