@@ -186,7 +186,7 @@ public class RobotContainer {
         //toolOp.a().whileTrue(new InstantCommand(()->shooter.shooterSpeed(shooter.CalculateSpeed())));
         toolOp.a().onFalse(new InstantCommand(()->shooter.shooterSpeed(0.0)));
 
-        toolOp.b().whileTrue(new InstantCommand(()->shooter.shooterSpeed(58.7)));
+        toolOp.b().onTrue(new InstantCommand(()->shooter.shooterSpeed(58.7)));
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
         //toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm, uptake)); // test next 

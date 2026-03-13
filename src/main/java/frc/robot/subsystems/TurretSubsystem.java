@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -105,7 +106,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
         if (!manualControlEnabled && pidController != null) {
             // Run software PID: set the setpoint (degrees). Actual motor output
             // is applied in periodic().
-            // pidController.setSetpoint(angleDegrees);
+            pidController.setSetpoint(angleDegrees);
         }
     }
     
@@ -165,7 +166,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
             }
             
             if (motor != null) {
-                //motor.set(speed);
+                motor.set(speed);
             }
         }
     }
@@ -201,7 +202,11 @@ public abstract class TurretSubsystem extends SubsystemBase {
                 (currentAngle <= RobotMap.Turret.MIN_ROTATION_DEGREES && output < 0)) {
                 output = 0.0;
             }
-            // motor.set(output);
+            motor.set(output);
+
+            SmartDashboard.putNumber("Turret/CurrentAngle", currentAngle);
+            SmartDashboard.putNumber("Output", output);
+            SmartDashboard.putNumber("Setpoint", pidController.getSetpoint());
         }
 
         updateShuffleboard();
