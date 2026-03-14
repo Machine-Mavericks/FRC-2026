@@ -64,6 +64,10 @@ public class HopperFeed extends SubsystemBase {
         motor.set(RobotMap.HopperFeed.DEFAULT_SPEED);
     }
 
+     public void jogBack(){
+        motor.set(-1* RobotMap.HopperFeed.DEFAULT_SPEED);
+    }
+
     public void stop() {
         motor.set(0.0);
     }
