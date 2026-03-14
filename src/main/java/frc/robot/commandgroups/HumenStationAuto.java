@@ -21,11 +21,11 @@ import frc.robot.utils.AutoFunctions;
 // ParallelCommandGroup
 // ParallelRaceGroup
 // ParallelDeadlineGroup
-public class ShootPreloadsAuto extends SequentialCommandGroup {
+public class HumenStationAuto extends SequentialCommandGroup {
 
     
     // constructor
-    public ShootPreloadsAuto() {
+    public HumenStationAuto() {
 
         addCommands (
             
@@ -60,6 +60,40 @@ public class ShootPreloadsAuto extends SequentialCommandGroup {
         
         } ),
         
+        // Turn on tag detection
+        new InstantCommand(()->RobotContainer.odometry.TagEnable=true),
+
+       // Spinup Shoot
+        new ShootCommand(RobotContainer.shooter),
+
+        // Jog back hopper to clear anything thats stuck 
+        new InstantCommand(()-> RobotContainer.hopperFeed.jogBack()),
+        
+        // How long the jog back is 
+        new Pause(1.0),
+
+        // Feed hopper
+        new InstantCommand(()-> RobotContainer.hopperFeed.feed()),
+
+        // How long the feed is 
+        new Pause(1.0),
+
+        // Run Uptake 
+        new InstantCommand(()-> RobotContainer.uptake.feedShooter()),
+
+        // How long uptake will run
+        new Pause(1.0),
+
+         // Turn on tag detection
+        new InstantCommand(()->RobotContainer.odometry.TagEnable=false),
+
+        // Move to humen station 
+        new MoveToPose(2.0, 
+                        2.5,
+                        new Pose2d (5.98,2.68, new Rotation2d(Math.toRadians(120)))
+        ),
+
+        new Pause(5.0),
 
         // Spinup Shoot
         new ShootCommand(RobotContainer.shooter),
@@ -68,20 +102,50 @@ public class ShootPreloadsAuto extends SequentialCommandGroup {
         new InstantCommand(()-> RobotContainer.hopperFeed.jogBack()),
         
         // How long the jog back is 
-        new Pause(3.0),
+        new Pause(1.0),
 
         // Feed hopper
         new InstantCommand(()-> RobotContainer.hopperFeed.feed()),
 
         // How long the feed is 
-        new Pause(3.0),
+        new Pause(1.0),
 
         // Run Uptake 
         new InstantCommand(()-> RobotContainer.uptake.feedShooter()),
 
         // How long uptake will run
-        new Pause(3.0) 
-           
+        new Pause(1.0),
+
+        // Move to shoot
+        new MoveToPose(2.0, 
+                        2.5,
+                        new Pose2d (5.98,2.68, new Rotation2d(Math.toRadians(120)))
+        ),
+
+         // Turn off tag detection
+        new InstantCommand(()->RobotContainer.odometry.TagEnable=false)
+
+        
+
+        
+        // Turn on tag detection
+        //new InstantCommand(()->RobotContainer.odometry.TagEnable=true),
+
+        //new Pause(1.0)
+
+    
+        // move slowly to exact spot               
+        //new MoveToPose(0.5, 
+        //               1.0,
+        //               new Pose2d (5.40,2.75, new Rotation2d(Math.toRadians(120)))),
+
+        
+        // Turn off tag detection
+        //new InstantCommand(()->RobotContainer.odometry.TagEnable=false)
+        
+        
+
+       
         );
     }
 

@@ -120,7 +120,7 @@ public class IntakeArm extends SubsystemBase {
     }
 
     public void debug(double speed) {
-        intakeArmMotorRight.set(speed);
+        intakeArmMotorRight.set(speed * 1.2);
         intakeArmMotorLeft. set(speed);
     }
 
@@ -197,6 +197,11 @@ public class IntakeArm extends SubsystemBase {
     public void setStowedPosition() {
         intakeArmMotorRight.setPosition(RobotMap.IntakeArm.STOWED_POSITION);
         intakeArmMotorLeft.setPosition(RobotMap.IntakeArm.STOWED_POSITION);
+    }
+
+    public void setDeploeyedPosition() {
+        intakeArmMotorRight.setPosition(RobotMap.IntakeArm.DEPLOYED_POSITION);
+        intakeArmMotorLeft.setPosition(RobotMap.IntakeArm.DEPLOYED_POSITION);
     }
 
     /** Returns true if the forward (deployed) hardware limit switch is triggered */

@@ -8,12 +8,16 @@ import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.commands.UptakeAndFeed;
+import frc.robot.commandgroups.MoveOffLineAndShootPreloadsAuto;
+import frc.robot.commandgroups.ShootPreloadsAuto;
+import frc.robot.commands.AHHHCommand;
 import frc.robot.commands.AutoTrackGoal;
 import frc.robot.commands.FixOdometry;
 import frc.robot.commands.HopperJogBack;
 import frc.robot.commands.ManualTurretControl;
 import frc.robot.subsystems.HubTargetingSubsystem;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.MainShuffleBoardTab;
 import frc.robot.subsystems.Pigeon;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
@@ -74,6 +78,9 @@ public class RobotContainer {
     // field so isReadyToShoot() and getCalculatedShooterRPM() are reachable from
     // anywhere (e.g. button bindings). Fixes issue #13.
     public static AutoTrackGoal autoTrack;
+
+     // main shuffleboar page
+    public static MainShuffleBoardTab mainShufflePage;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -156,7 +163,7 @@ public class RobotContainer {
         // operator controls
 
         // Manual turret control - hold left bumper to override auto-tracking
-        toolOp.leftBumper().whileTrue(new ManualTurretControl());
+       // toolOp.leftBumper().whileTrue(new ManualTurretControl());
 
         // description of commands available:
         // .onTrue - runs command when button changes from not-pressed to pressed.
@@ -187,7 +194,7 @@ public class RobotContainer {
         //toolOp.a().whileTrue(new InstantCommand(()->shooter.shooterSpeed(shooter.CalculateSpeed())));
         toolOp.a().onFalse(new InstantCommand(()->shooter.shooterSpeed(0.0)));
 
-        toolOp.b().onTrue(new InstantCommand(()->shooter.shooterSpeed(58.7)));
+       // toolOp.b().onTrue(new InstantCommand(()->shooter.shooterSpeed(58.7)));
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
         //toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm, uptake)); // test next 
@@ -197,8 +204,13 @@ public class RobotContainer {
         //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
         toolOp.rightBumper().whileTrue(new UptakeAndFeed(hopperFeed,uptake));
         toolOp.leftBumper().whileTrue(new RunIntakeCommand(intake));
+        // toolOp.leftTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-5.0 / 360.0)));
+        // toolOp.rightTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-90.0 / 360.0)));
         toolOp.y().whileTrue(new ShootCommand(shooter));
         toolOp.back().whileTrue(new HopperJogBack(hopperFeed));
+
+        toolOp.povDown().whileTrue(new AHHHCommand(-0.15));
+        toolOp.povUp().whileTrue(new AHHHCommand(0.15));
     }
 
     /**
@@ -220,6 +232,36 @@ public class RobotContainer {
         // );
     //}
 
+    public Command getAutonomousCommand() {
+    
+        // get autonomous path to run
+        // for example, a subsystem could made responsible for returning selected path
+        // from a list populated in shuffleboard.
+        int index = RobotContainer.mainShufflePage.getSelectedAutoIndex(); //RobotContainer.autopathselect.GetSelectedPath();
+
+        Command chosenCommand =  null; 
+
+    
+        
+        // return autonomous command to be run in autonomous
+        if (index == 0)
+            chosenCommand = new Pause(20.0); // do nothing command 
+        else if (index == 1)
+            chosenCommand = new MoveOffLineAndShootPreloadsAuto(); // drive off the line 
+            else if (index == 2)
+            chosenCommand = new ShootPreloadsAuto();
+        //     else if (index == 3)
+        //     chosenCommand = new OneCoralAutoCenter();
+        //     else if (index == 4)
+        //     chosenCommand = new OneCoralAutoLeft();
+        //     else if (index == 5)
+        //     chosenCommand = new TwoCoralAutoLeft();
+        
+
+        return new SequentialCommandGroup(
+            new Pause(RobotContainer.mainShufflePage.getAutoDelay()),
+            chosenCommand);
+    }
     /**
      * Helper: concatenate two int arrays into one (used to combine blue + red HUB
      * tag IDs).
