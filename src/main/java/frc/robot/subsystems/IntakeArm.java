@@ -115,7 +115,7 @@ public class IntakeArm extends SubsystemBase {
 
     public void debug(double speed) {
         intakeArmMotorRight.set(speed);
-        intakeArmMotorLeft. set(speed);
+        intakeArmMotorLeft.set(speed);
     }
 
     // place special subsystem methods here
@@ -171,6 +171,7 @@ public class IntakeArm extends SubsystemBase {
 
     public void stop() {
         intakeArmMotorRight.set(0);
+        intakeArmMotorLeft.set(0);
     }
 
     /**
