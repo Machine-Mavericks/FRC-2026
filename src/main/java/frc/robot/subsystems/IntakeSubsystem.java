@@ -15,8 +15,13 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.Publisher;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.TalonLogger;
 
 /**
  * Intake subsystem for controlling the intake mechanism.
@@ -35,6 +40,8 @@ public class IntakeSubsystem extends SubsystemBase {
         // The second parameter is whether the follower should invert its
         // direction compared to the master.
         // followerMotor.setControl(new Follower(masterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        
+        SmartDashboard.putData("Intake/Motor", new TalonLogger(intakeMotor));
     }
 
     // 1:1 geared, follower follows master

@@ -12,9 +12,11 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
+import frc.robot.TalonLogger;
 
 /**
  * HopperFeed subsystem - feeds game pieces from the hopper toward the shooter.
@@ -28,6 +30,8 @@ public class HopperFeed extends SubsystemBase {
 
     public HopperFeed() {
         motor = new TalonFX(RobotMap.CANID.HOPPER_FEED);
+
+        SmartDashboard.putData("Hopper/Motor", new TalonLogger(motor));
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 1;

@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.TalonLogger;
 
 public class Shooter extends SubsystemBase {
 
@@ -53,6 +54,7 @@ public class Shooter extends SubsystemBase {
   public Shooter(boolean skipHardware) {
     if (!skipHardware) {
       shooterMotor = new TalonFX(RobotMap.CANID.SHOOTER);
+      SmartDashboard.putData("shooter/Motor", new TalonLogger(shooterMotor));
 
       TalonFXConfiguration config = new TalonFXConfiguration()
           .withFeedback(
@@ -75,7 +77,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shooterSpeed(double speed) {
-    SmartDashboard.putNumber("shooter/desierd", speed);
+    SmartDashboard.putNumber("shooter/desired", speed);
     if (shooterMotor != null) {
       if (speed < 15) { // in RPS
         shooterMotor.set(0);

@@ -272,7 +272,7 @@ public class RobotMap {
      * Uptake subsystem constants
      */
     public static class Uptake {
-        public static final double UPTAKE_SPEED = 0.8;
+        public static final double UPTAKE_SPEED = 1;
         public static final double GEAR_RATIO = 9.0;
     }
 

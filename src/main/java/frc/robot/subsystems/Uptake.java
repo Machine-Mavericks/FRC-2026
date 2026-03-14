@@ -5,8 +5,11 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.TalonLogger;
 
 /**
  * Uptake subsystem for feeding game pieces into the shooter flywheels.
@@ -28,6 +31,9 @@ public class Uptake extends SubsystemBase {
         if (!skipHardware) {
             masterMotor = new TalonFX(RobotMap.CANID.UPTAKE_MASTER);
             followerMotor = new TalonFX(RobotMap.CANID.UPTAKE_FOLLOWER);
+
+            SmartDashboard.putData("Uptake/masterMotor", new TalonLogger(masterMotor));
+            SmartDashboard.putData("Uptake/followermotor", new TalonLogger(followerMotor));
 
             TalonFXConfiguration config = new TalonFXConfiguration();
             config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 1;
