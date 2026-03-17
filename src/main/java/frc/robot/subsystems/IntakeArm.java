@@ -177,6 +177,7 @@ public class IntakeArm extends SubsystemBase {
 
     public void stop() {
         intakeArmMotorRight.set(0);
+        intakeArmMotorLeft.set(0);
     }
 
     /**
