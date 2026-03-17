@@ -8,6 +8,7 @@ import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.commands.UptakeAndFeed;
+import frc.robot.commandgroups.JogUptakeAndFeedCommand;
 import frc.robot.commandgroups.MoveOffLineAndShootPreloadsAuto;
 import frc.robot.commandgroups.ShootPreloadsAuto;
 import frc.robot.commands.AHHHCommand;
@@ -80,7 +81,7 @@ public class RobotContainer {
     public static AutoTrackGoal autoTrack;
 
      // main shuffleboar page
-    public static MainShuffleBoardTab mainShufflePage;
+    public static MainShuffleBoardTab mainShufflePage = new MainShuffleBoardTab();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -202,7 +203,7 @@ public class RobotContainer {
         // Intake control - toggle right bumper: first press deploys arm + runs intake,
         // second press stops intake and stows arm.
         //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
-        toolOp.rightBumper().whileTrue(new UptakeAndFeed(hopperFeed,uptake));
+        toolOp.rightBumper().whileTrue(new JogUptakeAndFeedCommand(hopperFeed,uptake));
         toolOp.leftBumper().whileTrue(new RunIntakeCommand(intake));
         // toolOp.leftTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-5.0 / 360.0)));
         // toolOp.rightTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-90.0 / 360.0)));
@@ -240,16 +241,18 @@ public class RobotContainer {
         int index = RobotContainer.mainShufflePage.getSelectedAutoIndex(); //RobotContainer.autopathselect.GetSelectedPath();
 
         Command chosenCommand =  null; 
-
+System.out.println("Getting Autonomous Command!");
+        System.out.println(index);
     
         
         // return autonomous command to be run in autonomous
         if (index == 0)
             chosenCommand = new Pause(20.0); // do nothing command 
         else if (index == 1)
-            chosenCommand = new MoveOffLineAndShootPreloadsAuto(); // drive off the line 
-            else if (index == 2)
-            chosenCommand = new ShootPreloadsAuto();
+            chosenCommand = new ShootPreloadsAuto(true); // drive off the line 
+        else if (index == 2)
+            chosenCommand = new ShootPreloadsAuto(false);
+   
         //     else if (index == 3)
         //     chosenCommand = new OneCoralAutoCenter();
         //     else if (index == 4)

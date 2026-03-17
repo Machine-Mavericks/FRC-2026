@@ -26,6 +26,8 @@ public class Limelight extends SubsystemBase {
     private StructPublisher<Pose2d> posePublisher;
     private IntegerPublisher tagPublisher;
 
+    private Pose2d filteredPose = new Pose2d();
+
     public Limelight(String name) {
         this.name = "limelight-" + name;
         posePublisher = NetworkTableInstance.getDefault()
@@ -54,11 +56,18 @@ public class Limelight extends SubsystemBase {
 
         LimelightHelpers.SetRobotOrientation(name, yaw, 0.0, 0.0, 0.0, 0.0, 0.0);
 
+        Pose2d raw = getRawPose();
+
+        if(raw.getX() != 0 || raw.getY() != 0){
+            
+            filteredPose = raw;
+        }
+
         posePublisher.set(getPose());
         tagPublisher.set(LimelightHelpers.getTargetCount(name));
     }
 
-    public Pose2d getPose(){
+    private Pose2d getRawPose(){
         LimelightHelpers.PoseEstimate measurement;
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent() && alliance.get() == Alliance.Blue){
@@ -67,6 +76,10 @@ public class Limelight extends SubsystemBase {
             measurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);      
         }
         return measurement.pose;
+    }
+
+    public Pose2d getPose(){
+        return filteredPose;
     }
 
 

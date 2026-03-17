@@ -38,7 +38,7 @@ public class Uptake extends SubsystemBase {
             TalonFXConfiguration config = new TalonFXConfiguration();
             config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 1;
             config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
-            config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+            config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
            masterMotor.getConfigurator().apply(config);
            followerMotor.getConfigurator().apply(config);
 
@@ -56,6 +56,10 @@ public class Uptake extends SubsystemBase {
     public void feedShooter() {
          masterMotor.set(RobotMap.Uptake.UPTAKE_SPEED);
         
+    }
+
+    public void jogBack() {
+        masterMotor.set(-RobotMap.Uptake.UPTAKE_SPEED);
     }
 
     /**

@@ -31,7 +31,7 @@ public class ManualDrive extends Command {
     double basePowerFacter = 0.12;
     double boostPowerFacter = 0.88;
 
-    final double MAX_ACCEL = 100.0;  // max accel in m/s2
+    final double MAX_ACCEL = 10.0;  // max accel in m/s2 // was 100
 
     double old_dX, old_dY;
 

@@ -131,7 +131,8 @@ public class MainShuffleBoardTab extends SubsystemBase {
         // add autonomous commands to page -
         m_autonomousPath = new SendableChooser<Integer>();
         m_autonomousPath.addOption("Do Nothing",0);
-        m_autonomousPath.addOption("Shoot Preloads",1);
+        m_autonomousPath.addOption("Version A",1);
+        m_autonomousPath.addOption("Version B", 2);
         //m_autonomousPath.addOption("Off Line & Shoot Preloads", 2);
         //m_autonomousPath.addOption("Preloads and Humen Station", 3);;
         m_autonomousPath.setDefaultOption("Do Nothing", 0);
