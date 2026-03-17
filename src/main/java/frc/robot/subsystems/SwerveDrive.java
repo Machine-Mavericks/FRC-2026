@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -18,6 +20,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -592,6 +598,12 @@ public class SwerveDrive extends SubsystemBase {
     private GenericEntry m_LRDriveMotorSpeed;
     private GenericEntry m_RRDriveMotorSpeed;
 
+    // Modern drive telemetry
+    private StructArrayPublisher<SwerveModuleState> desiredPublisher;
+    private StructArrayPublisher<SwerveModuleState> measuredPublisher;
+    private StructPublisher<ChassisSpeeds> desiredVectorPublisher;
+    private StructPublisher<ChassisSpeeds> measuredVectorPublisher;
+
     /** Initialize subsystem shuffleboard page and controls */
     private void initializeShuffleboard() {
         // Create odometry page in shuffleboard
@@ -648,6 +660,11 @@ public class SwerveDrive extends SubsystemBase {
         m_RRDriveMotorSpeed = l4.add("Drive Speed(mps)", 0.0).getEntry();
         m_RRDriveMotorTargetSpeed = l4.add("Drive Target(mps)", 0.0).getEntry();
 
+        desiredPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("SwerveDrive/Desired States", SwerveModuleState.struct).publish();
+        measuredPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("SwerveDrive/Measured States", SwerveModuleState.struct).publish();
+        desiredVectorPublisher = NetworkTableInstance.getDefault().getStructTopic("SwerveDrive/Desired Velocity Vector", ChassisSpeeds.struct).publish();
+        measuredVectorPublisher = NetworkTableInstance.getDefault().getStructTopic("SwerveDrive/Measured Velocity Vector", ChassisSpeeds.struct).publish();
+
     }
 
     /** Update subsystem shuffle board page with current Gyro values */
@@ -695,21 +712,13 @@ public class SwerveDrive extends SubsystemBase {
 
         // Log swerve states for AdvantageScope
         if (m_states != null) {
-            double[] desiredStates = new double[m_states.length * 2];
-            for (int i = 0; i < m_states.length; i++) {
-                desiredStates[i * 2] = m_states[i].angle.getRadians();
-                desiredStates[i * 2 + 1] = m_states[i].speedMetersPerSecond;
-            }
-            SmartDashboard.putNumberArray("Swerve/DesiredStates", desiredStates);
+            desiredPublisher.set(m_states);
+            desiredVectorPublisher.set(driveKinematics.toChassisSpeeds(m_states));
         }
 
-        SwerveModuleState[] measuredStates = GetSwerveStates();
-        double[] measuredStatesArray = new double[measuredStates.length * 2];
-        for (int i = 0; i < measuredStates.length; i++) {
-            measuredStatesArray[i * 2] = measuredStates[i].angle.getRadians();
-            measuredStatesArray[i * 2 + 1] = measuredStates[i].speedMetersPerSecond;
-        }
-        SmartDashboard.putNumberArray("Swerve/MeasuredStates", measuredStatesArray);
+        SwerveModuleState[] states = GetSwerveStates();
+        measuredPublisher.set(states);
+        measuredVectorPublisher.set(driveKinematics.toChassisSpeeds(states));
     }
 
 }
