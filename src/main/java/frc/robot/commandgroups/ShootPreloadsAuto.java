@@ -76,7 +76,7 @@ public class ShootPreloadsAuto extends SequentialCommandGroup {
                 // new InstantCommand(() -> RobotContainer.drivesystem.FieldDrive(0,0,0, false))
 
                 // new Pause(10),
-                new SendItCommand(2, 0).withTimeout(1.5).,
+                new SendItCommand(2, 0).withTimeout(1.5),
                 new SendItCommand(0, direction ? 2 : -2).withTimeout(1.75)
                 // new MoveToPose(
                 //     2.0, 
