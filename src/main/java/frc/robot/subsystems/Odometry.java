@@ -252,7 +252,7 @@ public class Odometry extends SubsystemBase {
         if (camera.isTargetPresent()){
             Pose2d campose = camera.getPose();
             
-            setPose(campose);
+            setPose(new Pose2d(campose.getX(), campose.getY(), getPose2d().getRotation()));
         }
 
         // TagResults = camera.GetJSONResults();
