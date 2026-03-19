@@ -117,7 +117,7 @@ public class RobotMap {
         public static final double MIN_ROTATION_DEGREES = -30.0; // was -90.0;
 
         // PID gains for turret position control
-        public static final double kP = 0.025;
+        public static final double kP = 0.001;
         public static final double kI = 0.0;
         public static final double kD = 0.001;
         public static final double kIZone = 0.0;
@@ -133,10 +133,12 @@ public class RobotMap {
         public static final double GEAR_RATIO = 100.0; // Adjust based on actual mechanism
 
         // Turret offsets from robot center (meters) - adjust based on CAD
-        public static final double LEFT_TURRET_X_OFFSET = -0.15; // Left of center
-        public static final double LEFT_TURRET_Y_OFFSET = 0.20; // Forward of center
-        public static final double RIGHT_TURRET_X_OFFSET = 0.15; // Right of center
-        public static final double RIGHT_TURRET_Y_OFFSET = 0.20; // Forward of center
+        public static final double LEFT_TURRET_X_OFFSET = -0.146; // Back of center
+        public static final double LEFT_TURRET_Y_OFFSET = 0.222; // Left of center
+        public static final double RIGHT_TURRET_X_OFFSET = -0.146; // Back of center
+        public static final double RIGHT_TURRET_Y_OFFSET = -0.222; // Right of center
+
+        public static final double TURRET_ANGLE_OFFSET = 180;
     }
 
     /**
