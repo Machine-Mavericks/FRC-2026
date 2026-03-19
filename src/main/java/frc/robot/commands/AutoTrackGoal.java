@@ -1,6 +1,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,8 +45,16 @@ public class AutoTrackGoal extends Command {
     private double calculatedShooterRPM = 0.0;
     private boolean targetVisible = false;
 
+    StructPublisher<Pose2d> leftTurretPose;
+    StructPublisher<Pose2d> rightTurretPose;
+    StructPublisher<Pose2d> targetPose;
+
     public AutoTrackGoal() {
         addRequirements(RobotContainer.turretLeft, RobotContainer.turretRight);
+
+        leftTurretPose = NetworkTableInstance.getDefault().getStructTopic("Aiming/Left Turret Pose", Pose2d.struct).publish(); 
+        rightTurretPose = NetworkTableInstance.getDefault().getStructTopic("Aiming/Right Turret Pose", Pose2d.struct).publish();
+        targetPose = NetworkTableInstance.getDefault().getStructTopic("Aiming/Target Pose", Pose2d.struct).publish();
     }
 
     @Override
@@ -92,31 +105,7 @@ public class AutoTrackGoal extends Command {
             SmartDashboard.putString("Tracking Mode", "Neutral Zone Safe");
             SmartDashboard.putNumber("Tx Error (deg)", 0.0);
             SmartDashboard.putNumber("Hub Distance (m)", distance); // Distance to safe target
-
-        }
-        // ------------------------------------------------------------------
-        // Priority 2: Direct Limelight mode — AprilTag in view
-        // ------------------------------------------------------------------
-        else if (RobotContainer.hubTargeting.isHubTagVisible()) {
-            targetVisible = true;
-
-            // tx is the horizontal angle error from camera center to tag center.
-            // We send this directly as a correction delta to each turret's current
-            // position.
-            double txError = RobotContainer.hubTargeting.getHorizontalAngleError();
-
-            double leftTarget = RobotContainer.turretLeft.getCurrentAngle() + txError;
-            double rightTarget = RobotContainer.turretRight.getCurrentAngle() + txError;
-
-            RobotContainer.turretLeft.setTargetAngle(leftTarget);
-            RobotContainer.turretRight.setTargetAngle(rightTarget);
-
-            // RPM from ty-based distance calculation
-            calculatedShooterRPM = RobotContainer.hubTargeting.getShooterRPM();
-
-            SmartDashboard.putString("Tracking Mode", "Limelight Direct");
-            SmartDashboard.putNumber("Tx Error (deg)", txError);
-            SmartDashboard.putNumber("Hub Distance (m)", RobotContainer.hubTargeting.getDistanceToHub());
+            targetPose.set(safeTarget);
 
         }
         // ------------------------------------------------------------------
@@ -160,6 +149,7 @@ public class AutoTrackGoal extends Command {
             SmartDashboard.putNumber("Hub Distance (m)", distance);
             SmartDashboard.putNumber("Left Turret Target (deg)", leftTurretAngle);
             SmartDashboard.putNumber("Right Turret Target (deg)", rightTurretAngle);
+            targetPose.set(goalPose);
         }
 
         // ---- Shared telemetry ----
@@ -168,6 +158,14 @@ public class AutoTrackGoal extends Command {
         SmartDashboard.putBoolean("Left Turret Ready", RobotContainer.turretLeft.atSetpoint());
         SmartDashboard.putBoolean("Right Turret Ready", RobotContainer.turretRight.atSetpoint());
         SmartDashboard.putBoolean("Ready to Shoot", isReadyToShoot());
+
+        Pose2d lTurrPose = TargetCalculations.robotPointToFieldPoint(robotPose, RobotMap.Turret.LEFT_TURRET_X_OFFSET, RobotMap.Turret.LEFT_TURRET_Y_OFFSET);
+        lTurrPose = lTurrPose.rotateAround(lTurrPose.getTranslation(), Rotation2d.fromDegrees(RobotContainer.turretLeft.getCurrentAngle() + RobotMap.Turret.TURRET_ANGLE_OFFSET));
+        leftTurretPose.set(lTurrPose);
+        
+        Pose2d rTurrPose = TargetCalculations.robotPointToFieldPoint(robotPose, RobotMap.Turret.RIGHT_TURRET_X_OFFSET, RobotMap.Turret.RIGHT_TURRET_Y_OFFSET);
+        rTurrPose = rTurrPose.rotateAround(rTurrPose.getTranslation(), Rotation2d.fromDegrees(RobotContainer.turretRight.getCurrentAngle() + RobotMap.Turret.TURRET_ANGLE_OFFSET));
+        rightTurretPose.set(rTurrPose);
     }
 
     /**
