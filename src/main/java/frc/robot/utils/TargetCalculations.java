@@ -69,6 +69,30 @@ public class TargetCalculations {
     // -------------------------------------------------------------------------
 
     /**
+     * Convert a point on the robot from robot-relative space to the corresponding point2D in field space
+     * @param robotPose Current pose of the robot on the field
+     * @param offsetX X offset from robot center (m, positive =
+     *                      robot-right)
+     * @param offsetY Y offset from robot center (m, positive =
+     *                      robot-forward)     * @param offsetY
+     * @return Corrseponding point on the field, with robot heading
+     */
+    public static Pose2d robotPointToFieldPoint(Pose2d robotPose, double offsetX, double offsetY){
+        Translation2d robotTranslation = robotPose.getTranslation();
+        Rotation2d robotRotation = robotPose.getRotation();
+
+        // Transform turret offset from robot-relative to field-relative
+        double fieldX = robotTranslation.getX()
+                + offsetX * Math.cos(robotRotation.getRadians())
+                - offsetY * Math.sin(robotRotation.getRadians());
+        double fieldY = robotTranslation.getY()
+                + offsetX * Math.sin(robotRotation.getRadians())
+                + offsetY * Math.cos(robotRotation.getRadians());
+
+        return new Pose2d(fieldX, fieldY, robotRotation);
+    }
+
+    /**
      * Calculate the angle a turret needs to rotate to point at the HUB goal.
      *
      * Uses field coordinates (robot pose + HUB position).
@@ -91,12 +115,9 @@ public class TargetCalculations {
         Rotation2d robotRotation = robotPose.getRotation();
 
         // Transform turret offset from robot-relative to field-relative
-        double fieldTurretX = robotTranslation.getX()
-                + turretOffsetX * Math.cos(robotRotation.getRadians())
-                - turretOffsetY * Math.sin(robotRotation.getRadians());
-        double fieldTurretY = robotTranslation.getY()
-                + turretOffsetX * Math.sin(robotRotation.getRadians())
-                + turretOffsetY * Math.cos(robotRotation.getRadians());
+        Pose2d fieldPose = robotPointToFieldPoint(robotPose, turretOffsetX, turretOffsetY);
+        double fieldTurretX = fieldPose.getX();
+        double fieldTurretY = fieldPose.getY();
 
         // Vector from turret position to goal
         double deltaX = goalPose.getX() - fieldTurretX;
@@ -106,7 +127,7 @@ public class TargetCalculations {
         double fieldAngleToGoal = Math.atan2(deltaY, deltaX);
 
         // Convert to robot-relative angle
-        double robotRelativeAngle = fieldAngleToGoal - robotRotation.getRadians();
+        double robotRelativeAngle = fieldAngleToGoal - robotRotation.getRadians() - Rotation2d.fromDegrees(RobotMap.Turret.TURRET_ANGLE_OFFSET).getRadians();
 
         // Normalize to [-PI, PI]
         while (robotRelativeAngle > Math.PI)
