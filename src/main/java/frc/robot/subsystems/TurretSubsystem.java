@@ -60,6 +60,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
             motor = new SparkMax(motorCANID, MotorType.kBrushless);
             SparkMaxConfig config = new SparkMaxConfig();
             config.encoder.positionConversionFactor(MECHANISM_RATIO);
+            config.openLoopRampRate(0.5);
 
             motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -68,6 +69,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
             resetEncoder();
             pidController = new PIDController(RobotMap.Turret.kP, RobotMap.Turret.kI, RobotMap.Turret.kD);
             pidController.setTolerance(RobotMap.Turret.POSITION_TOLERANCE);
+            pidController.setIntegratorRange(-0.1, 0.1);
 
             // Initialize Shuffleboard
             initializeShuffleboard();
@@ -102,6 +104,8 @@ public abstract class TurretSubsystem extends SubsystemBase {
                                Math.min(RobotMap.Turret.MAX_ROTATION_DEGREES, angleDegrees));
         
         targetAngleDegrees = angleDegrees;
+
+        SmartDashboard.putNumber("Target Angle", targetAngleDegrees);
         
         if (!manualControlEnabled && pidController != null) {
             // Run software PID: set the setpoint (degrees). Actual motor output
@@ -195,7 +199,8 @@ public abstract class TurretSubsystem extends SubsystemBase {
         if (!manualControlEnabled && pidController != null && motor != null && encoder != null) {
             double output = pidController.calculate(getCurrentAngle());
             // Clamp output to percent output range
-            output = Math.max(-0.2, Math.min(0.2, output));
+            double speedLimit = 0.2;
+            output = Math.max(-speedLimit, Math.min(speedLimit  , output));
             // Safety limits: don't drive past physical limits
             double currentAngle = getCurrentAngle();
             if ((currentAngle >= RobotMap.Turret.MAX_ROTATION_DEGREES && output > 0) ||
