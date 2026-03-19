@@ -53,7 +53,7 @@ public class Shooter extends SubsystemBase {
    */
   public Shooter(boolean skipHardware) {
     if (!skipHardware) {
-      shooterMotor = new TalonFX(RobotMap.CANID.SHOOTER);
+      shooterMotor = new TalonFX(RobotMap.CANID.RIGHT_SHOOTER);
       SmartDashboard.putData("shooter/Motor", new TalonLogger(shooterMotor));
 
       TalonFXConfiguration config = new TalonFXConfiguration()

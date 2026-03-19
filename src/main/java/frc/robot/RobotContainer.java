@@ -67,7 +67,7 @@ public class RobotContainer {
 
     // define shooter subsystem
     // define shooter subsystem
-    public static Shooter shooter;
+    public static Shooter rightShooter;
     public static TurretLeft turretLeft;
     public static TurretRight turretRight;
     public static IntakeSubsystem intake;
@@ -115,7 +115,7 @@ public class RobotContainer {
         drivesystem.setDefaultCommand(new ManualDrive());
         odometry = new Odometry();
         mySubsystem = new TemplateSubsystem();
-        shooter = new Shooter();
+        rightShooter = new Shooter();
 
         // Create shooter, turret, and uptake subsystems.
         // If left turret feature is disabled, instantiate no-op stubs so the
@@ -187,13 +187,13 @@ public class RobotContainer {
         // driverOp.rightTrigger(0.5).debounce(0.25).onTrue(new TemplateCommand());
 
         // Operator controlling shooter speeds
-        toolOp.b().onTrue(new IncrementShootersSpeed(shooter, 1.0));
+        toolOp.b().onTrue(new IncrementShootersSpeed(rightShooter, 1.0));
        // toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
         // toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 5.0));
-        toolOp.x().onTrue(new IncrementShootersSpeed(shooter, -1.0));
+        toolOp.x().onTrue(new IncrementShootersSpeed(rightShooter, -1.0));
 
         //toolOp.a().whileTrue(new InstantCommand(()->shooter.shooterSpeed(shooter.CalculateSpeed())));
-        toolOp.a().onFalse(new InstantCommand(()->shooter.shooterSpeed(0.0)));
+        toolOp.a().onFalse(new InstantCommand(()->rightShooter.shooterSpeed(0.0)));
 
        // toolOp.b().onTrue(new InstantCommand(()->shooter.shooterSpeed(58.7)));
         // Fire using the new automated sequence
@@ -207,7 +207,7 @@ public class RobotContainer {
         toolOp.leftBumper().whileTrue(new RunIntakeCommand(intake));
         // toolOp.leftTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-5.0 / 360.0)));
         // toolOp.rightTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-90.0 / 360.0)));
-        toolOp.y().whileTrue(new ShootCommand(shooter));
+        toolOp.y().whileTrue(new ShootCommand(rightShooter));
         toolOp.back().whileTrue(new HopperJogBack(hopperFeed));
 
         toolOp.povDown().whileTrue(new AHHHCommand(-0.15));

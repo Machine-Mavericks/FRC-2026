@@ -42,7 +42,7 @@ public class ShootCommand extends Command {
 
     double distance = Math.sqrt(Math.pow(robotPose.getX() - hubPose.getX(), 2) + Math.pow(robotPose.getY() - hubPose.getY(), 2));
 
-    double speedRPS = RobotContainer.shooter.CalculateSpeed(distance);
+    double speedRPS = RobotContainer.rightShooter.CalculateSpeed(distance);
     shooter.shooterSpeed(speedRPS);
 
     SmartDashboard.putNumber("ShootCommand/Distance", distance);
