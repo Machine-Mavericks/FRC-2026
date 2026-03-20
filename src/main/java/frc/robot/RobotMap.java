@@ -33,8 +33,9 @@ public class RobotMap {
         public static final int LEFT_TURRET_MOTOR = 15;
         public static final int RIGHT_TURRET_MOTOR = 16;
 
-        // Shooter motor
-        public static final int SHOOTER = 20;
+        // Shooter motors
+        public static final int RIGHT_SHOOTER = 20;
+        public static final int LEFT_SHOOTER = 21;
 
         // IntakeArm motors
         public static final int INTAKE_ARM_RIGHT = 23;
@@ -63,7 +64,7 @@ public class RobotMap {
          * disabled and replaced with software no-op stubs. Set to true to enable
          * the left turret and the shooter/uptake hardware.
          */
-        public static final boolean ENABLE_LEFT_TURRET = false;
+        public static final boolean ENABLE_LEFT_TURRET = true;
     }
 
     /**

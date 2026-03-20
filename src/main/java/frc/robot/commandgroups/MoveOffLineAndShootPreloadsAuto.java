@@ -71,7 +71,7 @@ public class MoveOffLineAndShootPreloadsAuto extends SequentialCommandGroup {
         //),
 
         // Spinup Shoot
-        new ShootCommand(RobotContainer.shooter),
+        new ShootCommand(RobotContainer.leftShooter, RobotContainer.rightShooter),
 
         // Jog back hopper to clear anything thats stuck 
         new InstantCommand(()-> RobotContainer.hopperFeed.jogBack()),

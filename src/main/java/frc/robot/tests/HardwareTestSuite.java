@@ -344,11 +344,11 @@ public class HardwareTestSuite {
             }),
             Commands.runEnd(
                 () -> {
-                    RobotContainer.shooter.shooterSpeed(20.0);
-                    maxRPS[0] = Math.max(maxRPS[0], RobotContainer.shooter.velocity);
+                    RobotContainer.rightShooter.shooterSpeed(20.0);
+                    maxRPS[0] = Math.max(maxRPS[0], RobotContainer.rightShooter.velocity);
                 },
-                () -> RobotContainer.shooter.stop(),
-                RobotContainer.shooter
+                () -> RobotContainer.rightShooter.stop(),
+                RobotContainer.rightShooter
             ).withTimeout(2.0),
             Commands.runOnce(() -> {
                 if (maxRPS[0] >= 10.0) {

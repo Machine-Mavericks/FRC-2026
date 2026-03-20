@@ -64,7 +64,7 @@ public class HumenStationAuto extends SequentialCommandGroup {
         new InstantCommand(()->RobotContainer.odometry.TagEnable=true),
 
        // Spinup Shoot
-        new ShootCommand(RobotContainer.shooter),
+        new ShootCommand(RobotContainer.leftShooter, RobotContainer.rightShooter),
 
         // Jog back hopper to clear anything thats stuck 
         new InstantCommand(()-> RobotContainer.hopperFeed.jogBack()),
@@ -96,7 +96,7 @@ public class HumenStationAuto extends SequentialCommandGroup {
         new Pause(5.0),
 
         // Spinup Shoot
-        new ShootCommand(RobotContainer.shooter),
+        new ShootCommand(RobotContainer.leftShooter, RobotContainer.rightShooter),
 
         // Jog back hopper to clear anything thats stuck 
         new InstantCommand(()-> RobotContainer.hopperFeed.jogBack()),

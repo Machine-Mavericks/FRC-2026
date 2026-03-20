@@ -194,9 +194,9 @@ public class Robot extends TimedRobot {
       case "Shooter":
         // --- Shooter Tuning Controls ---
         if (RobotContainer.toolOp.y().getAsBoolean()) {
-          RobotContainer.shooter.shooterSpeed(60.0); // Test target speed: 60 RPS
+          RobotContainer.rightShooter.shooterSpeed(60.0); // Test target speed: 60 RPS
         } else {
-          RobotContainer.shooter.stop();
+          RobotContainer.rightShooter.stop();
         }
         break;
 
