@@ -168,9 +168,9 @@ public class RobotMap {
         // Each HUB center is ~158.6" (4.03 m) from its respective Alliance Wall.
         // Field width: ~317.7" (8.07 m), HUBs are centered at Y ≈ 4.04 m.
         // TODO: confirm exact values from field CAD / manual p.35-36
-        public static final double BLUE_GOAL_X = 4.03; // ~158.6" from blue wall
+        public static final double BLUE_GOAL_X = 4.03 + 0.5; // ~158.6" from blue wall
         public static final double BLUE_GOAL_Y = 4.04; // center of field width
-        public static final double RED_GOAL_X = 12.51; // field_len(~16.54) - 4.03
+        public static final double RED_GOAL_X = 12.51 - 0.5; // field_len(~16.54) - 4.03
         public static final double RED_GOAL_Y = 4.04;
 
         // --------------- Neutral Zone Constants ---------------

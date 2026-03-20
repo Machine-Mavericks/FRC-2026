@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 // These functions are used to mirror points from blue to red
 public class AutoFunctions {
 
-    private static final double FieldYSize = 317.15 * 0.0254;
-    private static final double FieldXSize = 690.88 * 0.0254; 
+    private static final double FieldYSize = 317.7 * 0.0254;
+    private static final double FieldXSize = 651.2 * 0.0254; 
 
     // mirror provided pose2d for red vs blue team
     /**
