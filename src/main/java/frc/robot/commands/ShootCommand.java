@@ -18,14 +18,16 @@ import frc.robot.utils.AutoFunctions;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
 
-  private Shooter shooter;
+  private Shooter leftShooter;
+  private Shooter rightShooter;
 
   /** Creates a new ShootCommand. */
-  public ShootCommand(Shooter shooter) {
+  public ShootCommand(Shooter leftShooter, Shooter rightShooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooter);
+    addRequirements(leftShooter, rightShooter);
 
-    this.shooter = shooter;
+    this.leftShooter = leftShooter;
+    this.rightShooter = rightShooter;
   }
 
   // Called when the command is initially scheduled.
@@ -42,17 +44,22 @@ public class ShootCommand extends Command {
 
     double distance = Math.sqrt(Math.pow(robotPose.getX() - hubPose.getX(), 2) + Math.pow(robotPose.getY() - hubPose.getY(), 2));
 
-    double speedRPS = RobotContainer.rightShooter.CalculateSpeed(distance);
-    shooter.shooterSpeed(speedRPS);
+    double leftSpeedRPS = RobotContainer.leftShooter.CalculateSpeed(distance);
+    leftShooter.shooterSpeed(leftSpeedRPS);
+
+    double rightSpeedRPS = RobotContainer.rightShooter.CalculateSpeed(distance);
+    rightShooter.shooterSpeed(rightSpeedRPS);
 
     SmartDashboard.putNumber("ShootCommand/Distance", distance);
-    SmartDashboard.putNumber("ShootCommand/SpeedRPS", speedRPS);
+    SmartDashboard.putNumber("ShootCommand/LeftSpeedRPS", leftSpeedRPS);
+    SmartDashboard.putNumber("ShootCommand/RightSpeedRPS", rightSpeedRPS);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.shooterSpeed(0);
+    leftShooter.shooterSpeed(0);
+    rightShooter.shooterSpeed(0);
   }
 
   // Returns true when the command should end.

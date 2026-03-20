@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.signals.InvertedValue;
+
 /**
  * Disabled shooter that extends the real Shooter class but overrides
  * actuation methods to avoid commanding hardware. This keeps type
@@ -8,8 +10,8 @@ package frc.robot.subsystems;
  */
 public class ShooterDisabled extends Shooter {
 
-    public ShooterDisabled() {
-        super(true); // skip hardware initialization
+    public ShooterDisabled(int shooterMotorId, InvertedValue inverted) {
+        super(true, shooterMotorId, inverted); // skip hardware initialization
     }
 
     @Override

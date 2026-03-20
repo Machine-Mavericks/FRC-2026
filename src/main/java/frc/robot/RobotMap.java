@@ -33,8 +33,9 @@ public class RobotMap {
         public static final int LEFT_TURRET_MOTOR = 15;
         public static final int RIGHT_TURRET_MOTOR = 16;
 
-        // Shooter motor
+        // Shooter motors
         public static final int RIGHT_SHOOTER = 20;
+        public static final int LEFT_SHOOTER = 21;
 
         // IntakeArm motors
         public static final int INTAKE_ARM_RIGHT = 23;

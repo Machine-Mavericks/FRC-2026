@@ -15,7 +15,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotMap;
 import frc.robot.TalonLogger;
 
 public class Shooter extends SubsystemBase {
@@ -32,6 +31,8 @@ public class Shooter extends SubsystemBase {
 
   public double targetSpeed;
 
+  public InvertedValue inverted;
+
   /**
    * Total ratio from motor to flywheel <br/>
    * Represents how many wheel rotations occur for one motor rotation <br/>
@@ -44,16 +45,16 @@ public class Shooter extends SubsystemBase {
    */
   private static final double FEEDFORWARD = 0.013;
 
-  public Shooter() {
-    this(false);
+  public Shooter(int shooterMotorId, InvertedValue inverted) {
+    this(false, shooterMotorId, inverted);
   }
 
   /**
    * Create a Shooter, optionally skipping hardware initialization.
    */
-  public Shooter(boolean skipHardware) {
+  public Shooter(boolean skipHardware, int shooterMotorId, InvertedValue inverted) {
     if (!skipHardware) {
-      shooterMotor = new TalonFX(RobotMap.CANID.RIGHT_SHOOTER);
+      shooterMotor = new TalonFX(shooterMotorId);
       SmartDashboard.putData("shooter/Motor", new TalonLogger(shooterMotor));
 
       TalonFXConfiguration config = new TalonFXConfiguration()
@@ -62,7 +63,7 @@ public class Shooter extends SubsystemBase {
                   // CTRE Needs reduction ration (N:1) instead of actual ratio
                   .withSensorToMechanismRatio(1 / MECHANISM_RATIO))
           .withMotorOutput(new MotorOutputConfigs()
-              .withInverted(InvertedValue.CounterClockwise_Positive).withNeutralMode(NeutralModeValue.Coast))
+              .withInverted(inverted).withNeutralMode(NeutralModeValue.Coast))
           .withSlot0(new Slot0Configs().withKP(1.25) // was 1.25
               .withKI(2.0).withKD(0).withKV(FEEDFORWARD))
           .withClosedLoopRamps(new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Seconds.of(1)));
