@@ -3,6 +3,7 @@ package frc.robot.commandgroups;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -64,7 +65,7 @@ public class BackUpAndShootAuto extends SequentialCommandGroup {
                         // Deadline: finish driving to depot
                         new MoveToPose(1.5, 2.0, new Pose2d(1.30, 5.72, new Rotation2d(Math.toRadians(315.0)))),
                         // Continuously run intake while driving
-                        new InstantCommand(() -> RobotContainer.intake.intake(RobotMap.Intake.INTAKE_DEPOT_SPEED))),
+                        new RunCommand(() -> RobotContainer.intake.intake(RobotMap.Intake.INTAKE_DEPOT_SPEED), RobotContainer.intake)),
 
                 // 4. Stop intake once arrived at depot
                 new InstantCommand(() -> RobotContainer.intake.stop()),
