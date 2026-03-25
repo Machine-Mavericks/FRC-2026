@@ -243,6 +243,7 @@ public class RobotMap {
     public static class Intake {
         public static final double INTAKE_SPEED = 0.8; // was 0.8
         public static final double OUTTAKE_SPEED = -0.5; // was -0.5
+        public static final double INTAKE_DEPOT_SPEED = 0.5; // tune for depot pickup
     }
 
     /**
