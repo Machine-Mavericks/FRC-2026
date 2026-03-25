@@ -61,6 +61,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
             SparkMaxConfig config = new SparkMaxConfig();
             config.encoder.positionConversionFactor(MECHANISM_RATIO);
             config.openLoopRampRate(0.5);
+            config.smartCurrentLimit(10);
 
             motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 

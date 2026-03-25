@@ -20,6 +20,7 @@ public class TalonLogger implements Sendable {
         builder.addDoubleProperty("OutputCurrent", () -> talon.getTorqueCurrent().getValueAsDouble(), null);
         builder.addDoubleProperty("position", () -> talon.getPosition().getValueAsDouble(), null);
         builder.addDoubleProperty("velocity", () -> talon.getVelocity().getValueAsDouble(), null);
+        builder.addDoubleProperty("Bus Volts", () -> talon.getSupplyVoltage().getValueAsDouble(), null);
     }
 
 }

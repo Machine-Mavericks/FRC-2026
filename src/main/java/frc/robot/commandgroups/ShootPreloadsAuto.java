@@ -76,36 +76,36 @@ public class ShootPreloadsAuto extends SequentialCommandGroup {
                 // new InstantCommand(() -> RobotContainer.drivesystem.FieldDrive(0,0,0, false))
 
                 // new Pause(10),
-                new SendItCommand(2, 0).withTimeout(1.5),
-                new SendItCommand(0, direction ? 2 : -2).withTimeout(1.75)
+                // new SendItCommand(2, 0).withTimeout(1.5),
+                // new SendItCommand(0, direction ? 2 : -2).withTimeout(1.75)
                 // new MoveToPose(
                 //     2.0, 
                 //     2.5,
                 //     new Pose2d (3.42,2.42, new Rotation2d(Math.toRadians(0)))
                 // )
-                // new ParallelCommandGroup(
-                //         new ShootCommand(RobotContainer.shooter),
+                new ParallelCommandGroup(
+                        new ShootCommand(RobotContainer.leftShooter, RobotContainer.rightShooter),
 
-                //         new SequentialCommandGroup(
-                //                 // Jog back hopper to clear anything thats stuck
-                //                 //new InstantCommand(() -> RobotContainer.hopperFeed.jogBack()),
+                        new SequentialCommandGroup(
+                                // Jog back hopper to clear anything thats stuck
+                                //new InstantCommand(() -> RobotContainer.hopperFeed.jogBack()),
 
-                //                 // How long the jog back is
-                //                 //new Pause(3.0),
+                                // How long the jog back is
+                                //new Pause(3.0),
 
-                //                 // Feed hopper
-                //                 // new InstantCommand(() -> RobotContainer.hopperFeed.feed()),
+                                // Feed hopper
+                                // new InstantCommand(() -> RobotContainer.hopperFeed.feed()),
 
-                //                 // How long the feed is
-                //                 //new Pause(3.0),
+                                // How long the feed is
+                                new Pause(1.0),
 
-                //                 // Run Uptake
-                //                 new InstantCommand(() -> RobotContainer.uptake.feedShooter()),
+                                // Run Uptake
+                                new UptakeAndFeed(RobotContainer.hopperFeed, RobotContainer.uptake),
 
-                //                 // How long uptake will run
-                //                 new Pause(20.0))                            
+                                // How long uptake will run
+                                new Pause(20.0))                    
                         
-                // )
+                )
         );
     }
 

@@ -182,9 +182,13 @@ public class SwerveDrive extends SubsystemBase {
         m_RRSteerMotor = new TalonFX(RobotMap.CANID.RR_STEER_MOTOR);
 
         SmartDashboard.putData("Left Front Steer", new TalonLogger(m_LFSteerMotor));
+        // SmartDashboard.putData("Left Front Drive", new TalonLogger(m_LFDriveMotor));
         SmartDashboard.putData("Right Front Steer", new TalonLogger(m_RFSteerMotor));
+        // SmartDashboard.putData("Right Front Drive", new TalonLogger(m_RFDriveMotor));
         SmartDashboard.putData("Left Rear Steer", new TalonLogger(m_LRSteerMotor));
+        // SmartDashboard.putData("Left Rear Drive", new TalonLogger(m_LRDriveMotor));
         SmartDashboard.putData("Right Rear Steer", new TalonLogger(m_RRSteerMotor));
+        // SmartDashboard.putData("Right Rear Drive", new TalonLogger(m_RRDriveMotor));
 
         // turn on safety oversight of steer motors
         m_LFSteerMotor.setSafetyEnabled(false);
@@ -712,8 +716,8 @@ public class SwerveDrive extends SubsystemBase {
 
         // Log swerve states for AdvantageScope
         if (m_states != null) {
-            desiredPublisher.set(m_states);
-            desiredVectorPublisher.set(driveKinematics.toChassisSpeeds(m_states));
+          desiredPublisher.set(m_states);
+          desiredVectorPublisher.set(driveKinematics.toChassisSpeeds(m_states));
         }
 
         SwerveModuleState[] states = GetSwerveStates();

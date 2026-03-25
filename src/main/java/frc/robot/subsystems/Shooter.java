@@ -45,6 +45,8 @@ public class Shooter extends SubsystemBase {
    */
   private static final double FEEDFORWARD = 0.013;
 
+  private final String basename;
+
   public Shooter(int shooterMotorId, InvertedValue inverted) {
     this(false, shooterMotorId, inverted);
   }
@@ -53,9 +55,11 @@ public class Shooter extends SubsystemBase {
    * Create a Shooter, optionally skipping hardware initialization.
    */
   public Shooter(boolean skipHardware, int shooterMotorId, InvertedValue inverted) {
+    basename = "Shooter [" + shooterMotorId + "]";
     if (!skipHardware) {
       shooterMotor = new TalonFX(shooterMotorId);
-      SmartDashboard.putData("shooter/Motor", new TalonLogger(shooterMotor));
+      
+      SmartDashboard.putData(basename+"shooter/Motor", new TalonLogger(shooterMotor));
 
       TalonFXConfiguration config = new TalonFXConfiguration()
           .withFeedback(
@@ -78,7 +82,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shooterSpeed(double speed) {
-    SmartDashboard.putNumber("shooter/desired", speed);
+    SmartDashboard.putNumber(basename+"/desired", speed);
     if (shooterMotor != null) {
       if (speed < 15) { // in RPS
         shooterMotor.set(0);
@@ -106,7 +110,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("shooter/actual", shooterMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber(basename+"shooter/actual", shooterMotor.getVelocity().getValueAsDouble());
     
     if (shooterMotor != null) {
       currentSpeed = shooterMotor.get();

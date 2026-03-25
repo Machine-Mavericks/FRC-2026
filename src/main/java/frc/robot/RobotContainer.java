@@ -3,6 +3,7 @@ package frc.robot;
 import frc.robot.commands.IncrementShootersSpeed;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.MoveToPose;
+import frc.robot.commands.ParkCommand;
 import frc.robot.commands.Pause;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.ShootCommand;
@@ -42,6 +43,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
@@ -86,6 +91,8 @@ public class RobotContainer {
 
      // main shuffleboar page
     public static MainShuffleBoardTab mainShufflePage = new MainShuffleBoardTab();
+
+    public static PowerDistribution pdh;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -149,6 +156,10 @@ public class RobotContainer {
         turretLeft.setDefaultCommand(autoTrack);
         turretRight.setDefaultCommand(autoTrack);
 
+        pdh = new PowerDistribution(1, ModuleType.kRev);
+
+        SmartDashboard.putData("Power Distribution", pdh);
+
         // attach commands to controller buttons
         configureBindings();
     }
@@ -166,6 +177,8 @@ public class RobotContainer {
         }));
 
         driverOp.start().onTrue(new FixOdometry());
+
+        driverOp.leftBumper().whileTrue(new ParkCommand(drivesystem));
 
         // operator controls
 
