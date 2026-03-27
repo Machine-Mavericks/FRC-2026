@@ -165,4 +165,13 @@ public class Shooter extends SubsystemBase {
   public double getTargetSpeed() {
     return targetSpeed;
   }
+
+  private static final double AT_SPEED_TOLERANCE_RPS = 3.0; // tune
+
+  /** Returns true when the flywheel is within tolerance of its commanded speed. */
+  public boolean isAtSpeed() {
+      return commanded >= 15.0
+          && Math.abs(getVelocity() - commanded) < AT_SPEED_TOLERANCE_RPS;
+  }
+
 }

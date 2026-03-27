@@ -79,6 +79,13 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.set(RobotMap.Intake.INTAKE_SPEED);
     }
 
+    /** Runs intake at a custom speed (0.0 - 1.0). */
+    public void intake(double speed) {
+        if (intakeMotor != null) {
+            intakeMotor.set(speed);
+        }
+    }
+
     /**
      * Runs the intake to eject game pieces.
      */
