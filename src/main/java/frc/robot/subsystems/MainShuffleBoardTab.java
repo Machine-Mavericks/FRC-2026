@@ -133,6 +133,7 @@ public class MainShuffleBoardTab extends SubsystemBase {
         m_autonomousPath.addOption("Do Nothing",0);
         m_autonomousPath.addOption("Version A",1);
         m_autonomousPath.addOption("Version B", 2);
+        m_autonomousPath.addOption("Testing", 3);
         //m_autonomousPath.addOption("Off Line & Shoot Preloads", 2);
         //m_autonomousPath.addOption("Preloads and Humen Station", 3);;
         m_autonomousPath.setDefaultOption("Do Nothing", 0);

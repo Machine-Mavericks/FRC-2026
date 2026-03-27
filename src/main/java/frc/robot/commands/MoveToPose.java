@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.utils.AutoFunctions;
@@ -53,6 +54,8 @@ public class MoveToPose extends Command {
         m_xController.setIZone(0.1);
         m_yController.setIZone(0.1);
 
+        m_rotController.enableContinuousInput(-180, 180);
+
         // create timer
         m_Timer = new Timer();
     }
@@ -86,6 +89,9 @@ public class MoveToPose extends Command {
         double xSpeed = m_xController.calculate(currentpose.getX(), dest.getX());
         double ySpeed = m_yController.calculate(currentpose.getY(), dest.getY());
         double rotSpeed = m_rotController.calculate(currentpose.getRotation().getDegrees(), dest.getRotation().getDegrees());
+
+        SmartDashboard.putNumber("Autos/Current Rotation", currentpose.getRotation().getDegrees());
+        SmartDashboard.putNumber("Autos/Dest Rotation", dest.getRotation().getDegrees());
 
         // limit speeds to allowable
         if (xSpeed > maxSpeed) xSpeed = maxSpeed;
