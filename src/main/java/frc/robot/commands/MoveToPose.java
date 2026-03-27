@@ -91,7 +91,11 @@ public class MoveToPose extends Command {
         double rotSpeed = m_rotController.calculate(currentpose.getRotation().getDegrees(), dest.getRotation().getDegrees());
 
         SmartDashboard.putNumber("Autos/Current Rotation", currentpose.getRotation().getDegrees());
-        SmartDashboard.putNumber("Autos/Dest Rotation", dest.getRotation().getDegrees());
+        SmartDashboard.putNumber("Autos/Dest/Rotation", dest.getRotation().getDegrees());
+
+        
+        SmartDashboard.putNumber("Autos/Dest/X", dest.getX());
+        SmartDashboard.putNumber("Autos/Dest/Y", dest.getY());
 
         // limit speeds to allowable
         if (xSpeed > maxSpeed) xSpeed = maxSpeed;

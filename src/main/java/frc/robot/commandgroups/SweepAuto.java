@@ -17,22 +17,24 @@ import frc.robot.utils.AutoFunctions;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class TestAutoStuffCommand extends SequentialCommandGroup {
+public class SweepAuto extends SequentialCommandGroup {
   /** Creates a new TestAutoStuffCommand. */
-  public TestAutoStuffCommand() {
+  public SweepAuto() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new SendItCommand(4, 0).withTimeout(1.25),
-      new TurnAndZeroCommand(),
+      new TurnAndZeroCommand(false),
       new InstantCommand(() -> RobotContainer.intake.intake(), RobotContainer.intake),
       // Move to pos already does the red vs blue for us!
       new MoveToPose(1,1, (new Pose2d(7.62, 1.778, new Rotation2d()))).withTimeout(2),
       new MoveToPose(1,1, (new Pose2d(7.62, 4.0, Rotation2d.fromDegrees(90)))).withTimeout(2.5),
       new MoveToPose(1,1, (new Pose2d(5.5, 2.64, Rotation2d.fromDegrees(180)))).withTimeout(3),
-      new InstantCommand(() -> RobotContainer.intake.intake(), RobotContainer.intake),
-      new SendItCommand(4, 0).withTimeout(1.25),
-      new TurnAndZeroCommand(),
+      new InstantCommand(() -> RobotContainer.intake.stop(), RobotContainer.intake),
+      new SendItCommand(4, 0).withTimeout(1.5),
+      new TurnAndZeroCommand(true),
+      
+      new MoveToPose(1,1, (new Pose2d(2.0, 2.64, Rotation2d.fromDegrees(225)))).withTimeout(2.5),
 
       new ShootPreloadsAuto(false)
 

@@ -10,12 +10,15 @@ import frc.robot.RobotContainer;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class TurnAndZeroCommand extends Command {
 
+  private boolean left;
+
   Long timeout = Long.MAX_VALUE;
 
   /** Creates a new TurnAndZeroCommand. */
-  public TurnAndZeroCommand() {
+  public TurnAndZeroCommand(boolean left) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.drivesystem);
+    this.left = left;
   }
 
   // Called when the command is initially scheduled.
@@ -33,7 +36,11 @@ public class TurnAndZeroCommand extends Command {
         timeout = System.currentTimeMillis() + 250;
       }
     } else {
-      RobotContainer.drivesystem.RobotDrive(0, 0, -1.25, false);
+      if (left) {
+        RobotContainer.drivesystem.RobotDrive(0,0, 1.25, false);
+      }else{
+        RobotContainer.drivesystem.RobotDrive(0, 0, -1.25, false);
+      }
     }
 
   }
