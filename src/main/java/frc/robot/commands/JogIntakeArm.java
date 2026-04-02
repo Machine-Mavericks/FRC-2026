@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class AHHHCommand extends Command {
+public class JogIntakeArm extends Command {
   private double speed;
-  /** Creates a new AHHHCommand. */
-  public AHHHCommand(double speed) {
+  /** Creates a new JogIntakeArm. */
+  public JogIntakeArm(double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.intakeArm);
     this.speed = speed;
@@ -20,7 +20,7 @@ public class AHHHCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.intakeArm.debug(speed);
+    RobotContainer.intakeArm.jog(speed);
 
   }
 
