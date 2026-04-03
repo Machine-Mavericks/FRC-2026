@@ -40,11 +40,11 @@ public class IntakeArm extends SubsystemBase {
 
     /** Place code here to initialize subsystem */
     public IntakeArm() {
-        double kP = 12.0;
+        double kP = 4.0;
         double kD = 0.1;
         double kG = 0.0;
-        double cruiseVelocity = 5;
-        double acceleration = 10;
+        double cruiseVelocity = 0.5; // Highly cautious velocity (rotations/sec)
+        double acceleration = 1.0; // Gentle acceleration (rot/sec^2)
 
         SmartDashboard.putData("IntakeArm/ArmMotorRight", new TalonLogger(intakeArmMotorRight));
         SmartDashboard.putData("IntakeArm/ArmMotorLeft", new TalonLogger(intakeArmMotorLeft));
