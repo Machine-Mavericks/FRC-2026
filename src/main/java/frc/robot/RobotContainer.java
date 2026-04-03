@@ -1,22 +1,16 @@
 package frc.robot;
 
-import frc.robot.commands.IncrementShootersSpeed;
 import frc.robot.commands.ManualDrive;
-import frc.robot.commands.MoveToPose;
 import frc.robot.commands.ParkCommand;
 import frc.robot.commands.Pause;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.TemplateCommand;
-import frc.robot.commands.UptakeAndFeed;
 import frc.robot.commandgroups.JogUptakeAndFeedCommand;
-import frc.robot.commandgroups.MoveOffLineAndShootPreloadsAuto;
 import frc.robot.commandgroups.ShootPreloadsAuto;
 import frc.robot.commands.JogIntakeArm;
 import frc.robot.commands.AutoTrackGoal;
 import frc.robot.commands.FixOdometry;
 import frc.robot.commands.HopperJogBack;
-import frc.robot.commands.ManualTurretControl;
 import frc.robot.subsystems.HubTargetingSubsystem;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.MainShuffleBoardTab;
@@ -28,31 +22,23 @@ import frc.robot.subsystems.TurretLeft;
 import frc.robot.subsystems.TurretLeft;
 import frc.robot.subsystems.TurretRight;
 import frc.robot.subsystems.TurretDisabled;
-import frc.robot.subsystems.ShooterDisabled;
-import frc.robot.subsystems.UptakeDisabled;
 import frc.robot.subsystems.Odometry;
 import frc.robot.subsystems.HopperFeed;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeArm;
 import frc.robot.subsystems.Uptake;
-import frc.robot.commands.IntakeSequence;
-import frc.robot.commands.ShootSequence;
 import frc.robot.utils.AutoFunctions;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 //import frc.robot.utils.AlgaePositions;
 
 public class RobotContainer {
@@ -166,12 +152,14 @@ public class RobotContainer {
 
     /** Use this method to define your trigger->command mappings. */
     private void configureBindings() {
+        // Safety toggle: most manual controls are disabled if the Hardware Test Suite is running
+        java.util.function.BooleanSupplier notTesting = () -> !frc.robot.tests.HardwareTestSuite.isTestRunning;
+
 
         // attach commands to buttons
 
         // reset odometry to appropriate angle when back pressed.
         driverOp.back().onTrue(new InstantCommand(() -> {
-            Pose2d pos = odometry.getPose2d();
             Rotation2d newHeading = AutoFunctions.redVsBlue(new Rotation2d(0.0));
             odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
         }));
@@ -225,17 +213,17 @@ public class RobotContainer {
         // second press stops intake and stows arm.
         // toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); //
         // test next
-        toolOp.rightBumper().whileTrue(new JogUptakeAndFeedCommand(hopperFeed, uptake));
-        toolOp.leftBumper().whileTrue(new RunIntakeCommand(intake));
+        toolOp.rightBumper().and(notTesting).whileTrue(new JogUptakeAndFeedCommand(hopperFeed, uptake));
+        toolOp.leftBumper().and(notTesting).whileTrue(new RunIntakeCommand(intake));
         // toolOp.leftTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-5.0 /
         // 360.0)));
         // toolOp.rightTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-90.0 /
         // 360.0)));
-        toolOp.y().whileTrue(new ShootCommand(leftShooter, rightShooter));
-        toolOp.back().whileTrue(new HopperJogBack(hopperFeed));
+        toolOp.y().and(notTesting).whileTrue(new ShootCommand(leftShooter, rightShooter));
+        toolOp.back().and(notTesting).whileTrue(new HopperJogBack(hopperFeed));
 
-        toolOp.povDown().whileTrue(new JogIntakeArm(-0.15));
-        toolOp.povUp().whileTrue(new JogIntakeArm(0.15));
+        toolOp.povDown().and(notTesting).whileTrue(new JogIntakeArm(-0.15));
+        toolOp.povUp().and(notTesting).whileTrue(new JogIntakeArm(0.15));
     }
 
     public Command getAutonomousCommand() {

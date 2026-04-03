@@ -23,9 +23,9 @@ Since the total travel for the arm is less than 90 degrees, the default limits i
 2. **Temporarily zero the encoder to Horizontal:** Using a bubble level or phone app, manually hold the arm perfectly horizontal. With the robot enabled in **Test Mode**, press the **Back Button** on the Operator Gamepad to zero the encoders (`0.0` rotations).
 3. Disable the robot again. Open **Phoenix Tuner X** and connect to the robot.
 4. Open the signals tab/device details for the Right Intake Arm Motor to read its **Position**.
-5. Manually push the arm up until it gently rests against the **Upper Hard Stop**. Record this position in rotations (this will likely be greater than -0.25, e.g., -0.20 or -72 degrees).
-6. Manually pull the arm down until it gently rests against the **Lower Hard Stop**. Record this position in rotations (e.g., -0.05).
-7. Open `RobotMap.java` and update `FORWARD_SOFT_LIMIT` (bottom position) and `REVERSE_SOFT_LIMIT` (top position) to be slightly *inside* these physical hard stops (e.g., pad them by 0.01 rotations) so the software stops the motor before it hits the metal.
+5. Manually push the arm up until it gently rests against the **Upper Hard Stop**. Record this position in rotations (this will likely be near -0.25 rotations, e.g., -0.22 or -80 degrees).
+6. Manually pull the arm down until it gently rests against the **Lower Hard Stop**. Record this position in rotations. **Note:** Since moving UP is negative, moving DOWN is positive. If the arm dips *below* horizontal, this will be a small positive number (e.g., +0.02 rotations). If it stops just *above* horizontal, it will be a small negative number (e.g., -0.02 rotations).
+7. Open `RobotMap.java` and update `REVERSE_SOFT_LIMIT` (top position) and `FORWARD_SOFT_LIMIT` (bottom position) to be slightly *inside* these physical hard stops so the software stops the motor before it hits the metal. (e.g. if the top stop is -0.22, set `REVERSE` to -0.21).
 8. Update `DEPLOYED_POSITION` and `STOWED_POSITION` in `RobotMap.java` to fall safely within these new limits.
 9. **Re-deploy your code.**
 
@@ -38,8 +38,8 @@ Since the total travel for the arm is less than 90 degrees, the default limits i
 If the arm is not perfectly horizontal when the robot boots up, gravity feedforward will fight the arm instead of helping it.
 
 To safely zero the arm properly, use one of these methods:
-*   **Preferred Method (Highest Accuracy):** Manually hold the arm so it is **perfectly horizontal**. Then, with the robot enabled in **Test Mode**, press the **Back Button** on the Operator Gamepad to zero the encoders (`0.0` rotations).
-*   **Alternative Method (Using Stowed Position):** If you updated `STOWED_POSITION` in `RobotMap.java` in the previous step to precisely match your upper hard stop setting, let the arm rest against the top hard stop. With the robot enabled in **Test Mode**, press the **Start Button** to initialize the position to this stowed angle.
+*   **Preferred Method (Highest Accuracy):** Manually hold the arm so it is **perfectly horizontal**. Then, with the robot enabled in **Test Mode**, press the **Back Button** on the Operator Gamepad to zero the encoders (`0.0` rotations). *(Note: You cannot use this method if your lower hard stop physically prevents the arm from reaching horizontal!)*
+*   **Alternative Method (Using Stowed Position):** If the arm cannot reach horizontal, or if you simply prefer this method, you can rely on your upper hard stop. Ensure you updated `STOWED_POSITION` in `RobotMap.java` in the previous step to precisely match your top hard stop. Let the arm rest naturally against the top hard stop. With the robot enabled in **Test Mode**, press the **Start Button** to initialize the position to this stowed angle.
 
 ---
 
@@ -47,21 +47,26 @@ To safely zero the arm properly, use one of these methods:
 
 Because the arm uses `Arm_Cosine` gravity type, $kG$ represents the voltage required to hold the arm *perfectly horizontal* against gravity.
 
+> [!IMPORTANT]
+> To use the following controls, you must ensure the **Shuffleboard "Test Subsystem" Chooser** is set to **`IntakeArm`**. If it is set to "Default" or another entry, the buttons will not respond.
+
 1. Ensure the encoders are correctly zeroed (see Step 2).
-2. Physically hold the arm horizontally (or command it there if safe).
+2. Physically hold the arm horizontally (or command it there if safe). **If the arm physically cannot reach horizontal**, just bring it down as low as it can go (e.g., to your deployed hard stop at -5 degrees).
 3. In **Phoenix Tuner X**, open the configuration for **both** the Left and Right Intake Arm motors.
 4. Locate `Slot0.kG`. Start at `0.0`.
 5. Slowly increase the $kG$ value simultaneously on both motors (you can use Phoenix Tuner's control tab to apply a neutral output and tune config live).
-6. Find the *minimum* voltage value where the motors alone can hold the arm horizontal without it sagging downward.
+6. Find the *minimum* voltage value where the motors alone can hold the arm steady (either horizontally, or resting just barely above your lower hard stop without sagging onto it). Because cos(-5°) is 0.996, tuning it at -5° is effectively mathematically identical to tuning it perfectly horizontal.
 7. Record this value cleanly in `frc/robot/subsystems/IntakeArm.java`.
 
 ---
 
 ## 5. Tuning Motion Magic (PID)
 
-Once gravity is handled, tune the dynamic movement between the stowed and deployed positions.
+Once gravity is handled, tune the dynamic movement between the stowed and deployed positions. Ensure **Shuffleboard "Test Subsystem"** is still set to **`IntakeArm`**.
 
 **Test Mode Controls:**
+*   **Back Button:** Zero the encoders (`0.0` rotations) — use when PERFECTLY horizontal.
+*   **Start Button:** Set encoders to `STOWED_POSITION` — use when resting against top hard stop.
 *   **D-Pad Up:** Snaps the arm to `STOWED_POSITION`. *Only use this after you have updated `STOWED_POSITION` in `RobotMap.java` to match your actual top limit!* 
 *   **D-Pad Down:** Snaps the arm to `DEPLOYED_POSITION`. *Only use this after updating `DEPLOYED_POSITION` to match your actual bottom limit!*
 
@@ -76,8 +81,3 @@ Once gravity is handled, tune the dynamic movement between the stowed and deploy
 ---
 
 ## 6. Software and Hardware Limits
-
-To protect the arm from tearing itself apart:
-
-*   **Software Limits:** Ensure `FORWARD_SOFT_LIMIT` and `REVERSE_SOFT_LIMIT` in `RobotMap.IntakeArm` align tightly with your physical hard stops. The code automatically clamps commanded Motion Magic setpoints to stay within this range.
-*   **Stator Current Limit:** `RobotMap.IntakeArm.STATOR_CURRENT_LIMIT` is currently set to `20.0` Amps. This cuts power to the motors if they stall against a hard stop or jam on a game piece. If the arm cannot lift a heavy game piece, you may need to increase this slightly (e.g. to `30.0` Amps or `40.0` Amps), but keep it as low as possible to protect the motors.

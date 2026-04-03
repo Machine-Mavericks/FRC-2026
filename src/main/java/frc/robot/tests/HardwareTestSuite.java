@@ -37,6 +37,12 @@ import frc.robot.RobotMap;
  */
 public class HardwareTestSuite {
 
+    /** 
+     * Flag to indicate if the test suite is currently running.
+     * Used by RobotContainer to disable conflicting button bindings.
+     */
+    public static boolean isTestRunning = false;
+
     // ── Status string constants ─────────────────────────────────────────────
     private static final String PENDING = "---";
     private static final String RUNNING = "RUNNING...";
@@ -91,7 +97,10 @@ public class HardwareTestSuite {
      */
     public Command buildTestSequence() {
         return Commands.sequence(
-            Commands.runOnce(this::resetAllStatus),
+            Commands.runOnce(() -> {
+                isTestRunning = true;
+                resetAllStatus();
+            }),
             testGyro(),
             Commands.waitSeconds(0.25),
             testSwerve(),
@@ -106,7 +115,7 @@ public class HardwareTestSuite {
             Commands.waitSeconds(0.25),
             testShooter(),
             Commands.runOnce(this::finalizeOverall)
-        );
+        ).finallyDo(() -> isTestRunning = false);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -251,11 +260,11 @@ public class HardwareTestSuite {
                 RobotContainer.intakeArm
             ).withTimeout(2.5)
              .until(() -> Math.abs(RobotContainer.intakeArm.leftCurrentPose
-                                   - RobotMap.IntakeArm.STOWED_POSITION) < 0.5),
+                                   - RobotMap.IntakeArm.STOWED_POSITION) < 0.02),
             Commands.runOnce(() -> {
                 double err = Math.abs(RobotContainer.intakeArm.leftCurrentPose
                                       - RobotMap.IntakeArm.STOWED_POSITION);
-                if (err < 2.0) {
+                if (err < 0.05) {
                     recordPass(e_intakeArm,
                             String.format("pos=%.2f rot (err=%.2f)", RobotContainer.intakeArm.leftCurrentPose, err));
                 } else {
