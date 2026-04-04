@@ -276,7 +276,7 @@ public class RobotMap {
      */
     public static class Uptake {
         public static final double UPTAKE_SPEED = 1;
-        public static final double GEAR_RATIO = 9.0;
+        public static final double GEAR_RATIO = 4.0;
     }
 
     /**
@@ -284,6 +284,6 @@ public class RobotMap {
      */
     public static class HopperFeed {
         /** Default feed speed (percent output, 0.0 – 1.0). Tunable via Shuffleboard. */
-        public static final double DEFAULT_SPEED = 0.20;
+        public static final double DEFAULT_SPEED = 0.60;
     }
 }
