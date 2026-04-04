@@ -67,7 +67,7 @@ public class HumenStationAuto extends SequentialCommandGroup {
         new ShootCommand(RobotContainer.leftShooter, RobotContainer.rightShooter),
 
         // Jog back hopper to clear anything thats stuck 
-        new InstantCommand(()-> RobotContainer.hopperFeed.jogBack()),
+        
         
         // How long the jog back is 
         new Pause(1.0),
@@ -98,9 +98,7 @@ public class HumenStationAuto extends SequentialCommandGroup {
         // Spinup Shoot
         new ShootCommand(RobotContainer.leftShooter, RobotContainer.rightShooter),
 
-        // Jog back hopper to clear anything thats stuck 
-        new InstantCommand(()-> RobotContainer.hopperFeed.jogBack()),
-        
+       
         // How long the jog back is 
         new Pause(1.0),
 

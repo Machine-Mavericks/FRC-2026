@@ -22,7 +22,7 @@ public class JogUptakeAndFeedCommand extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new UptakeJogBack(uptake).alongWith(new HopperJogBack(hopper)).withTimeout(0.25),
+      //new UptakeJogBack(uptake).alongWith(new HopperJogBack(hopper)).withTimeout(0.25),
       new UptakeAndFeed(hopper, uptake)
     );
   }
