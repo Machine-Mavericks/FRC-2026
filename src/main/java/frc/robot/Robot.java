@@ -144,7 +144,7 @@ public class Robot extends TimedRobot {
     String testSubsystem = m_testChooser.getSelected();
     if (testSubsystem == null) return;
 
-   // RobotContainer.intakeArm.debug(0.1);
+   // RobotContainer.intakeArm.jog(0.1);
 
     
     switch (testSubsystem) {

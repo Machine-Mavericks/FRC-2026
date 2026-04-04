@@ -119,7 +119,7 @@ public class IntakeArm extends SubsystemBase {
 
     }
 
-    public void debug(double speed) {
+    public void jog(double speed) {
         intakeArmMotorRight.set(speed * 1.2);
         intakeArmMotorLeft. set(speed);
     }
