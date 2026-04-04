@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -119,6 +120,9 @@ public class Odometry extends SubsystemBase {
             if(RobotContainer.gyro.getXAcceleration() <= 1 && RobotContainer.gyro.getYAcceleration() <= 1){
                 updateAprilTagOdometry(RobotContainer.limelightShooter);
             }
+        }
+        else if(TagEnable == VisionMode.FAST){
+           updateAprilTagOdometry(RobotContainer.limelightShooter);
         }
 
         // pose update using dead-wheel data
