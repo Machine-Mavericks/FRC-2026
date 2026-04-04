@@ -15,7 +15,7 @@ import frc.robot.commandgroups.MoveOffLineAndShootPreloadsAuto;
 import frc.robot.commandgroups.ShootPreloadsAuto;
 import frc.robot.commandgroups.StraightAuto;
 import frc.robot.commandgroups.SweepAuto;
-import frc.robot.commands.AHHHCommand;
+import frc.robot.commands.JogIntakeArm;
 import frc.robot.commands.AutoTrackGoal;
 import frc.robot.commands.FixOdometry;
 import frc.robot.commands.HopperJogBack;
@@ -92,7 +92,7 @@ public class RobotContainer {
     // anywhere (e.g. button bindings). Fixes issue #13.
     public static AutoTrackGoal autoTrack;
 
-     // main shuffleboar page
+    // main shuffleboar page
     public static MainShuffleBoardTab mainShufflePage = new MainShuffleBoardTab();
 
     public static PowerDistribution pdh;
@@ -143,7 +143,7 @@ public class RobotContainer {
             // Left turret hardware missing -> provide software stubs
             turretLeft = new TurretDisabled();
         }
-        
+
         uptake = new Uptake(false);
 
         // Right turret (present) and other subsystems
@@ -186,7 +186,7 @@ public class RobotContainer {
         // operator controls
 
         // Manual turret control - hold left bumper to override auto-tracking
-       // toolOp.leftBumper().whileTrue(new ManualTurretControl());
+        // toolOp.leftBumper().whileTrue(new ManualTurretControl());
 
         // description of commands available:
         // .onTrue - runs command when button changes from not-pressed to pressed.
@@ -210,68 +210,53 @@ public class RobotContainer {
 
         // Operator controlling shooter speeds
         // toolOp.b().onTrue(new IncrementShootersSpeed(rightShooter, 1.0));
-       // toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
+        // toolOp.a().onTrue(new IncrementShootersSpeed(shooter, -0.5));
         // toolOp.y().onTrue(new IncrementShootersSpeed(shooter, 5.0));
         // toolOp.x().onTrue(new IncrementShootersSpeed(rightShooter, -1.0));
 
-        //toolOp.a().whileTrue(new InstantCommand(()->shooter.shooterSpeed(shooter.CalculateSpeed())));
+        // toolOp.a().whileTrue(new
+        // InstantCommand(()->shooter.shooterSpeed(shooter.CalculateSpeed())));
         // toolOp.a().onFalse(new InstantCommand(()->rightShooter.shooterSpeed(0.0)));
 
-       // toolOp.b().onTrue(new InstantCommand(()->shooter.shooterSpeed(58.7)));
+        // toolOp.b().onTrue(new InstantCommand(()->shooter.shooterSpeed(58.7)));
         // Fire using the new automated sequence
         // Uses the RPM computed by HubTargetingSubsystem each loop (issue #15).
-        //toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm, uptake)); // test next 
+        // toolOp.rightTrigger().whileTrue(new ShootSequence(shooter, intakeArm,
+        // uptake)); // test next
 
         // Intake control - toggle right bumper: first press deploys arm + runs intake,
         // second press stops intake and stows arm.
-        //toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); // test next 
-        toolOp.rightBumper().whileTrue(new JogUptakeAndFeedCommand(hopperFeed,uptake));
+        // toolOp.rightBumper().toggleOnTrue(new IntakeSequence(intake, intakeArm)); //
+        // test next
+        toolOp.rightBumper().whileTrue(new JogUptakeAndFeedCommand(hopperFeed, uptake));
         toolOp.leftBumper().whileTrue(new RunIntakeCommand(intake));
-        // toolOp.leftTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-5.0 / 360.0)));
-        // toolOp.rightTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-90.0 / 360.0)));
+        // toolOp.leftTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-5.0 /
+        // 360.0)));
+        // toolOp.rightTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-90.0 /
+        // 360.0)));
         toolOp.y().whileTrue(new ShootCommand(leftShooter, rightShooter));
         toolOp.back().whileTrue(new HopperJogBack(hopperFeed));
 
-        toolOp.povDown().whileTrue(new AHHHCommand(-0.15));
-        toolOp.povUp().whileTrue(new AHHHCommand(0.15));
+        toolOp.povDown().whileTrue(new JogIntakeArm(-0.15));
+        toolOp.povUp().whileTrue(new JogIntakeArm(0.15));
     }
 
-    /**
-     * Use this function to return pointer to the command the robot is to follow in
-     * autonomous
-     * 
-     * @return the command to run in autonomous
-     */
-    //public Command getAutonomousCommand() {
-        //return new AutoTrackGoal(); // this isn't right, we will pick a proper one later, but for now we just want
-                                    // to test that the command scheduling and subsystem default commands work in
-                                    // autonomous
-
-        // Example: Move robot forward 1 meter, no rotation
-        // return new frc.robot.commands.MoveRobotRelative(
-        // 1.0, // maxSpeed
-        // 0.5, // maxAccel (used as maxRotSpeed)
-        // new Pose2d(.5, 0.0, new Rotation2d(0.0)) // move 1 meter forward
-        // );
-    //}
-
     public Command getAutonomousCommand() {
-    
+
         // get autonomous path to run
         // for example, a subsystem could made responsible for returning selected path
         // from a list populated in shuffleboard.
-        int index = RobotContainer.mainShufflePage.getSelectedAutoIndex(); //RobotContainer.autopathselect.GetSelectedPath();
+        int index = RobotContainer.mainShufflePage.getSelectedAutoIndex(); // RobotContainer.autopathselect.GetSelectedPath();
 
-        Command chosenCommand =  null; 
-System.out.println("Getting Autonomous Command!");
+        Command chosenCommand = null;
+        System.out.println("Getting Autonomous Command!");
         System.out.println(index);
-    
-        
+
         // return autonomous command to be run in autonomous
         if (index == 0)
-            chosenCommand = new Pause(20.0); // do nothing command 
+            chosenCommand = new Pause(20.0); // do nothing command
         else if (index == 1)
-            chosenCommand = new ShootPreloadsAuto(true); // drive off the line 
+            chosenCommand = new ShootPreloadsAuto(true); // drive off the line
         else if (index == 2)
             chosenCommand = new ShootPreloadsAuto(false);
         else if (index == 3)
@@ -286,9 +271,10 @@ System.out.println("Getting Autonomous Command!");
         
 
         return new SequentialCommandGroup(
-            new Pause(RobotContainer.mainShufflePage.getAutoDelay()),
-            chosenCommand);
+                new Pause(RobotContainer.mainShufflePage.getAutoDelay()),
+                chosenCommand);
     }
+
     /**
      * Helper: concatenate two int arrays into one (used to combine blue + red HUB
      * tag IDs).

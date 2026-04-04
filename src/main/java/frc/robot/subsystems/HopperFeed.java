@@ -36,7 +36,7 @@ public class HopperFeed extends SubsystemBase {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 1;
         config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         StatusCode status = motor.getConfigurator().apply(config);
 
         if (!status.isOK()) {
