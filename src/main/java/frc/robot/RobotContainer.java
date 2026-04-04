@@ -9,10 +9,12 @@ import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.commands.UptakeAndFeed;
+import frc.robot.commandgroups.DepotAuto;
 import frc.robot.commandgroups.JogUptakeAndFeedCommand;
 import frc.robot.commandgroups.MoveOffLineAndShootPreloadsAuto;
 import frc.robot.commandgroups.ShootPreloadsAuto;
-import frc.robot.commandgroups.TestAutoStuffCommand;
+import frc.robot.commandgroups.StraightAuto;
+import frc.robot.commandgroups.SweepAuto;
 import frc.robot.commands.AHHHCommand;
 import frc.robot.commands.AutoTrackGoal;
 import frc.robot.commands.FixOdometry;
@@ -273,7 +275,7 @@ System.out.println("Getting Autonomous Command!");
         else if (index == 2)
             chosenCommand = new ShootPreloadsAuto(false);
         else if (index == 3)
-            chosenCommand = new TestAutoStuffCommand();
+            chosenCommand = new DepotAuto();
    
         //     else if (index == 3)
         //     chosenCommand = new OneCoralAutoCenter();

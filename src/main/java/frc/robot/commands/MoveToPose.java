@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,6 +28,8 @@ public class MoveToPose extends Command {
 
     private final double m_positiontolerance = 0.01;
     private final double m_angletolerance = 1.0;
+
+     private StructPublisher<Pose2d> posePublisher;
 
     public MoveToPose(double maxSpeed, double maxAccel, Pose2d destination) {
         this(maxSpeed, maxAccel, destination, true);
@@ -77,6 +81,9 @@ public class MoveToPose extends Command {
             dest = AutoFunctions.redVsBlue(dest_unmirrored);
         else
             dest = dest_unmirrored;
+
+        posePublisher = NetworkTableInstance.getDefault()
+            .getStructTopic( "MoveToPose/robotPose", Pose2d.struct).publish();
     }
 
     // This method is called periodically while command is active
@@ -91,11 +98,8 @@ public class MoveToPose extends Command {
         double rotSpeed = m_rotController.calculate(currentpose.getRotation().getDegrees(), dest.getRotation().getDegrees());
 
         SmartDashboard.putNumber("Autos/Current Rotation", currentpose.getRotation().getDegrees());
-        SmartDashboard.putNumber("Autos/Dest/Rotation", dest.getRotation().getDegrees());
-
         
-        SmartDashboard.putNumber("Autos/Dest/X", dest.getX());
-        SmartDashboard.putNumber("Autos/Dest/Y", dest.getY());
+        posePublisher.set(dest);
 
         // limit speeds to allowable
         if (xSpeed > maxSpeed) xSpeed = maxSpeed;
