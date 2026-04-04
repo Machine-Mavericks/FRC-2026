@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,6 +30,14 @@ public class Odometry extends SubsystemBase {
 
     // timer used for simuation purposes only
     Timer simTimer;
+    public static enum VisionMode{
+        DISABLED,
+        MANUAL,
+        SLOW,
+        FAST;
+    }
+
+    
 
     // constant to convert degrees to radians
     public final static float DEGtoRAD = (float) (3.1415926 / 180.0);
@@ -45,7 +54,7 @@ public class Odometry extends SubsystemBase {
 
     Pose2d currentPoseBeforeAdjustment;
 
-    public boolean TagEnable = true;
+    public VisionMode TagEnable = VisionMode.MANUAL;
 
     StructPublisher<Pose2d> posePublisher;
 
@@ -105,6 +114,12 @@ public class Odometry extends SubsystemBase {
 
         // pose update using drive wheel data
         updateDriveWheelOdometry();
+
+        if (TagEnable == VisionMode.SLOW){
+            if(RobotContainer.gyro.getXAcceleration() <= 1 && RobotContainer.gyro.getYAcceleration() <= 1){
+                updateAprilTagOdometry(RobotContainer.limelightShooter);
+            }
+        }
 
         // pose update using dead-wheel data
         // updateDeadWheelOdometry();
@@ -249,6 +264,10 @@ public class Odometry extends SubsystemBase {
 
         // get updates from camera
 
+        if (TagEnable == VisionMode.DISABLED){
+            return;
+        }
+
         if (camera.isTargetPresent()){
             Pose2d campose = camera.getPose();
             
@@ -391,10 +410,6 @@ public class Odometry extends SubsystemBase {
         m_DWfieldYPos.setDouble(DWfieldY);
         m_DWfieldAngle.setDouble(Math.toDegrees(DWfieldAngle));
 
-    }
-
-    public void EnableApriltagProcessing(boolean enable) {
-        TagEnable = enable;
     }
 
     // ---------- Subsystem Simulation Methods ----------

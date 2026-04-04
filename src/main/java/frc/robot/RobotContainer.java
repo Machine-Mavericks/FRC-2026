@@ -33,6 +33,7 @@ import frc.robot.subsystems.TurretRight;
 import frc.robot.subsystems.TurretDisabled;
 import frc.robot.subsystems.ShooterDisabled;
 import frc.robot.subsystems.UptakeDisabled;
+import frc.robot.subsystems.Odometry.VisionMode;
 import frc.robot.subsystems.Odometry;
 import frc.robot.subsystems.HopperFeed;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -268,11 +269,13 @@ public class RobotContainer {
         //     chosenCommand = new OneCoralAutoLeft();
         //     else if (index == 5)
         //     chosenCommand = new TwoCoralAutoLeft();
-        
 
         return new SequentialCommandGroup(
+            new InstantCommand(() -> RobotContainer.odometry.TagEnable = VisionMode.MANUAL),
                 new Pause(RobotContainer.mainShufflePage.getAutoDelay()),
-                chosenCommand);
+                chosenCommand,
+                 new InstantCommand(() -> RobotContainer.odometry.TagEnable = VisionMode.SLOW)
+        );
     }
 
     /**

@@ -14,6 +14,7 @@ import frc.robot.commands.Pause;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.UptakeAndFeed;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Odometry.VisionMode;
 import frc.robot.utils.AutoFunctions;
 
 // Example Sequential Command Group
@@ -61,9 +62,6 @@ public class MoveOffLineAndShootPreloadsAuto extends SequentialCommandGroup {
         
         } ),
         
-        // Turn on tag detection
-        new InstantCommand(()->RobotContainer.odometry.TagEnable=true),
-
         // Move off the line 
         // new MoveToPose(2.0, 
         //                 2.5,
@@ -89,10 +87,8 @@ public class MoveOffLineAndShootPreloadsAuto extends SequentialCommandGroup {
         new InstantCommand(()-> RobotContainer.uptake.feedShooter()),
 
         // How long uptake will run
-        new Pause(1.0),
+        new Pause(1.0)
 
-         // Turn on tag detection
-        new InstantCommand(()->RobotContainer.odometry.TagEnable=false)
 
         
 

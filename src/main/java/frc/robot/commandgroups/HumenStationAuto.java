@@ -60,9 +60,6 @@ public class HumenStationAuto extends SequentialCommandGroup {
         
         } ),
         
-        // Turn on tag detection
-        new InstantCommand(()->RobotContainer.odometry.TagEnable=true),
-
        // Spinup Shoot
         new ShootCommand(RobotContainer.leftShooter, RobotContainer.rightShooter),
 
@@ -83,9 +80,6 @@ public class HumenStationAuto extends SequentialCommandGroup {
 
         // How long uptake will run
         new Pause(1.0),
-
-         // Turn on tag detection
-        new InstantCommand(()->RobotContainer.odometry.TagEnable=false),
 
         // Move to humen station 
         new MoveToPose(2.0, 
@@ -118,10 +112,7 @@ public class HumenStationAuto extends SequentialCommandGroup {
         new MoveToPose(2.0, 
                         2.5,
                         new Pose2d (5.98,2.68, new Rotation2d(Math.toRadians(120)))
-        ),
-
-         // Turn off tag detection
-        new InstantCommand(()->RobotContainer.odometry.TagEnable=false)
+        )
 
         
 
