@@ -9,12 +9,17 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
+import frc.robot.utils.TargetCalculations;
 
 /**
  * Base class for turret subsystem.
@@ -33,6 +38,8 @@ public abstract class TurretSubsystem extends SubsystemBase {
     private static final double MECHANISM_RATIO = (1.0 / 5.0) * (18.0 / 120.0);
     // Shuffleboard
     protected ShuffleboardTab tab;
+
+    private StructPublisher<Pose2d> posePublisher;
 
     private Pose2d fieldPose;
     
@@ -57,6 +64,8 @@ public abstract class TurretSubsystem extends SubsystemBase {
      */
     public TurretSubsystem(boolean skipHardware, int motorCANID, String name) {
         this.name = name;
+        posePublisher = NetworkTableInstance.getDefault().getStructTopic(prefixEntry("Pose"), Pose2d.struct).publish(); 
+
 
         if (!skipHardware) {
             // Initialize motor (REVLib new API)
@@ -109,7 +118,7 @@ public abstract class TurretSubsystem extends SubsystemBase {
         
         targetAngleDegrees = angleDegrees;
 
-        SmartDashboard.putNumber("Target Angle", targetAngleDegrees);
+        SmartDashboard.putNumber(prefixEntry("Target Angle"), targetAngleDegrees);
         
         if (!manualControlEnabled && pidController != null) {
             // Run software PID: set the setpoint (degrees). Actual motor output
@@ -199,6 +208,12 @@ public abstract class TurretSubsystem extends SubsystemBase {
     
     @Override
     public void periodic() {
+
+        // figure out location on field
+        fieldPose = TargetCalculations.robotPointToFieldPoint(RobotContainer.odometry.getPose2d(), getRobotOffset().getX(), getRobotOffset().getY());
+        fieldPose = fieldPose.rotateAround(fieldPose.getTranslation(), Rotation2d.fromDegrees(getCurrentAngle() + RobotMap.Turret.TURRET_ANGLE_OFFSET));
+
+
         // If not in manual control, run software PID to compute motor output
         if (!manualControlEnabled && pidController != null && motor != null && encoder != null) {
             double output = pidController.calculate(getCurrentAngle());
@@ -213,15 +228,19 @@ public abstract class TurretSubsystem extends SubsystemBase {
             }
             motor.set(output);
 
-            SmartDashboard.putNumber("Turret/CurrentAngle", currentAngle);
-            SmartDashboard.putNumber("Output", output);
-            SmartDashboard.putNumber("Setpoint", pidController.getSetpoint());
+            SmartDashboard.putNumber(prefixEntry("CurrentAngle"), currentAngle);
+            SmartDashboard.putNumber(prefixEntry("Output"), output);
+            SmartDashboard.putNumber(prefixEntry("Setpoint"), pidController.getSetpoint());
         }
 
+        posePublisher.set(fieldPose);
         updateShuffleboard();
     }
     
     protected abstract Translation2d getRobotOffset();
+    protected String prefixEntry(String entry){
+        return name + "/" + entry;
+    }
 
     /**
      * Initialize Shuffleboard telemetry.
