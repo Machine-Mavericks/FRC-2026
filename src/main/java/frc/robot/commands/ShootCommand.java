@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Shooter;
 import frc.robot.utils.AutoFunctions;
+import frc.robot.utils.ShooterCalculations;
+import frc.robot.utils.TargetCalculations;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
@@ -39,20 +41,29 @@ public class ShootCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Pose2d robotPose = RobotContainer.limelightShooter.getPose();
-    Pose2d hubPose = AutoFunctions.redVsBlue(new Pose2d(4.625, 4.034, Rotation2d.kZero));
+    Pose2d robotPose = RobotContainer.odometry.getPose2d();
 
-    double distance = Math.sqrt(Math.pow(robotPose.getX() - hubPose.getX(), 2) + Math.pow(robotPose.getY() - hubPose.getY(), 2));
+    Pose2d targetPose = TargetCalculations.getTargetPose(robotPose);
 
-    double leftSpeedRPS = RobotContainer.leftShooter.CalculateSpeed(distance);
+    Pose2d leftTurretPose = RobotContainer.turretLeft.getFieldPose();
+    double leftTurretDistance = distanceBetweenPoses(targetPose, leftTurretPose);
+    double leftSpeedRPS = RobotContainer.leftShooter.CalculateSpeed(leftTurretDistance);
     leftShooter.shooterSpeed(leftSpeedRPS);
 
-    double rightSpeedRPS = RobotContainer.rightShooter.CalculateSpeed(distance);
+    Pose2d rightTurretPose = RobotContainer.turretRight.getFieldPose();
+    double rightTurretDistance = distanceBetweenPoses(targetPose, rightTurretPose);
+    double rightSpeedRPS = RobotContainer.rightShooter.CalculateSpeed(rightTurretDistance);
     rightShooter.shooterSpeed(rightSpeedRPS);
 
-    SmartDashboard.putNumber("ShootCommand/Distance", distance);
+    SmartDashboard.putNumber("ShootCommand/Left Distance", leftTurretDistance);
+    SmartDashboard.putNumber("ShootCommand/Right Distance", rightTurretDistance);
     SmartDashboard.putNumber("ShootCommand/LeftSpeedRPS", leftSpeedRPS);
     SmartDashboard.putNumber("ShootCommand/RightSpeedRPS", rightSpeedRPS);
+  }
+
+  private double distanceBetweenPoses(Pose2d a, Pose2d b){
+    // Use inner translation objects to get distance
+    return a.getTranslation().getDistance(b.getTranslation());
   }
 
   // Called once the command ends or is interrupted.
