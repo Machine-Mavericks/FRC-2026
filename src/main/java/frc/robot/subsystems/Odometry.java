@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.lang.annotation.Target;
+
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -55,7 +57,7 @@ public class Odometry extends SubsystemBase {
 
     Pose2d currentPoseBeforeAdjustment;
 
-    public VisionMode TagEnable = VisionMode.MANUAL;
+    public VisionMode TagEnable = VisionMode.SLOW;
 
     StructPublisher<Pose2d> posePublisher;
 
@@ -118,12 +120,20 @@ public class Odometry extends SubsystemBase {
 
         if (TagEnable == VisionMode.SLOW){
             if(RobotContainer.gyro.getXAcceleration() <= 1 && RobotContainer.gyro.getYAcceleration() <= 1){
-                updateAprilTagOdometry(RobotContainer.limelightShooter);
+                ChassisSpeeds chassisSpeeds = RobotContainer.drivesystem.getChassisSpeeds();
+                double velocitySquared = (chassisSpeeds.vxMetersPerSecond * chassisSpeeds.vxMetersPerSecond + chassisSpeeds.vyMetersPerSecond * chassisSpeeds.vyMetersPerSecond);
+                if(velocitySquared < 1 && chassisSpeeds.omegaRadiansPerSecond < 1){
+                     updateAprilTagOdometry(RobotContainer.limelightShooter);
+                }
+               
             }
         }
         else if(TagEnable == VisionMode.FAST){
            updateAprilTagOdometry(RobotContainer.limelightShooter);
         }
+
+        SmartDashboard.putString("Odometry/TagEnable", TagEnable.toString());
+        SmartDashboard.putNumber("Odometry/TagTime", timeSinceLastTag.get());
 
         // pose update using dead-wheel data
         // updateDeadWheelOdometry();
@@ -276,6 +286,8 @@ public class Odometry extends SubsystemBase {
             Pose2d campose = camera.getPose();
             
             setPose(new Pose2d(campose.getX(), campose.getY(), getPose2d().getRotation()));
+            
+            timeSinceLastTag.reset();
         }
 
         // TagResults = camera.GetJSONResults();
@@ -322,7 +334,6 @@ public class Odometry extends SubsystemBase {
             // } // end for
 
             // // m_test.setDouble(timeSinceLastTag.get());
-            timeSinceLastTag.reset();
         }
 
     

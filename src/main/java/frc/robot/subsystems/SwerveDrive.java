@@ -575,6 +575,10 @@ public class SwerveDrive extends SubsystemBase {
         return driveKinematics;
     }
 
+    public ChassisSpeeds getChassisSpeeds(){
+       return driveKinematics.toChassisSpeeds(GetSwerveStates());
+    }
+
     // -------------------- Subsystem Shuffleboard Methods --------------------
 
     private GenericEntry m_LFCanCoderPos;
