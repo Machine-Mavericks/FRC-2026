@@ -68,87 +68,32 @@ public class AutoTrackGoal extends Command {
     @Override
     public void execute() {
         Pose2d robotPose = getRobotPoseFromOdometry();
-        boolean inNeutralZone = (robotPose != null) && TargetCalculations.isInNeutralZone(robotPose);
 
-        boolean isRedAlliance = false;
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            isRedAlliance = (alliance.get() == Alliance.Red);
-        }
+        Pose2d goalPose = TargetCalculations.getTargetPose(robotPose);
 
-        // ------------------------------------------------------------------
-        // Priority 1: Neutral Zone (highest priority: avoid hub)
-        // ------------------------------------------------------------------
-        if (inNeutralZone) {
-            targetVisible = false; // We are purposely ignoring the Limelight tag
-            lastRobotPose = robotPose;
+        // Calculate angles from robot pose + turret offsets + goal position
+        double leftTurretAngle = TargetCalculations.getTargetAngleForTurret(
+                robotPose,
+                RobotContainer.turretLeft.getFieldPose(),
+                goalPose);
 
-            double leftTurretAngle = TargetCalculations.calculateNeutralZoneAimAngle(
-                    robotPose,
-                    RobotContainer.turretLeft.getFieldPose(),
-                    isRedAlliance);
+        double rightTurretAngle = TargetCalculations.getTargetAngleForTurret(
+                robotPose,
+                RobotContainer.turretRight.getFieldPose(),
+                goalPose);
 
-            double rightTurretAngle = TargetCalculations.calculateNeutralZoneAimAngle(
-                    robotPose,
-                    RobotContainer.turretRight.getFieldPose(),
-                    isRedAlliance);
+        double distance = TargetCalculations.getDistanceToGoal(robotPose, goalPose);
 
-            Pose2d safeTarget = isRedAlliance ? TargetCalculations.getRedSafeTargetPose()
-                    : TargetCalculations.getBlueSafeTargetPose();
-            double distance = TargetCalculations.getDistanceToGoal(robotPose, safeTarget);
-            calculatedShooterRPM = ShooterCalculations.getShooterRPM(distance);
+        RobotContainer.turretLeft.setTargetAngle(leftTurretAngle);
+        RobotContainer.turretRight.setTargetAngle(rightTurretAngle);
 
-            RobotContainer.turretLeft.setTargetAngle(leftTurretAngle);
-            RobotContainer.turretRight.setTargetAngle(rightTurretAngle);
+        SmartDashboard.putString("Tracking Mode", "Field Coordinates");
+        SmartDashboard.putNumber("Tx Error (deg)", 0.0);
+        SmartDashboard.putNumber("Hub Distance (m)", distance);
+        SmartDashboard.putNumber("Left Turret Target (deg)", leftTurretAngle);
+        SmartDashboard.putNumber("Right Turret Target (deg)", rightTurretAngle);
+        targetPose.set(goalPose);
 
-            SmartDashboard.putString("Tracking Mode", "Neutral Zone Safe");
-            SmartDashboard.putNumber("Tx Error (deg)", 0.0);
-            SmartDashboard.putNumber("Hub Distance (m)", distance); // Distance to safe target
-            targetPose.set(safeTarget);
-
-        }
-        // ------------------------------------------------------------------
-        // Priority 3: Field-coordinate mode — use odometry
-        // ------------------------------------------------------------------
-        else {
-            if (robotPose == null) {
-                // Nothing we can do — hold current position
-                targetVisible = false;
-                SmartDashboard.putString("Tracking Mode", "No Pose");
-                SmartDashboard.putBoolean("Target Visible", false);
-                return;
-            }
-
-            lastRobotPose = robotPose;
-            targetVisible = false; // tag not confirmed visible
-
-            Pose2d goalPose = TargetCalculations.getTargetGoalPose(isRedAlliance);
-
-            // Calculate angles from robot pose + turret offsets + goal position
-            double leftTurretAngle = TargetCalculations.getTargetAngleForTurret(
-                    robotPose,
-                    RobotContainer.turretLeft.getFieldPose(),
-                    
-                    goalPose);
-
-            double rightTurretAngle = TargetCalculations.getTargetAngleForTurret(
-                    robotPose,
-                    RobotContainer.turretRight.getFieldPose(),
-                    goalPose);
-
-            double distance = TargetCalculations.getDistanceToGoal(robotPose, goalPose);
-            calculatedShooterRPM = ShooterCalculations.getShooterRPM(distance);
-
-            RobotContainer.turretLeft.setTargetAngle(leftTurretAngle);
-            RobotContainer.turretRight.setTargetAngle(rightTurretAngle);
-
-            SmartDashboard.putString("Tracking Mode", "Field Coordinates");
-            SmartDashboard.putNumber("Tx Error (deg)", 0.0);
-            SmartDashboard.putNumber("Hub Distance (m)", distance);
-            SmartDashboard.putNumber("Left Turret Target (deg)", leftTurretAngle);
-            SmartDashboard.putNumber("Right Turret Target (deg)", rightTurretAngle);
-            targetPose.set(goalPose);
-        }
 
         // ---- Shared telemetry ----
         SmartDashboard.putBoolean("Target Visible", targetVisible);
@@ -156,14 +101,6 @@ public class AutoTrackGoal extends Command {
         SmartDashboard.putBoolean("Left Turret Ready", RobotContainer.turretLeft.atSetpoint());
         SmartDashboard.putBoolean("Right Turret Ready", RobotContainer.turretRight.atSetpoint());
         SmartDashboard.putBoolean("Ready to Shoot", isReadyToShoot());
-
-        Pose2d lTurrPose = TargetCalculations.robotPointToFieldPoint(robotPose, RobotMap.Turret.LEFT_TURRET_X_OFFSET, RobotMap.Turret.LEFT_TURRET_Y_OFFSET);
-        lTurrPose = lTurrPose.rotateAround(lTurrPose.getTranslation(), Rotation2d.fromDegrees(RobotContainer.turretLeft.getCurrentAngle() + RobotMap.Turret.TURRET_ANGLE_OFFSET));
-        leftTurretPose.set(lTurrPose);
-        
-        Pose2d rTurrPose = TargetCalculations.robotPointToFieldPoint(robotPose, RobotMap.Turret.RIGHT_TURRET_X_OFFSET, RobotMap.Turret.RIGHT_TURRET_Y_OFFSET);
-        rTurrPose = rTurrPose.rotateAround(rTurrPose.getTranslation(), Rotation2d.fromDegrees(RobotContainer.turretRight.getCurrentAngle() + RobotMap.Turret.TURRET_ANGLE_OFFSET));
-        rightTurretPose.set(rTurrPose);
     }
 
     /**
@@ -172,21 +109,7 @@ public class AutoTrackGoal extends Command {
      * then to the last known pose. Used only in field-coordinate mode.
      */
     private Pose2d getRobotPoseFromOdometry() {
-        // Try vision-based pose first (highest accuracy)
-        if (RobotContainer.limelightShooter.isTargetPresent()) {
-            Pose2d estimate = RobotContainer.limelightShooter.getPose();
-            if (estimate != null && estimate != null) {
-                return estimate;
-            }
-        }
-
-        // Try odometry
-        if (RobotContainer.odometry != null) {
-            return RobotContainer.odometry.getPose2d();
-        }
-
-        // Last resort — last known pose (robot moved since, but better than nothing)
-        return lastRobotPose;
+        return RobotContainer.odometry.getPose2d();
     }
 
     /**
@@ -208,8 +131,15 @@ public class AutoTrackGoal extends Command {
         boolean turretsOnTarget = RobotContainer.turretLeft.atSetpoint()
                 && RobotContainer.turretRight.atSetpoint();
 
+       boolean isRedAlliance = false;
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            isRedAlliance = (alliance.get() == Alliance.Red);
+        }
+
+
         Pose2d robotPose = getRobotPoseFromOdometry();
-        boolean inNeutralZone = (robotPose != null) && TargetCalculations.isInNeutralZone(robotPose);
+        boolean inNeutralZone = (robotPose != null) && TargetCalculations.isInNeutralZone(robotPose, isRedAlliance);
 
         if (inNeutralZone) {
             return turretsOnTarget; // Just need turrets to be at safe angle

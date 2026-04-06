@@ -1,8 +1,13 @@
 package frc.robot.utils;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
 /**
@@ -180,9 +185,14 @@ public class TargetCalculations {
      * @param robotPose Current pose of the robot on the field
      * @return True if the robot is within the defined neutral zone X coordinates
      */
-    public static boolean isInNeutralZone(Pose2d robotPose) {
-        double x = robotPose.getX();
-        return x >= RobotMap.Vision.NEUTRAL_ZONE_X_MIN && x <= RobotMap.Vision.NEUTRAL_ZONE_X_MAX;
+    public static boolean isInNeutralZone(Pose2d robotPose, boolean isRedAlliance) {
+        Pose2d decisionPose = AutoFunctions.redVsBlue(new Pose2d(5.229, 4, Rotation2d.kZero));
+
+        if (isRedAlliance){
+            return robotPose.getX() < decisionPose.getX();
+        } else {
+            return robotPose.getX() > decisionPose.getX();
+        }
     }
 
     /**
@@ -243,5 +253,25 @@ public class TargetCalculations {
      */
     public static boolean isOnTarget(double txDegrees, double toleranceDeg) {
         return Math.abs(txDegrees) <= toleranceDeg;
+    }
+
+
+    public static Pose2d getTargetPose(Pose2d robotPose) {
+       boolean isRedAlliance = false;
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            isRedAlliance = (alliance.get() == Alliance.Red);
+        }
+
+        boolean passing = isInNeutralZone(robotPose, isRedAlliance);
+
+        if (passing) {
+            if (isRedAlliance)
+                return getRedSafeTargetPose();
+            else
+                return getBlueSafeTargetPose();
+        } else {
+            return TargetCalculations.getTargetGoalPose(isRedAlliance);
+        }
     }
 }
