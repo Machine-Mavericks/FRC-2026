@@ -8,7 +8,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,6 +33,8 @@ public abstract class TurretSubsystem extends SubsystemBase {
     private static final double MECHANISM_RATIO = (1.0 / 5.0) * (18.0 / 120.0);
     // Shuffleboard
     protected ShuffleboardTab tab;
+
+    private Pose2d fieldPose;
     
     /**
      * Create a turret subsystem.
@@ -218,6 +221,8 @@ public abstract class TurretSubsystem extends SubsystemBase {
         updateShuffleboard();
     }
     
+    protected abstract Translation2d getRobotOffset();
+
     /**
      * Initialize Shuffleboard telemetry.
      */
