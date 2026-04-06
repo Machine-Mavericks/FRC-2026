@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.utils.ShooterCalculations;
@@ -84,14 +85,12 @@ public class AutoTrackGoal extends Command {
 
             double leftTurretAngle = TargetCalculations.calculateNeutralZoneAimAngle(
                     robotPose,
-                    RobotMap.Turret.LEFT_TURRET_X_OFFSET,
-                    RobotMap.Turret.LEFT_TURRET_Y_OFFSET,
+                    RobotContainer.turretLeft.getFieldPose(),
                     isRedAlliance);
 
             double rightTurretAngle = TargetCalculations.calculateNeutralZoneAimAngle(
                     robotPose,
-                    RobotMap.Turret.RIGHT_TURRET_X_OFFSET,
-                    RobotMap.Turret.RIGHT_TURRET_Y_OFFSET,
+                    RobotContainer.turretRight.getFieldPose(),
                     isRedAlliance);
 
             Pose2d safeTarget = isRedAlliance ? TargetCalculations.getRedSafeTargetPose()
@@ -128,14 +127,13 @@ public class AutoTrackGoal extends Command {
             // Calculate angles from robot pose + turret offsets + goal position
             double leftTurretAngle = TargetCalculations.getTargetAngleForTurret(
                     robotPose,
-                    RobotMap.Turret.LEFT_TURRET_X_OFFSET,
-                    RobotMap.Turret.LEFT_TURRET_Y_OFFSET,
+                    RobotContainer.turretLeft.getFieldPose(),
+                    
                     goalPose);
 
             double rightTurretAngle = TargetCalculations.getTargetAngleForTurret(
                     robotPose,
-                    RobotMap.Turret.RIGHT_TURRET_X_OFFSET,
-                    RobotMap.Turret.RIGHT_TURRET_Y_OFFSET,
+                    RobotContainer.turretRight.getFieldPose(),
                     goalPose);
 
             double distance = TargetCalculations.getDistanceToGoal(robotPose, goalPose);

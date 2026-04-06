@@ -236,6 +236,10 @@ public abstract class TurretSubsystem extends SubsystemBase {
         posePublisher.set(fieldPose);
         updateShuffleboard();
     }
+
+    public Pose2d getFieldPose(){
+        return fieldPose;
+    }
     
     protected abstract Translation2d getRobotOffset();
     protected String prefixEntry(String entry){

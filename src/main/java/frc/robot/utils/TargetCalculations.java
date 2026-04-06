@@ -98,26 +98,20 @@ public class TargetCalculations {
      * Uses field coordinates (robot pose + HUB position).
      *
      * @param robotPose     Current pose of the robot on the field
-     * @param turretOffsetX Turret X offset from robot center (m, positive =
-     *                      robot-right)
-     * @param turretOffsetY Turret Y offset from robot center (m, positive =
-     *                      robot-forward)
+     * @param turretPose    Current pose of the turret on the field
      * @param goalPose      Position of the goal on the field
      * @return Target angle in degrees (0 = forward, positive = counterclockwise)
      */
     public static double getTargetAngleForTurret(
             Pose2d robotPose,
-            double turretOffsetX,
-            double turretOffsetY,
+            Pose2d turretPose,
             Pose2d goalPose) {
 
-        Translation2d robotTranslation = robotPose.getTranslation();
+            
         Rotation2d robotRotation = robotPose.getRotation();
-
-        // Transform turret offset from robot-relative to field-relative
-        Pose2d fieldPose = robotPointToFieldPoint(robotPose, turretOffsetX, turretOffsetY);
-        double fieldTurretX = fieldPose.getX();
-        double fieldTurretY = fieldPose.getY();
+        
+        double fieldTurretX = turretPose.getX();
+        double fieldTurretY = turretPose.getY();
 
         // Vector from turret position to goal
         double deltaX = goalPose.getX() - fieldTurretX;
@@ -196,18 +190,16 @@ public class TargetCalculations {
      * when we are in the neutral zone.
      *
      * @param robotPose     Current pose of the robot
-     * @param turretOffsetX Turret X offset (m)
-     * @param turretOffsetY Turret Y offset (m)
+     * @param TurretPose    Current pose of the turret on the field
      * @param isRedAlliance True if on the red alliance
      * @return Target angle in degrees for the turret
      */
     public static double calculateNeutralZoneAimAngle(
             Pose2d robotPose,
-            double turretOffsetX,
-            double turretOffsetY,
+            Pose2d TurretPose,
             boolean isRedAlliance) {
         Pose2d safeTarget = isRedAlliance ? getRedSafeTargetPose() : getBlueSafeTargetPose();
-        return getTargetAngleForTurret(robotPose, turretOffsetX, turretOffsetY, safeTarget);
+        return getTargetAngleForTurret(robotPose, TurretPose, safeTarget);
     }
 
     /** @return Safe target Pose2d for the blue alliance when in neutral zone */
