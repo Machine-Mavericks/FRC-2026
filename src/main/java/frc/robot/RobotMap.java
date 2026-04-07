@@ -42,7 +42,8 @@ public class RobotMap {
         public static final int INTAKE_ARM_LEFT = 24;
 
         // Intake motors
-        public static final int INTAKE_SPIN = 28;
+        public static final int INTAKE_SPIN_R = 28;
+         public static final int INTAKE_SPIN_L= 29;
 
         // Uptake motors
         public static final int UPTAKE_MASTER = 25;

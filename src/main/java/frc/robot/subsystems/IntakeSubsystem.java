@@ -28,20 +28,22 @@ import frc.robot.TalonLogger;
  * Uses two 1:1 geared motors.
  */
 public class IntakeSubsystem extends SubsystemBase {
-    private final TalonFX intakeMotor;
-    // private final TalonFX followerMotor;
+    private final TalonFX intakeMotor_r;
+    private final TalonFX followerMotor;
 
     public IntakeSubsystem() {
-        intakeMotor = new TalonFX(RobotMap.CANID.INTAKE_SPIN);
-        intakeMotor.getConfigurator().apply(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
-        // followerMotor = new TalonFX(RobotMap.CANID.INTAKE_FOLLOWER);
+        intakeMotor_r = new TalonFX(RobotMap.CANID.INTAKE_SPIN_R);
+        intakeMotor_r.getConfigurator().apply(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
+        followerMotor = new TalonFX(RobotMap.CANID.INTAKE_SPIN_L);
+        followerMotor.setControl(new Follower(intakeMotor_r.getDeviceID(), MotorAlignmentValue.Opposed));
+
 
         // 1:1 geared, follower follows master
         // The second parameter is whether the follower should invert its
         // direction compared to the master.
         // followerMotor.setControl(new Follower(masterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
         
-        SmartDashboard.putData("Intake/Motor", new TalonLogger(intakeMotor));
+        SmartDashboard.putData("Intake/Motor", new TalonLogger(intakeMotor_r));
     }
 
     // 1:1 geared, follower follows master
@@ -54,7 +56,8 @@ public class IntakeSubsystem extends SubsystemBase {
   
   public IntakeSubsystem(boolean skipHardware) {
     if (!skipHardware) {
-      intakeMotor = new TalonFX(RobotMap.CANID.INTAKE_SPIN);
+      intakeMotor_r = new TalonFX(RobotMap.CANID.INTAKE_SPIN_R);
+        followerMotor = new TalonFX(RobotMap.CANID.INTAKE_SPIN_L);
 
       TalonFXConfiguration config = new TalonFXConfiguration()
           .withFeedback(
@@ -66,9 +69,14 @@ public class IntakeSubsystem extends SubsystemBase {
           //.withSlot0(new Slot0Configs().withKP(1.25) // was 1.25
               //.withKI(2.0).withKD(0).withKV(FEEDFORWARD))
           .withOpenLoopRamps(new OpenLoopRampsConfigs().withVoltageOpenLoopRampPeriod(Seconds.of(5)));
-      intakeMotor.getConfigurator().apply(config);
-    }else{
-        intakeMotor = null; 
+      
+      config.withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
+      intakeMotor_r.getConfigurator().apply(config);
+      followerMotor.getConfigurator().apply(config);
+      followerMotor.setControl(new Follower(intakeMotor_r.getDeviceID(), MotorAlignmentValue.Opposed));
+    } else {
+        intakeMotor_r = null; 
+          followerMotor = null; 
     }
   }
 
@@ -76,21 +84,21 @@ public class IntakeSubsystem extends SubsystemBase {
      * Runs the intake to pull game pieces in.
      */
     public void intake() {
-        intakeMotor.set(RobotMap.Intake.INTAKE_SPEED);
+        intakeMotor_r.set(RobotMap.Intake.INTAKE_SPEED);
     }
 
     /**
      * Runs the intake to eject game pieces.
      */
     public void outtake() {
-        intakeMotor.set(RobotMap.Intake.OUTTAKE_SPEED);
+        intakeMotor_r.set(RobotMap.Intake.OUTTAKE_SPEED);
     }
 
     /**
      * Stops the intake motors.
      */
     public void stop() {
-        intakeMotor.set(0.0);
+        intakeMotor_r.set(0.0);
     }
 
     /**
@@ -98,7 +106,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * tests.
      */
     public double getVelocityRPS() {
-        return intakeMotor.getVelocity().getValueAsDouble();
+        return intakeMotor_r.getVelocity().getValueAsDouble();
     }
 
     @Override
