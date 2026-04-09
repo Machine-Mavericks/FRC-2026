@@ -4,7 +4,9 @@ import static edu.wpi.first.units.Units.Rotation;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotContainer;
@@ -265,13 +267,30 @@ public class TargetCalculations {
 
         boolean passing = isInNeutralZone(robotPose, isRedAlliance);
 
+        Pose2d targetPose;
+
         if (passing) {
             if (isRedAlliance)
-                return getRedSafeTargetPose();
+                targetPose = getRedSafeTargetPose();
             else
-                return getBlueSafeTargetPose();
+                targetPose = getBlueSafeTargetPose();
         } else {
-            return TargetCalculations.getTargetGoalPose(isRedAlliance);
+            targetPose = TargetCalculations.getTargetGoalPose(isRedAlliance);
         }
+
+        ChassisSpeeds robotSpeeds = RobotContainer.drivesystem.getChassisSpeeds();
+        Translation2d robotVelocity = new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+        
+        double timeOfFlight = 1;
+        Translation2d compensationDisplacement = robotVelocity.times(timeOfFlight);
+        return new Pose2d(targetPose.getX() - compensationDisplacement.getX(), targetPose.getY() - compensationDisplacement.getY(), targetPose.getRotation());
     }
+    
+
+
+
+
+
+
+
 }
