@@ -32,9 +32,14 @@ public class IntakeSubsystem extends SubsystemBase {
     private final TalonFX followerMotor;
 
     public IntakeSubsystem() {
+
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
+
         intakeMotor_r = new TalonFX(RobotMap.CANID.INTAKE_SPIN_R);
-        intakeMotor_r.getConfigurator().apply(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
+        intakeMotor_r.getConfigurator().apply(config);
         followerMotor = new TalonFX(RobotMap.CANID.INTAKE_SPIN_L);
+        followerMotor.getConfigurator().apply(config);
         followerMotor.setControl(new Follower(intakeMotor_r.getDeviceID(), MotorAlignmentValue.Opposed));
 
 
@@ -43,42 +48,13 @@ public class IntakeSubsystem extends SubsystemBase {
         // direction compared to the master.
         // followerMotor.setControl(new Follower(masterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
         
-        SmartDashboard.putData("Intake/Motor", new TalonLogger(intakeMotor_r));
+        SmartDashboard.putData("Intake/Lead Motor", new TalonLogger(intakeMotor_r));
+        SmartDashboard.putData("Intake/Follow Motor", new TalonLogger(followerMotor));
     }
 
     // 1:1 geared, follower follows master
     // The second parameter is whether the follower should invert its
     // direction compared to the master.
-
-  /**
-   * Create a Shooter, optionally skipping hardware initialization.
-   */
-  
-  public IntakeSubsystem(boolean skipHardware) {
-    if (!skipHardware) {
-      intakeMotor_r = new TalonFX(RobotMap.CANID.INTAKE_SPIN_R);
-        followerMotor = new TalonFX(RobotMap.CANID.INTAKE_SPIN_L);
-
-      TalonFXConfiguration config = new TalonFXConfiguration()
-          .withFeedback(
-              new FeedbackConfigs())
-                  // CTRE Needs reduction ration (N:1) instead of actual ratio
-                  //.withSensorToMechanismRatio(1 / MECHANISM_RATIO))
-          //.withMotorOutput(new MotorOutputConfigs()
-             // .withInverted(InvertedValue.Clockwise_Positive).withNeutralMode(NeutralModeValue.Coast))
-          //.withSlot0(new Slot0Configs().withKP(1.25) // was 1.25
-              //.withKI(2.0).withKD(0).withKV(FEEDFORWARD))
-          .withOpenLoopRamps(new OpenLoopRampsConfigs().withVoltageOpenLoopRampPeriod(Seconds.of(5)));
-      
-      config.withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
-      intakeMotor_r.getConfigurator().apply(config);
-      followerMotor.getConfigurator().apply(config);
-      followerMotor.setControl(new Follower(intakeMotor_r.getDeviceID(), MotorAlignmentValue.Opposed));
-    } else {
-        intakeMotor_r = null; 
-          followerMotor = null; 
-    }
-  }
 
     /**
      * Runs the intake to pull game pieces in.
