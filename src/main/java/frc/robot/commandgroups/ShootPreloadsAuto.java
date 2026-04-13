@@ -29,40 +29,8 @@ public class ShootPreloadsAuto extends SequentialCommandGroup {
 
     // constructor
     public ShootPreloadsAuto(boolean direction) {
-        addRequirements(RobotContainer.drivesystem);
+        addRequirements(RobotContainer.leftShooter, RobotContainer.rightShooter, RobotContainer.uptake, RobotContainer.hopperFeed);
         addCommands(
-
-                // depending on start position, set odometry
-                new InstantCommand(() -> {
-                    int startposn = RobotContainer.mainShufflePage.getStartPositionIndex();
-
-                    Pose2d startpose; // add positions
-                    switch (startposn) {
-                        case 0: // on the center line 3.4m
-                            startpose = new Pose2d(3.42, 2.33, new Rotation2d(Math.toRadians(45.0))); // Bump right
-                            break;
-                        case 1:
-                            startpose = new Pose2d(3.42, 5.72, new Rotation2d(Math.toRadians(315.0))); // Bump left
-                            break;
-                        case 2:
-                            startpose = new Pose2d(3.42, 0.63, new Rotation2d(Math.toRadians(180))); // trench right 60 degrees
-                            break;
-                        case 3:
-                            startpose = new Pose2d(3.42, 7.42, new Rotation2d(Math.toRadians(300.0))); // trench left
-                            break;
-                        default:
-                            startpose = new Pose2d(3.42, 5.72, new Rotation2d(Math.toRadians(315.0)));
-                    }
-                    ;
-
-                    // convert for red vs blue
-                    startpose = AutoFunctions.redVsBlue(startpose);
-
-                    // set odometry
-                    RobotContainer.odometry.setPose(startpose);
-
-                }),
-                
                 // new MoveToPose(
                 //     2.0, 
                 //     2.5,

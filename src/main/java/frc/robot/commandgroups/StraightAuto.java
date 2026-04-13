@@ -21,17 +21,24 @@ import frc.robot.utils.AutoFunctions;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class StraightAuto extends SequentialCommandGroup {
-  /** Creates a new TestAutoStuffCommand. */
-  public StraightAuto() {
+  
+  public StraightAuto(boolean left) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
+    // left and right poses 
+    Pose2d rightPos1 = new Pose2d(8.25, 3.0, new Rotation2d());
+    Pose2d leftPos1 = new Pose2d(8.25, 5.05, new Rotation2d());
+    Pose2d rightPos2 = new Pose2d(5.5, 2.64, Rotation2d.fromDegrees(180));
+    Pose2d leftPos2 = new Pose2d(5.5, 5.41, Rotation2d.fromDegrees(180));
+    Pose2d rightPos3 = new Pose2d(2.0, 2.64, Rotation2d.fromDegrees(225));
+    Pose2d leftPos3 = new Pose2d(2.0, 5.41, Rotation2d.fromDegrees(135));
     addCommands(
       new SendItCommand(4, 0).withTimeout(1.25),
-      new TurnAndZeroCommand(false),
+      new TurnAndZeroCommand(left),
       new InstantCommand(() -> RobotContainer.intake.intake(), RobotContainer.intake),
       // Move to pos already does the red vs blue for us!
-      new MoveToPose(1,1, (new Pose2d(8.25, 3.0, new Rotation2d()))).withTimeout(5),
-      new MoveToPose(3,3, (new Pose2d(5.5, 2.64, Rotation2d.fromDegrees(180)))).withTimeout(3),
+      new MoveToPose(1,1, (left?leftPos1:rightPos1)).withTimeout(5),
+      new MoveToPose(3,3, (left?leftPos2:rightPos2)).withTimeout(3),
       new InstantCommand(() -> RobotContainer.intake.stop(), RobotContainer.intake),
       new SendItCommand(4, 0).withTimeout(1.5),
       
@@ -39,8 +46,8 @@ public class StraightAuto extends SequentialCommandGroup {
         new ShootCommand(RobotContainer.leftShooter, RobotContainer.rightShooter),
         
         new SequentialCommandGroup(
-          new TurnAndZeroCommand(true),
-          new MoveToPose(1,1, (new Pose2d(2.0, 2.64, Rotation2d.fromDegrees(225)))).withTimeout(2.5),
+          new TurnAndZeroCommand(!left),
+          new MoveToPose(1,1, (left?leftPos3:rightPos3)).withTimeout(2.5),
           new UptakeAndFeed(RobotContainer.hopperFeed, RobotContainer.uptake)
         )
       )

@@ -257,11 +257,15 @@ public class RobotContainer {
         if (index == 0)
             chosenCommand = new Pause(20.0); // do nothing command
         else if (index == 1)
-            chosenCommand = new ShootPreloadsAuto(true); // drive off the line
+            chosenCommand = new ShootPreloadsAuto(true); 
         else if (index == 2)
-            chosenCommand = new ShootPreloadsAuto(false);
+            chosenCommand = new StraightAuto(true);
         else if (index == 3)
-            chosenCommand = new DepotAuto();
+            chosenCommand = new StraightAuto(false);
+        else if (index == 4)
+            chosenCommand = new SweepAuto(true);
+        else if (index == 5)
+            chosenCommand = new SweepAuto(false);
    
         //     else if (index == 3)
         //     chosenCommand = new OneCoralAutoCenter();
