@@ -23,10 +23,10 @@ public class SweepAuto extends SequentialCommandGroup {
   /** Creates a new TestAutoStuffCommand. */
   public SweepAuto(boolean left) {
     // left and right poses
-    Pose2d rightPos1 = new Pose2d(7.62, 1.778, new Rotation2d());
-    Pose2d leftPos1 = new Pose2d(7.62, 6.274, new Rotation2d());
-    Pose2d rightPos2 = new Pose2d(7.62, 4.0, Rotation2d.fromDegrees(90));
-    Pose2d leftPos2 = new Pose2d(7.62, 4.05, Rotation2d.fromDegrees(270));
+    Pose2d rightPos1 = new Pose2d(7.80, 0.644, Rotation2d.fromDegrees(90));
+    Pose2d leftPos1 = new Pose2d(rightPos1.getX(), 8.5 - rightPos1.getY(), Rotation2d.fromDegrees(270));
+    Pose2d rightPos2 = new Pose2d(7.80, 4.0, Rotation2d.fromDegrees(90));
+    Pose2d leftPos2 = new Pose2d(7.80, 4.05, Rotation2d.fromDegrees(270));
     Pose2d rightPos3 = new Pose2d(5.5, 2.64, Rotation2d.fromDegrees(180));
     Pose2d leftPos3 = new Pose2d(5.5, 5.41, Rotation2d.fromDegrees(180));
     Pose2d rightPos4 = new Pose2d(2.0, 2.64, Rotation2d.fromDegrees(225));
@@ -36,13 +36,13 @@ public class SweepAuto extends SequentialCommandGroup {
     addCommands(
       new SendItCommand(4, 0).withTimeout(1.25),
       new TurnAndZeroCommand(left),
-      new JogIntakeArm(-0.1).withTimeout(0.1),
+      //new JogIntakeArm(-0.1).withTimeout(0.1),
       new InstantCommand(() -> RobotContainer.intake.intake(), RobotContainer.intake),
       // Move to pos already does the red vs blue for us!
-      new MoveToPose(1,1, (left?leftPos1:rightPos1)).withTimeout(2),
-      new MoveToPose(1,1, (left?leftPos2:rightPos2)).withTimeout(2.5),
-      new MoveToPose(1,1, (left?leftPos3:rightPos3)).withTimeout(3),
+      new MoveToPose(1,2, (left?leftPos1:rightPos1)),//.withTimeout(2),
+      new MoveToPose(2,2, (left?leftPos2:rightPos2)),//.withTimeout(2.5),
       new InstantCommand(() -> RobotContainer.intake.stop(), RobotContainer.intake),
+      new MoveToPose(1,2, (left?leftPos3:rightPos3)),//.withTimeout(3),
       new SendItCommand(4, 0).withTimeout(1.5),
       new TurnAndZeroCommand(!left),
       

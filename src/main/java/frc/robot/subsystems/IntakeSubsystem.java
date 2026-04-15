@@ -77,6 +77,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor_r.set(0.0);
     }
 
+
     /**
      * Returns master motor velocity in RPS — useful for diagnostics and smoke
      * tests.

@@ -206,23 +206,28 @@ public class TargetCalculations {
      * @param isRedAlliance True if on the red alliance
      * @return Target angle in degrees for the turret
      */
-    public static double calculateNeutralZoneAimAngle(
-            Pose2d robotPose,
-            Pose2d TurretPose,
-            boolean isRedAlliance) {
-        Pose2d safeTarget = isRedAlliance ? getRedSafeTargetPose() : getBlueSafeTargetPose();
-        return getTargetAngleForTurret(robotPose, TurretPose, safeTarget);
-    }
+
+
+    static Pose2d smallYTarget = new Pose2d(1.5, 1.5, new Rotation2d(0));
+    static Pose2d bigYTarget = new Pose2d(1.5, 6.5, new Rotation2d(0) );
+    static double centreLineY = 4.0;
+
 
     /** @return Safe target Pose2d for the blue alliance when in neutral zone */
-    public static Pose2d getBlueSafeTargetPose() {
-        return new Pose2d(RobotMap.Vision.BLUE_SAFE_TARGET_X, RobotMap.Vision.BLUE_SAFE_TARGET_Y, new Rotation2d());
+    public static Pose2d getSafeTargetPose() {
+        double comp = RobotContainer.odometry.getPose2d().getY() - centreLineY;
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red){
+            comp = -comp;
+        }
+        if(comp > 0){
+            return AutoFunctions.redVsBlue(bigYTarget);
+        }else{
+           return AutoFunctions.redVsBlue(smallYTarget);
+        }
+        
     }
 
-    /** @return Safe target Pose2d for the red alliance when in neutral zone */
-    public static Pose2d getRedSafeTargetPose() {
-        return new Pose2d(RobotMap.Vision.RED_SAFE_TARGET_X, RobotMap.Vision.RED_SAFE_TARGET_Y, new Rotation2d());
-    }
+
 
     // -------------------------------------------------------------------------
     // Direct Limelight mode (camera-angle-based, requires tag in view)
@@ -270,10 +275,7 @@ public class TargetCalculations {
         Pose2d targetPose;
 
         if (passing) {
-            if (isRedAlliance)
-                targetPose = getRedSafeTargetPose();
-            else
-                targetPose = getBlueSafeTargetPose();
+            targetPose = getSafeTargetPose();
         } else {
             targetPose = TargetCalculations.getTargetGoalPose(isRedAlliance);
         }

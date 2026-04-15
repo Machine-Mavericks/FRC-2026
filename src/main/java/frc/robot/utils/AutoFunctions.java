@@ -46,4 +46,18 @@ public class AutoFunctions {
             return rotation;
     }
 
+    /**
+     * Get a pose mirrored left vs right
+     * @param pose Pose on the right side of the field
+     * @param left Boolean wehther to return right or left version
+     * @return Right or left version of provided pose
+     */
+    public static Pose2d leftVsRight(Pose2d pose, boolean left){
+        if (left) {
+            return  new Pose2d(pose.getX(), 8.5 - pose.getY(), Rotation2d.fromDegrees(360).minus(pose.getRotation()));
+        } else {
+            return pose;
+        }
+    }
+
 }

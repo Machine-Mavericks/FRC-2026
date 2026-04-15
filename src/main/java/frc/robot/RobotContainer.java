@@ -4,6 +4,7 @@ import frc.robot.commands.IncrementShootersSpeed;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.MoveToPose;
 import frc.robot.commands.ParkCommand;
+import frc.robot.commands.PassingShot;
 import frc.robot.commands.Pause;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.ShootCommand;
@@ -12,6 +13,7 @@ import frc.robot.commands.UptakeAndFeed;
 import frc.robot.commandgroups.DepotAuto;
 import frc.robot.commandgroups.JogUptakeAndFeedCommand;
 import frc.robot.commandgroups.MoveOffLineAndShootPreloadsAuto;
+import frc.robot.commandgroups.PassingAuto;
 import frc.robot.commandgroups.ShootPreloadsAuto;
 import frc.robot.commandgroups.StraightAuto;
 import frc.robot.commandgroups.SweepAuto;
@@ -179,7 +181,7 @@ public class RobotContainer {
             Rotation2d newHeading = AutoFunctions.redVsBlue(new Rotation2d(0.0));
             odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
         }));
-
+        driverOp.leftTrigger().whileTrue(new RunIntakeCommand(intake));
         driverOp.start().onTrue(new FixOdometry());
 
         driverOp.leftBumper().whileTrue(new ParkCommand(drivesystem));
@@ -236,6 +238,8 @@ public class RobotContainer {
         // toolOp.rightTrigger().onTrue(new InstantCommand(()->intakeArm.moveTo(-90.0 /
         // 360.0)));
         toolOp.y().whileTrue(new ShootCommand(leftShooter, rightShooter));
+        toolOp.a().whileTrue(new PassingShot(leftShooter, rightShooter));
+        toolOp.b().whileTrue(new InstantCommand(()-> intake.outtake()));
         toolOp.back().whileTrue(new HopperJogBack(hopperFeed));
 
         toolOp.povDown().whileTrue(new JogIntakeArm(-0.15));
@@ -266,6 +270,10 @@ public class RobotContainer {
             chosenCommand = new SweepAuto(true);
         else if (index == 5)
             chosenCommand = new SweepAuto(false);
+        else if (index == 6)
+            chosenCommand = new PassingAuto(true);
+        else if (index == 7)
+            chosenCommand = new PassingAuto(false);
    
         //     else if (index == 3)
         //     chosenCommand = new OneCoralAutoCenter();

@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
@@ -26,8 +27,8 @@ public class MoveToPose extends Command {
     private PIDController m_yController;
     private PIDController m_rotController;
 
-    private final double m_positiontolerance = 0.01;
-    private final double m_angletolerance = 1.0;
+    private final double m_positiontolerance = 0.1;
+    private final double m_angletolerance = 3.0;
 
      private StructPublisher<Pose2d> posePublisher;
 
@@ -51,8 +52,8 @@ public class MoveToPose extends Command {
         addRequirements(RobotContainer.drivesystem);
 
         // set up PIDs
-        m_xController = new PIDController(2.2, 0.1, 0.0);
-        m_yController = new PIDController(2.2, 0.1, 0.0);
+        m_xController = new PIDController(3, 0.1, 0.0);
+        m_yController = new PIDController(3, 0.1, 0.0);
         m_rotController = new PIDController(0.05, 0.001, 0.0000);
    
         m_xController.setIZone(0.1);
@@ -96,6 +97,15 @@ public class MoveToPose extends Command {
         double xSpeed = m_xController.calculate(currentpose.getX(), dest.getX());
         double ySpeed = m_yController.calculate(currentpose.getY(), dest.getY());
         double rotSpeed = m_rotController.calculate(currentpose.getRotation().getDegrees(), dest.getRotation().getDegrees());
+
+        SmartDashboard.putNumber("Autos/X Speed", xSpeed);
+        SmartDashboard.putNumber("Autos/Y Speed", ySpeed);
+        SmartDashboard.putNumber("Autos/Rot Speed", rotSpeed);
+
+        Translation2d error = dest.getTranslation().minus(currentpose.getTranslation());
+        SmartDashboard.putNumber("Autos/X Error", Math.abs(dest.getX() - currentpose.getX()));
+        SmartDashboard.putNumber("Autos/Y Error", Math.abs(dest.getY() - currentpose.getY()));
+        SmartDashboard.putNumber("Autos/Rot Error", Math.abs(Utils.AngleDifference(dest.getRotation().getDegrees(), currentpose.getRotation().getDegrees())));
 
         SmartDashboard.putNumber("Autos/Current Rotation", currentpose.getRotation().getDegrees());
         
