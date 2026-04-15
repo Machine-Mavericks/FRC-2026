@@ -11,6 +11,7 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TemplateCommand;
 import frc.robot.commands.UptakeAndFeed;
 import frc.robot.commandgroups.DepotAuto;
+import frc.robot.commandgroups.DepotSweepAuto;
 import frc.robot.commandgroups.JogUptakeAndFeedCommand;
 import frc.robot.commandgroups.MoveOffLineAndShootPreloadsAuto;
 import frc.robot.commandgroups.PassingAuto;
@@ -274,6 +275,10 @@ public class RobotContainer {
             chosenCommand = new PassingAuto(true);
         else if (index == 7)
             chosenCommand = new PassingAuto(false);
+        else if (index == 8)
+            chosenCommand = new DepotAuto(false);
+        else if (index == 9)
+            chosenCommand = new DepotSweepAuto();
    
         //     else if (index == 3)
         //     chosenCommand = new OneCoralAutoCenter();

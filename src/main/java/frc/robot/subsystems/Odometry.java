@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Limelight;
+import frc.robot.utils.AutoFunctions;
 
 /** Subsystem */
 public class Odometry extends SubsystemBase {
@@ -158,7 +159,7 @@ public class Odometry extends SubsystemBase {
 
     // initialize robot odometry to zero
     public void InitializeToZero() {
-        setPose(0.0, 0.0, 0.0, 0.0);
+        setPose(AutoFunctions.redVsBlue(new Pose2d()));
     }
 
     /** Use to set odometry to fixed position and angle */

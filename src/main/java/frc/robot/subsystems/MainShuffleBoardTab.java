@@ -138,6 +138,8 @@ public class MainShuffleBoardTab extends SubsystemBase {
         m_autonomousPath.addOption("R Sweep Auto", 5);
         m_autonomousPath.addOption("L Passing Auto", 6);
         m_autonomousPath.addOption("R Passing Auto", 7);
+        m_autonomousPath.addOption("M Depot Auto", 8);
+        m_autonomousPath.addOption("L Sweep + Depot Auto", 9);
         //m_autonomousPath.addOption("Off Line & Shoot Preloads", 2);
         //m_autonomousPath.addOption("Preloads and Humen Station", 3);;
         m_autonomousPath.setDefaultOption("Do Nothing", 0);

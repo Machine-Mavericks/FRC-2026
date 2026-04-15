@@ -24,30 +24,32 @@ import frc.robot.utils.AutoFunctions;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class DepotAuto extends SequentialCommandGroup {
   /** Creates a new TestAutoStuffCommand. */
-  public DepotAuto() {
+  public DepotAuto(boolean isSubcommand) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new InstantCommand(() -> {
-        RobotContainer.odometry.setPose(AutoFunctions.redVsBlue(new Pose2d(3.62 ,4, Rotation2d.fromDegrees(180))));
+        if (!isSubcommand)
+          RobotContainer.odometry.setPose(AutoFunctions.redVsBlue(new Pose2d(3.62 ,4, Rotation2d.fromDegrees(180))));
       }, RobotContainer.odometry),
 
        new InstantCommand(() -> RobotContainer.intake.intake(), RobotContainer.intake),
       // Move to pos already does the red vs blue for us!
-      new MoveToPose(1,1, (new Pose2d(1.27, 5.84, Rotation2d.fromDegrees(180)))).withTimeout(5),
+      new MoveToPose(1,1, (new Pose2d(1.27, 6.0, Rotation2d.fromDegrees(180)))),
 
-      new MoveToPose(1,1, (new Pose2d(0.47, 5.84, Rotation2d.fromDegrees(180)))).withTimeout(5),
+      new MoveToPose(1,1, (new Pose2d(0.27, 6, Rotation2d.fromDegrees(180)))),
       
+      new MoveToPose(1,1, (new Pose2d(1.75, 5, Rotation2d.fromDegrees(180)))),
+
+      new MoveToPose(1,1, (new Pose2d(1.75, 4.0, Rotation2d.fromDegrees(180)))),
+
+
       new InstantCommand(() -> RobotContainer.intake.stop(), RobotContainer.intake),
       //new SendItCommand(4, 0).withTimeout(1.5),
       
       new ParallelCommandGroup(
         new ShootCommand(RobotContainer.leftShooter, RobotContainer.rightShooter),
-        
-        new SequentialCommandGroup(
-          new MoveToPose(1,1, (new Pose2d(2.0, 5.0, Rotation2d.fromDegrees(135)))).withTimeout(2.5),
-          new UptakeAndFeed(RobotContainer.hopperFeed, RobotContainer.uptake)
-        )
+        new UptakeAndFeed(RobotContainer.hopperFeed, RobotContainer.uptake)
       )
 
 
