@@ -241,7 +241,8 @@ public class RobotContainer {
         toolOp.y().whileTrue(new ShootCommand(leftShooter, rightShooter));
         toolOp.a().whileTrue(new PassingShot(leftShooter, rightShooter));
         toolOp.b().whileTrue(new InstantCommand(()-> intake.outtake()));
-        toolOp.back().whileTrue(new HopperJogBack(hopperFeed));
+        toolOp.back().whileTrue(nerJogBack(hopperFeed));
+       
 
         toolOp.povDown().whileTrue(new JogIntakeArm(-0.15));
         toolOp.povUp().whileTrue(new JogIntakeArm(0.15));

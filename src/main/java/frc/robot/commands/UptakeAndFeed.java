@@ -33,13 +33,7 @@ public class UptakeAndFeed extends Command {
     // This method is called periodically while command is active
     @Override
     public void execute() {
-        if (hopperFeed.isJammed()){
-            unjamTimeout = System.currentTimeMillis() + 1000;
-            hopperFeed.jogBack();
-        }
-        else if (System.currentTimeMillis() > unjamTimeout){
-            hopperFeed.feed();
-        }
+        hopperFeed.feed();
         uptake.feedShooter();
     }
 
