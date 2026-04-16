@@ -37,6 +37,8 @@ public class HopperFeed extends SubsystemBase {
         config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 1;
         config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 1;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.CurrentLimits.StatorCurrentLimit = 60;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
         StatusCode status = motor.getConfigurator().apply(config);
 
         if (!status.isOK()) {
@@ -52,7 +54,7 @@ public class HopperFeed extends SubsystemBase {
 
     @Override
     public void periodic() {
-
+        SmartDashboard.putBoolean("Hopper/Jammed", isJammed());
     }
 
     /** Returns motor velocity in RPS — useful for diagnostics and smoke tests. */
@@ -66,6 +68,11 @@ public class HopperFeed extends SubsystemBase {
 
      public void jogBack(){
         motor.set(-1* RobotMap.HopperFeed.DEFAULT_SPEED);
+    }
+
+    public boolean isJammed(){
+        // If we're commanding output but not getting anything, then a jam has occured
+        return Math.abs(motor.get()) > 0.1 && Math.abs(motor.getVelocity().getValueAsDouble()) < 0.1;
     }
 
     public void stop() {

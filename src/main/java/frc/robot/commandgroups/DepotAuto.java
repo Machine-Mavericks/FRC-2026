@@ -43,6 +43,7 @@ public class DepotAuto extends SequentialCommandGroup {
 
       new MoveToPose(1,1, (new Pose2d(1.75, 4.0, Rotation2d.fromDegrees(180)))),
 
+      new InstantCommand(() -> RobotContainer.odometry.updateAprilTagOdometry(RobotContainer.limelightShooter)),
 
       new InstantCommand(() -> RobotContainer.intake.stop(), RobotContainer.intake),
       //new SendItCommand(4, 0).withTimeout(1.5),

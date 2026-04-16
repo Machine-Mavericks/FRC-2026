@@ -54,7 +54,7 @@ public class DepotSweepAuto extends SequentialCommandGroup {
       new ParallelCommandGroup(
         new MoveToPose(1,1, (left?leftPos4:rightPos4)).withTimeout(2.5),
         new ShootPreloadsAuto(false)
-      ).withTimeout(5),
+      ).withTimeout(7),
 
       new DepotAuto(true)
 

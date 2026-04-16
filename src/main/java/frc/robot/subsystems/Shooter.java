@@ -68,7 +68,7 @@ public class Shooter extends SubsystemBase {
                   .withSensorToMechanismRatio(1 / MECHANISM_RATIO))
           .withMotorOutput(new MotorOutputConfigs()
               .withInverted(inverted).withNeutralMode(NeutralModeValue.Coast))
-          .withSlot0(new Slot0Configs().withKP(4.00) // was 1.25
+          .withSlot0(new Slot0Configs().withKP(5.00) // was 1.25
               .withKI(2.0).withKD(0).withKV(FEEDFORWARD))
           .withClosedLoopRamps(new ClosedLoopRampsConfigs().withVoltageClosedLoopRampPeriod(Seconds.of(1)));
 

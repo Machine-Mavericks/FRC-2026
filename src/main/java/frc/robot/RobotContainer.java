@@ -182,7 +182,7 @@ public class RobotContainer {
             Rotation2d newHeading = AutoFunctions.redVsBlue(new Rotation2d(0.0));
             odometry.setPose(0.0, 0.0, newHeading.getRadians(), newHeading.getRadians());
         }));
-        driverOp.leftTrigger().whileTrue(new RunIntakeCommand(intake));
+       // driverOp.leftTrigger().whileTrue(new RunIntakeCommand(intake));
         driverOp.start().onTrue(new FixOdometry());
 
         driverOp.leftBumper().whileTrue(new ParkCommand(drivesystem));

@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.HopperFeed;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.Uptake;
 
 
@@ -10,6 +9,9 @@ import frc.robot.subsystems.Uptake;
 public class UptakeAndFeed extends Command {
  private HopperFeed hopperFeed;
   private Uptake uptake;
+
+  private long unjamTimeout = 0;
+
     // constructor
     public UptakeAndFeed(HopperFeed hopperFeed, Uptake uptake) {
 
@@ -31,7 +33,13 @@ public class UptakeAndFeed extends Command {
     // This method is called periodically while command is active
     @Override
     public void execute() {
-        hopperFeed.feed();
+        if (hopperFeed.isJammed()){
+            unjamTimeout = System.currentTimeMillis() + 1000;
+            hopperFeed.jogBack();
+        }
+        else if (System.currentTimeMillis() > unjamTimeout){
+            hopperFeed.feed();
+        }
         uptake.feedShooter();
     }
 
